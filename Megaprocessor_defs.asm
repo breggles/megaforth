@@ -18,7 +18,6 @@ PS_INT_ENABLE_BIT               equ     0x01;
 //
 // External RAM:
 EXT_RAM_START                   equ     0x0000;
-EXT_RAM_END                     equ     0x7FFF;
 EXT_RAM_LEN                     equ     0x8000;
 
 // ================================================================
