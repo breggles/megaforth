@@ -92,6 +92,20 @@ rotr_inner:
         ld.w    r1,r1_store;
         jmp     _next;
 
+drop2:
+        dw      drop2_inner;
+drop2_inner:
+        pop     r0;
+        pop     r0;
+        jmp     _next;
+
+dup2:
+        dw      dup2_inner;
+dup2_inner:
+        ld.w    r0,(sp+0);
+        ld.w    r2,(sp+2);
+        jmp     _next;
+
 plus:
         dw      plus_inner;
 plus_inner:
