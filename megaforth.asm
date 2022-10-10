@@ -3,7 +3,7 @@ include "Megaprocessor_defs.asm";
 RETURN_STACK        equ 0x6000;
 
         org     0x400;
-        dw      fn3,fn2;
+        dw      dup; //fn3,fn2;
 
         org     0;
         // set up data stack
@@ -13,9 +13,9 @@ RETURN_STACK        equ 0x6000;
         ld.w    r1,#RETURN_STACK;
 
         // put some data on data stack for testing
-        ld.w    r0,#0x1234;
-        push    r0;
         ld.w    r0,#0x1;
+        push    r0;
+        ld.w    r0,#0x1234;
         push    r0;
 
         ld.w    r3,#0x400;
@@ -49,6 +49,13 @@ drop:
         dw      drop_inner;
 drop_inner:
         pop     r0;
+        jmp     _next;
+
+dup:
+        dw      dup_inner;
+dup_inner:
+        ld.w    r0,(sp+0);
+        push    r0;
         jmp     _next;
 
 plus:
