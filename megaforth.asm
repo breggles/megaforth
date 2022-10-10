@@ -73,11 +73,25 @@ rot_inner:
         pop     r0;
         pop     r1;
         pop     r2;
+        push    r1;
+        push    r0;
+        push    r2;
+        ld.w    r1,r1_store;
+        jmp     _next;
+
+rotr:
+        dw      rotr_inner;
+rotr_inner:
+        st.w    r1_store,r1;
+        pop     r0;
+        pop     r1;
+        pop     r2;
         push    r0;
         push    r2;
         push    r1;
         ld.w    r1,r1_store;
         jmp     _next;
+
 plus:
         dw      plus_inner;
 plus_inner:
