@@ -21,6 +21,10 @@ RETURN_STACK        equ 0x6000;
         ld.w    r3,#0x400;
         jmp     _next;
 
+// NB: We're using r1 as the return stack pointer and r3 as the "instruction" pointer.
+//     They can be used in words, but their values need to be stored and and restored,
+//     before called _next.
+
 _next:
         ld.w    r0,(r3++);
         move    r2,r0;
