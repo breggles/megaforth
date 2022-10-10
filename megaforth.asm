@@ -9,7 +9,7 @@ current_code_word:
 
         org     0x400;
 
-        dw      plus; //fn3,fn2;
+        dw      fn3,fn2;
 
         org     0;
 
@@ -36,13 +36,13 @@ _next:
         jmp     (r0);
 
 _docol:
-        st.w    current_code_word,r2;
+        push    r2;    //slightly abusing stack here, as it's only supposed to be used for Forth data, but since it's gonna get popped in this fn, and since everything is single threaded...
         move    r2,r1;
         move    r1,r3;
         addq    r2,#-2;
         st.w    (r2),r1;
         move    r1,r2;
-        ld.w    r3,current_code_word;
+        pop     r3;
         addq    r3,#2;
         jmp     _next;
 
