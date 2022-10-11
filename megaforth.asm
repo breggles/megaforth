@@ -29,8 +29,8 @@ _next:
         jmp     (r0);
 
 exit:
-        dw      exit_inner;
-exit_inner:
+        dw      exit_code;
+exit_code:
         move    r2,r1;
         ld.w    r0,(r2);
         addq    r1,#2;
@@ -38,14 +38,14 @@ exit_inner:
         jmp     _next;
 
 drop:
-        dw      drop_inner;
-drop_inner:
+        dw      drop_code;
+drop_code:
         pop     r0;
         jmp     _next;
 
 swap:
-        dw      swap_inner;
-swap_inner:
+        dw      swap_code;
+swap_code:
         pop     r0;
         pop     r2;
         push    r0;
@@ -53,22 +53,22 @@ swap_inner:
         jmp     _next;
 
 dup:
-        dw      dup_inner;
-dup_inner:
+        dw      dup_code;
+dup_code:
         ld.w    r0,(sp+0);
         push    r0;
         jmp     _next;
 
 over:
-        dw      over_inner;
-over_inner:
+        dw      over_code;
+over_code:
         ld.w    r0,(sp+2);
         push    r0;
         jmp     _next;
 
 rot:
-        dw      rot_inner;
-rot_inner:
+        dw      rot_code;
+rot_code:
         st.w    r1_store,r1;
         pop     r0;
         pop     r1;
@@ -80,8 +80,8 @@ rot_inner:
         jmp     _next;
 
 rotr:
-        dw      rotr_inner;
-rotr_inner:
+        dw      rotr_code;
+rotr_code:
         st.w    r1_store,r1;
         pop     r0;
         pop     r1;
@@ -93,22 +93,22 @@ rotr_inner:
         jmp     _next;
 
 drop2:
-        dw      drop2_inner;
-drop2_inner:
+        dw      drop2_code;
+drop2_code:
         pop     r0;
         pop     r0;
         jmp     _next;
 
 dup2:
-        dw      dup2_inner;
-dup2_inner:
+        dw      dup2_code;
+dup2_code:
         ld.w    r0,(sp+0);
         ld.w    r2,(sp+2);
         jmp     _next;
 
 swap2:
-        dw      swap2_inner;
-swap2_inner:
+        dw      swap2_code;
+swap2_code:
         st.w    r1_store,r1;
         st.w    r3_store,r3;
         pop     r0;
@@ -124,15 +124,15 @@ swap2_inner:
         jmp     _next;
 
 branch:
-        dw      branch_inner;
-branch_inner:
+        dw      branch_code;
+branch_code:
         ld.w    r0,(r3);
         add     r3,r0;      // add 2 more?
         jmp     _next;
 
 plus:
-        dw      plus_inner;
-plus_inner:
+        dw      plus_code;
+plus_code:
         pop     r0;
         pop     r1;
         add     r0,r1;
@@ -140,16 +140,16 @@ plus_inner:
         jmp     _next;
 
 lit:
-        dw      lit_inner;
-lit_inner:
+        dw      lit_code;
+lit_code:
         ld.w    r0,(r3);
         push    r0;
         addq    r3,#2;
         jmp     _next;
 
 fetch:
-        dw      fetch_inner;
-fetch_inner:
+        dw      fetch_code;
+fetch_code:
         pop     r2;
         ld.w    r0,(r2);
         push    r0;
@@ -159,14 +159,14 @@ double:
         dw      _docol,dup,plus,exit;
 
 fn1:
-        dw      f1_inner;
-f1_inner:
+        dw      f1_code;
+f1_code:
         ld.b    r0,#0x11;
         jmp     _next;
 
 fn2:
-        dw      fn2_inner;
-fn2_inner:
+        dw      fn2_code;
+fn2_code:
         ld.b    r0,#0x22;
         jmp     _next;
 
