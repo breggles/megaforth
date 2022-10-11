@@ -3,7 +3,7 @@ include "Megaprocessor_defs.asm";
 RETURN_STACK        equ 0x6000;
 
         org     0x400;
-        dw      branch,4,fn1,fn2; //fn3,fn2;
+        dw      lit,0x4321,branch,4,fn1,fn2; //fn3,fn2;
 
         org     0;
 
@@ -139,14 +139,16 @@ plus_inner:
         push    r0;
         jmp     _next;
 
+lit:
+        dw      lit_inner;
+lit_inner:
+        ld.w    r0,(r3);
+        push    r0;
+        addq    r3,#2;
+        jmp     _next;
+
 double:
         dw      _docol,dup,plus,exit;
-
-r1_store:
-        dw;
-
-r3_store:
-        dw;
 
 fn1:
         dw      f1_inner;
@@ -182,3 +184,9 @@ _init:
 
         ld.w    r3,#0x400;
         jmp     _next;
+
+r1_store:
+        dw;
+
+r3_store:
+        dw;
