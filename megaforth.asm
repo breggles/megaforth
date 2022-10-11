@@ -3,11 +3,11 @@ include "Megaprocessor_defs.asm";
 RETURN_STACK        equ 0x6000;
 
         org     0x400;
-        dw      lit,0x4321,branch,4,fn1,fn2; //fn3,fn2;
+        dw      lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4,fn1,fn2; //fn3,fn2;
 
         org     0;
 
-        jmp     _init;
+        jmp     _start;
 
 // NB: We're using r1 as the return stack pointer and r3 as the "instruction" pointer.
 //     They can be used in words, but their values need to be stored and and restored,
@@ -165,22 +165,13 @@ fn2_inner:
 fn3:
         dw      _docol,fn1,exit;
 
-_init:
+_start:
         // set up data stack
         ld.w    r0,#EXT_RAM_LEN;
         move    sp,r0;
+
         // set up return stack
         ld.w    r1,#RETURN_STACK;
-
-        // put some data on data stack for testing
-        ld.w    r0,#0x1;
-        push    r0;
-        ld.w    r0,#0x1234;
-        push    r0;
-        ld.w    r0,#0x2345;
-        push    r0;
-        ld.w    r0,#0x3456;
-        push    r0;
 
         ld.w    r3,#0x400;
         jmp     _next;
