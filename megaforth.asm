@@ -3,7 +3,7 @@ include "Megaprocessor_defs.asm";
 RETURN_STACK        equ 0x6000;
 
         org     0x400;
-        dw      lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4,fn1,fn2; //fn3,fn2;
+        dw      latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
 
         org     0;
 
@@ -11,9 +11,9 @@ RETURN_STACK        equ 0x6000;
 
 // NB: We're using r1 as the return stack pointer and r3 as the "instruction" pointer.
 //     They can be used in words, but their values need to be stored and and restored,
-//     before called _next.
+//     before calling _next.
 
-_docol:                     // Has address 3, i.e. codeword 3 means it's not primitive
+_docol:
         move    r0,r3;
         move    r3,r2;
         addq    r1,#-2;
@@ -28,6 +28,12 @@ _next:
         ld.w    r0,(r2);
         jmp     (r0);
 
+// Primitives
+
+exit_name:
+        dw      0;
+        db      4;
+        dm      "exit";
 exit:
         dw      exit_code;
 exit_code:
@@ -37,12 +43,20 @@ exit_code:
         move    r3,r0;
         jmp     _next;
 
+drop_name:
+        dw      exit_name;
+        db      4;
+        dm      "drop";
 drop:
         dw      drop_code;
 drop_code:
         pop     r0;
         jmp     _next;
 
+swap_name:
+        dw      drop_name;
+        db      4;
+        dm      "swap";
 swap:
         dw      swap_code;
 swap_code:
@@ -52,6 +66,11 @@ swap_code:
         push    r2;
         jmp     _next;
 
+dup_name:
+        dw      swap_name;
+        db      4;
+        dm      "dup";
+        db      0;
 dup:
         dw      dup_code;
 dup_code:
@@ -59,6 +78,10 @@ dup_code:
         push    r0;
         jmp     _next;
 
+over_name:
+        dw      dup_name;
+        db      4;
+        dm      "over";
 over:
         dw      over_code;
 over_code:
@@ -66,6 +89,11 @@ over_code:
         push    r0;
         jmp     _next;
 
+rot_name:
+        dw      over_name;
+        db      4;
+        dm      "rot";
+        db      0;
 rot:
         dw      rot_code;
 rot_code:
@@ -79,6 +107,10 @@ rot_code:
         ld.w    r1,r1_store;
         jmp     _next;
 
+rotr_name:
+        dw      rot_name;
+        db      4;
+        dm      "rot-";
 rotr:
         dw      rotr_code;
 rotr_code:
@@ -92,6 +124,11 @@ rotr_code:
         ld.w    r1,r1_store;
         jmp     _next;
 
+drop2_name:
+        dw      rotr_name;
+        db      4;
+        dm      "2drop";
+        db      0;
 drop2:
         dw      drop2_code;
 drop2_code:
@@ -99,6 +136,10 @@ drop2_code:
         pop     r0;
         jmp     _next;
 
+dup2_name:
+        dw      drop2_name;
+        db      4;
+        dm      "2dup";
 dup2:
         dw      dup2_code;
 dup2_code:
@@ -106,6 +147,11 @@ dup2_code:
         ld.w    r2,(sp+2);
         jmp     _next;
 
+swap2_name:
+        dw      dup2_name;
+        db      4;
+        dm      "2swap";
+        db      0;
 swap2:
         dw      swap2_code;
 swap2_code:
@@ -123,6 +169,10 @@ swap2_code:
         ld.w    r3,r3_store;
         jmp     _next;
 
+branch_name:
+        dw      swap2_name;
+        db      4;
+        dm      "branch";
 branch:
         dw      branch_code;
 branch_code:
@@ -130,6 +180,10 @@ branch_code:
         add     r3,r0;      // add 2 more?
         jmp     _next;
 
+plus_name:
+        dw      branch_name;
+        db      4;
+        dm      "plus";
 plus:
         dw      plus_code;
 plus_code:
@@ -139,6 +193,11 @@ plus_code:
         push    r0;
         jmp     _next;
 
+lit_name:
+        dw      plus_name;
+        db      4;
+        dm      "lit";
+        db      0;
 lit:
         dw      lit_code;
 lit_code:
@@ -147,6 +206,11 @@ lit_code:
         addq    r3,#2;
         jmp     _next;
 
+fetch_name:
+        dw      lit_name;
+        db      4;
+        dm      "@";
+        db      0;
 fetch:
         dw      fetch_code;
 fetch_code:
@@ -154,24 +218,31 @@ fetch_code:
         ld.w    r0,(r2);
         push    r0;
         jmp     _next;
+ 
+// Variables
 
+latest_name:
+        dw      fetch_name;
+        db      4;
+        dm      "latest";
+        db      0;
+latest:
+        dw      latest_code;
+latest_code:
+        ld.w    r0,#latest_var;
+        push    r0;
+        jmp     _next;
+latest_var:
+        dw      double_name;
+
+// Words
+
+double_name:
+        dw      fetch_name;
+        db      4;
+        dm      "double";
 double:
         dw      _docol,dup,plus,exit;
-
-fn1:
-        dw      f1_code;
-f1_code:
-        ld.b    r0,#0x11;
-        jmp     _next;
-
-fn2:
-        dw      fn2_code;
-fn2_code:
-        ld.b    r0,#0x22;
-        jmp     _next;
-
-fn3:
-        dw      _docol,fn1,exit;
 
 _start:
         // set up data stack
