@@ -3,7 +3,7 @@ include "Megaprocessor_defs.asm";
 RETURN_STACK        equ 0x6000;
 
         org     0x400;
-        dw      latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
+        dw      key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
 
         org     0;
 
@@ -27,6 +27,11 @@ _next:
         move    r2,r0;
         ld.w    r0,(r2);
         jmp     (r0);
+
+r1_store:
+        dw;
+r3_store:
+        dw;
 
 // Primitives
 
@@ -218,11 +223,26 @@ fetch_code:
         ld.w    r0,(r2);
         push    r0;
         jmp     _next;
- 
+
+key_name:
+        dw      fetch_name;
+key:
+        dw      key_code;
+key_code:
+        ld.w    r2,(currkey);
+        ld.b    r0,(r2);
+        // TODO: if r0 = 0, halt
+        push    r0;
+        addq    r2,#1;
+        st.w    currkey,r2;
+        jmp     _next;
+currkey:
+        dw      buffer;
+
 // Variables
 
 latest_name:
-        dw      fetch_name;
+        dw      key_name;
         db      4;
         dm      "latest";
         db      0;
@@ -255,8 +275,5 @@ _start:
         ld.w    r3,#0x400;
         jmp     _next;
 
-r1_store:
-        dw;
-
-r3_store:
-        dw;
+buffer:
+        dm      "lit 2 lit 3 +";
