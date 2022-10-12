@@ -273,10 +273,19 @@ word_1:
 word_buffer:
         ds      32;
 
+// Words
+
+double_name:
+        dw      word_name;
+        db      7;
+        dm      "double";
+double:
+        dw      _docol,dup,plus,exit;
+
 // Variables
 
 latest_name:
-        dw      word_name;
+        dw      double_name;
         db      7;
         dm      "latest";
 latest:
@@ -288,14 +297,18 @@ latest_code:
 latest_var:
         dw      double_name;
 
-// Words
-
-double_name:
-        dw      fetch_name;
-        db      7;
-        dm      "double";
-double:
-        dw      _docol,dup,plus,exit;
+base_name:
+        dw      latest_name;
+        db      5;
+        dm      "base";
+base:
+        dw      base_code;
+base_code:
+        ld.w    r0,#base_var;
+        push    r0;
+        jmp     _next;
+base_var:
+        db      10;
 
 _start:
         // set up data stack
