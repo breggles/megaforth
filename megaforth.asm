@@ -3,7 +3,7 @@ include "Megaprocessor_defs.asm";
 RETURN_STACK        equ 0x6000;
 
         org     0x400;
-        dw      key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
+        dw      word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
 
         org     0;
 
@@ -232,13 +232,16 @@ key_name:
 key:
         dw      key_code;
 key_code:
+        jsr     _key;
+        push    r0;
+        jmp     _next;
+_key:
         ld.w    r2,(currkey);
         ld.b    r0,(r2);
         // TODO: if r0 = 0, halt
-        push    r0;
         addq    r2,#1;
         st.w    currkey,r2;
-        jmp     _next;
+        ret;
 currkey:
         dw      buffer;
 
@@ -246,6 +249,29 @@ word_name:
         dw      key_name;
         db      5;
         dm      "word";
+word:
+        dw      word_code;
+word_code:
+        jsr     _key;
+        ld.w    r2,#0x20; // Space
+        cmp     r0,r2;
+        beq     word_code;
+        st.w    r3_store,r3;
+        ld.w    r3,#word_buffer;
+word_1:
+        st.b    (r3++),r0;
+        jsr     _key;
+        ld.w    r2,#0x20; // Space
+        cmp     r0,r2;
+        bne     word_1;
+        ld.w    r0,#word_buffer;
+        push    r0;
+        sub     r3,r0;
+        push    r3;
+        ld.w    r3,r3_store;
+        jmp     _next;
+word_buffer:
+        ds      32;
 
 // Variables
 
