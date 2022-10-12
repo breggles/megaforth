@@ -37,7 +37,7 @@ r3_store:
 
 exit_name:
         dw      0;
-        db      4;
+        db      5;
         dm      "exit";
 exit:
         dw      exit_code;
@@ -50,7 +50,7 @@ exit_code:
 
 drop_name:
         dw      exit_name;
-        db      4;
+        db      5;
         dm      "drop";
 drop:
         dw      drop_code;
@@ -60,7 +60,7 @@ drop_code:
 
 swap_name:
         dw      drop_name;
-        db      4;
+        db      5;
         dm      "swap";
 swap:
         dw      swap_code;
@@ -85,7 +85,7 @@ dup_code:
 
 over_name:
         dw      dup_name;
-        db      4;
+        db      5;
         dm      "over";
 over:
         dw      over_code;
@@ -114,7 +114,7 @@ rot_code:
 
 rotr_name:
         dw      rot_name;
-        db      4;
+        db      5;
         dm      "rot-";
 rotr:
         dw      rotr_code;
@@ -131,7 +131,7 @@ rotr_code:
 
 drop2_name:
         dw      rotr_name;
-        db      4;
+        db      6;
         dm      "2drop";
         db      0;
 drop2:
@@ -143,7 +143,7 @@ drop2_code:
 
 dup2_name:
         dw      drop2_name;
-        db      4;
+        db      5;
         dm      "2dup";
 dup2:
         dw      dup2_code;
@@ -154,7 +154,7 @@ dup2_code:
 
 swap2_name:
         dw      dup2_name;
-        db      4;
+        db      6;
         dm      "2swap";
         db      0;
 swap2:
@@ -176,7 +176,7 @@ swap2_code:
 
 branch_name:
         dw      swap2_name;
-        db      4;
+        db      7;
         dm      "branch";
 branch:
         dw      branch_code;
@@ -187,7 +187,7 @@ branch_code:
 
 plus_name:
         dw      branch_name;
-        db      4;
+        db      5;
         dm      "plus";
 plus:
         dw      plus_code;
@@ -213,7 +213,7 @@ lit_code:
 
 fetch_name:
         dw      lit_name;
-        db      1;
+        db      2;
         dm      "@";
         db      0;
 fetch:
@@ -226,7 +226,7 @@ fetch_code:
 
 key_name:
         dw      fetch_name;
-        db      3;
+        db      4;
         dm      "key";
         db      0;
 key:
@@ -244,17 +244,15 @@ currkey:
 
 word_name:
         dw      key_name;
-        db      6;
-        dm      "latest";
-        db      0;
+        db      5;
+        dm      "word";
 
 // Variables
 
 latest_name:
         dw      word_name;
-        db      4;
+        db      7;
         dm      "latest";
-        db      0;
 latest:
         dw      latest_code;
 latest_code:
@@ -268,7 +266,7 @@ latest_var:
 
 double_name:
         dw      fetch_name;
-        db      4;
+        db      7;
         dm      "double";
 double:
         dw      _docol,dup,plus,exit;
