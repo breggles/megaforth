@@ -213,7 +213,7 @@ lit_code:
 
 fetch_name:
         dw      lit_name;
-        db      4;
+        db      1;
         dm      "@";
         db      0;
 fetch:
@@ -226,6 +226,9 @@ fetch_code:
 
 key_name:
         dw      fetch_name;
+        db      3;
+        dm      "key";
+        db      0;
 key:
         dw      key_code;
 key_code:
@@ -239,10 +242,16 @@ key_code:
 currkey:
         dw      buffer;
 
+word_name:
+        dw      key_name;
+        db      6;
+        dm      "latest";
+        db      0;
+
 // Variables
 
 latest_name:
-        dw      key_name;
+        dw      word_name;
         db      4;
         dm      "latest";
         db      0;
