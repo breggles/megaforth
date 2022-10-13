@@ -265,20 +265,32 @@ number_name:
 number:
         //TODO: do bases > 10
         //TODO: do negative numbers
+        //TODO: error handling
         dw      $+2;
         st.w    r1_store,r1;
         st.w    r3_store,r3;
+        clr     r3;
+number_2:
         ld.w    r0,(sp+0);     //string length
-        ld.w    r2,(sp+2);     //start address of string
         test    r0;
         beq     number_1;
+        move    r0,r3;
+        ld.b    r1,base_var;
+        mulu;
+        move    r3,r2;
+        ld.w    r0,(sp+0);     //string length
+        ld.w    r2,(sp+2);     //start address of string
+        addq    r0,#-1;
+        st.w    (sp+0),r0;
         ld.w    r0,#0x30;
         ld.b    r1,(r2);
         sub     r1,r0;
-        push    r1;
+        add     r3,r1;
+        addq    r2,#1;
+        st.w    (sp+2),r2;
+        jmp     number_2;
 number_1:
-        pop     r0;
-        st.w    (sp+2),r0;
+        st.w    (sp+2),r3;
         ld.w    r1,r1_store;
         ld.w    r3,r3_store;
         jmp     _next;
