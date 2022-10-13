@@ -3,7 +3,7 @@ include "Megaprocessor_defs.asm";
 RETURN_STACK        equ 0x6000;
 
         org     0x400;
-        dw      lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
+        dw      lit,buffer,lit,0x2,find,lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
 
         org     0;
 
@@ -37,7 +37,7 @@ r3_store:
 
 exit_name:
         dw      0;
-        db      5;
+        db      4;
         dm      "exit";
 exit:
         dw      $+2;
@@ -49,7 +49,7 @@ exit:
 
 drop_name:
         dw      exit_name;
-        db      5;
+        db      4;
         dm      "drop";
 drop:
         dw      $+2;
@@ -58,7 +58,7 @@ drop:
 
 swap_name:
         dw      drop_name;
-        db      5;
+        db      4;
         dm      "swap";
 swap:
         dw      $+2;
@@ -70,7 +70,7 @@ swap:
 
 dup_name:
         dw      swap_name;
-        db      4;
+        db      3;
         dm      "dup";
         db      0;
 dup:
@@ -81,7 +81,7 @@ dup:
 
 over_name:
         dw      dup_name;
-        db      5;
+        db      4;
         dm      "over";
 over:
         dw      $+2;
@@ -91,7 +91,7 @@ over:
 
 rot_name:
         dw      over_name;
-        db      4;
+        db      3;
         dm      "rot";
         db      0;
 rot:
@@ -108,7 +108,7 @@ rot:
 
 rotr_name:
         dw      rot_name;
-        db      5;
+        db      4;
         dm      "rot-";
 rotr:
         dw      $+2;
@@ -124,7 +124,7 @@ rotr:
 
 drop2_name:
         dw      rotr_name;
-        db      6;
+        db      5;
         dm      "2drop";
         db      0;
 drop2:
@@ -135,7 +135,7 @@ drop2:
 
 dup2_name:
         dw      drop2_name;
-        db      5;
+        db      4;
         dm      "2dup";
 dup2:
         dw      $+2;
@@ -145,7 +145,7 @@ dup2:
 
 swap2_name:
         dw      dup2_name;
-        db      6;
+        db      5;
         dm      "2swap";
         db      0;
 swap2:
@@ -166,7 +166,7 @@ swap2:
 
 branch_name:
         dw      swap2_name;
-        db      7;
+        db      6;
         dm      "branch";
 branch:
         dw      $+2;
@@ -176,7 +176,7 @@ branch:
 
 plus_name:
         dw      branch_name;
-        db      5;
+        db      4;
         dm      "plus";
 plus:
         dw      $+2;
@@ -188,7 +188,7 @@ plus:
 
 lit_name:
         dw      plus_name;
-        db      4;
+        db      3;
         dm      "lit";
         db      0;
 lit:
@@ -200,7 +200,7 @@ lit:
 
 fetch_name:
         dw      lit_name;
-        db      2;
+        db      1;
         dm      "@";
         db      0;
 fetch:
@@ -212,7 +212,7 @@ fetch:
 
 key_name:
         dw      fetch_name;
-        db      4;
+        db      3;
         dm      "key";
         db      0;
 key:
@@ -232,7 +232,7 @@ currkey:
 
 word_name:
         dw      key_name;
-        db      5;
+        db      4;
         dm      "word";
 word:
         dw      $+2;
@@ -260,7 +260,7 @@ word_buffer:
 
 number_name:
         dw      word_name;
-        db      7;
+        db      6;
         dm      "number";
 number:
         //TODO: do bases > 10
@@ -295,32 +295,35 @@ number_1:
         ld.w    r3,r3_store;
         jmp     _next;
 
+find_name:
+        dw      number_name;
+        db      4;
+        dm      "find";
+find:
+        dw      $+2;
+        st.w    r1_store,r1;
+        st.w    r3_store,r3;
+        pop     r0;             // string length
+        pop     r1;             // string address
+        ld.w    r2,latest_var;
+        ld.w    r1,r1_store;
+        ld.w    r3,r3_store;
+        jmp     _next;
+
 // Words
 
 double_name:
         dw      number_name;
-        db      7;
+        db      6;
         dm      "double";
 double:
         dw      _docol,dup,plus,exit;
 
 // Variables
 
-latest_name:
-        dw      double_name;
-        db      7;
-        dm      "latest";
-latest:
-        dw      $+2;
-        ld.w    r0,#latest_var;
-        push    r0;
-        jmp     _next;
-latest_var:
-        dw      double_name;
-
 base_name:
         dw      latest_name;
-        db      5;
+        db      4;
         dm      "base";
 base:
         dw      $+2;
@@ -329,6 +332,18 @@ base:
         jmp     _next;
 base_var:
         db      10;
+
+latest_name:
+        dw      double_name;
+        db      6;
+        dm      "latest";
+latest:
+        dw      $+2;
+        ld.w    r0,#latest_var;
+        push    r0;
+        jmp     _next;
+latest_var:
+        dw      latest_name;
 
 _start:
         // set up data stack
@@ -342,4 +357,4 @@ _start:
         jmp     _next;
 
 buffer:
-        dm      "23";
+        dm      "latest";
