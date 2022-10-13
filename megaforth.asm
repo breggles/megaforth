@@ -40,8 +40,7 @@ exit_name:
         db      5;
         dm      "exit";
 exit:
-        dw      exit_code;
-exit_code:
+        dw      $+2;
         move    r2,r1;
         ld.w    r0,(r2);
         addq    r1,#2;
@@ -53,8 +52,7 @@ drop_name:
         db      5;
         dm      "drop";
 drop:
-        dw      drop_code;
-drop_code:
+        dw      $+2;
         pop     r0;
         jmp     _next;
 
@@ -63,8 +61,7 @@ swap_name:
         db      5;
         dm      "swap";
 swap:
-        dw      swap_code;
-swap_code:
+        dw      $+2;
         pop     r0;
         pop     r2;
         push    r0;
@@ -77,8 +74,7 @@ dup_name:
         dm      "dup";
         db      0;
 dup:
-        dw      dup_code;
-dup_code:
+        dw      $+2;
         ld.w    r0,(sp+0);
         push    r0;
         jmp     _next;
@@ -88,8 +84,7 @@ over_name:
         db      5;
         dm      "over";
 over:
-        dw      over_code;
-over_code:
+        dw      $+2;
         ld.w    r0,(sp+2);
         push    r0;
         jmp     _next;
@@ -100,8 +95,7 @@ rot_name:
         dm      "rot";
         db      0;
 rot:
-        dw      rot_code;
-rot_code:
+        dw      $+2;
         st.w    r1_store,r1;
         pop     r0;
         pop     r1;
@@ -117,8 +111,7 @@ rotr_name:
         db      5;
         dm      "rot-";
 rotr:
-        dw      rotr_code;
-rotr_code:
+        dw      $+2;
         st.w    r1_store,r1;
         pop     r0;
         pop     r1;
@@ -135,8 +128,7 @@ drop2_name:
         dm      "2drop";
         db      0;
 drop2:
-        dw      drop2_code;
-drop2_code:
+        dw      $+2;
         pop     r0;
         pop     r0;
         jmp     _next;
@@ -146,8 +138,7 @@ dup2_name:
         db      5;
         dm      "2dup";
 dup2:
-        dw      dup2_code;
-dup2_code:
+        dw      $+2;
         ld.w    r0,(sp+0);
         ld.w    r2,(sp+2);
         jmp     _next;
@@ -158,8 +149,7 @@ swap2_name:
         dm      "2swap";
         db      0;
 swap2:
-        dw      swap2_code;
-swap2_code:
+        dw      $+2;
         st.w    r1_store,r1;
         st.w    r3_store,r3;
         pop     r0;
@@ -179,8 +169,7 @@ branch_name:
         db      7;
         dm      "branch";
 branch:
-        dw      branch_code;
-branch_code:
+        dw      $+2;
         ld.w    r0,(r3);
         add     r3,r0;      // add 2 more?
         jmp     _next;
@@ -190,8 +179,7 @@ plus_name:
         db      5;
         dm      "plus";
 plus:
-        dw      plus_code;
-plus_code:
+        dw      $+2;
         pop     r0;
         pop     r1;
         add     r0,r1;
@@ -204,8 +192,7 @@ lit_name:
         dm      "lit";
         db      0;
 lit:
-        dw      lit_code;
-lit_code:
+        dw      $+2;
         ld.w    r0,(r3);
         push    r0;
         addq    r3,#2;
@@ -217,8 +204,7 @@ fetch_name:
         dm      "@";
         db      0;
 fetch:
-        dw      fetch_code;
-fetch_code:
+        dw      $+2;
         pop     r2;
         ld.w    r0,(r2);
         push    r0;
@@ -230,8 +216,7 @@ key_name:
         dm      "key";
         db      0;
 key:
-        dw      key_code;
-key_code:
+        dw      $+2;
         jsr     _key;
         push    r0;
         jmp     _next;
@@ -250,12 +235,12 @@ word_name:
         db      5;
         dm      "word";
 word:
-        dw      word_code;
-word_code:
+        dw      $+2;
+word_2:
         jsr     _key;
         ld.w    r2,#0x20; // Space
         cmp     r0,r2;
-        beq     word_code;
+        beq     word_2;
         st.w    r3_store,r3;
         ld.w    r3,#word_buffer;
 word_1:
@@ -273,10 +258,29 @@ word_1:
 word_buffer:
         ds      32;
 
+number_name:
+        dw      word_name;
+        db      7;
+        dm      "number";
+number:
+        dw      $+2;
+        pop     r0;     //string length
+        pop     r2;     //start address of string
+        test    r0;
+        beq     number_1;
+        st.w    r1_store,r1;
+        st.w    r3_store,r3;
+        clr     r1;
+        clr     r3;
+        ld.w    r1,r1_store;
+        ld.w    r3,r3_store;
+number_1:
+        jmp     _next;
+
 // Words
 
 double_name:
-        dw      word_name;
+        dw      number_name;
         db      7;
         dm      "double";
 double:
@@ -289,8 +293,7 @@ latest_name:
         db      7;
         dm      "latest";
 latest:
-        dw      latest_code;
-latest_code:
+        dw      $+2;
         ld.w    r0,#latest_var;
         push    r0;
         jmp     _next;
@@ -302,8 +305,7 @@ base_name:
         db      5;
         dm      "base";
 base:
-        dw      base_code;
-base_code:
+        dw      $+2;
         ld.w    r0,#base_var;
         push    r0;
         jmp     _next;
