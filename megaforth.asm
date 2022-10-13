@@ -3,7 +3,7 @@ include "Megaprocessor_defs.asm";
 RETURN_STACK        equ 0x6000;
 
         org     0x400;
-        dw      word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
+        dw      lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
 
         org     0;
 
@@ -266,17 +266,21 @@ number:
         //TODO: do bases > 10
         //TODO: do negative numbers
         dw      $+2;
-        pop     r0;     //string length
-        pop     r2;     //start address of string
-        test    r0;
-        beq     number_1;
         st.w    r1_store,r1;
         st.w    r3_store,r3;
-        clr     r1;
-        clr     r3;
+        ld.w    r0,(sp+0);     //string length
+        ld.w    r2,(sp+2);     //start address of string
+        test    r0;
+        beq     number_1;
+        ld.w    r0,#0x30;
+        ld.b    r1,(r2);
+        sub     r1,r0;
+        push    r1;
+number_1:
+        pop     r0;
+        st.w    (sp+2),r0;
         ld.w    r1,r1_store;
         ld.w    r3,r3_store;
-number_1:
         jmp     _next;
 
 // Words
@@ -326,4 +330,4 @@ _start:
         jmp     _next;
 
 buffer:
-        dm      "lit 2 lit 3 +";
+        dm      "23";
