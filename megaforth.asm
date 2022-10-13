@@ -263,6 +263,8 @@ number_name:
         db      7;
         dm      "number";
 number:
+        //TODO: do bases > 10
+        //TODO: do negative numbers
         dw      $+2;
         pop     r0;     //string length
         pop     r2;     //start address of string
