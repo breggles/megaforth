@@ -74,7 +74,6 @@ dup_name:
         dw      swap_name;
         db      3;
         dm      "dup";
-        db      0;
 dup:
         dw      $+2;
         ld.w    r0,(sp+0);
@@ -95,7 +94,6 @@ rot_name:
         dw      over_name;
         db      3;
         dm      "rot";
-        db      0;
 rot:
         dw      $+2;
         st.w    r1_store,r1;
@@ -128,7 +126,6 @@ drop2_name:
         dw      rotr_name;
         db      5;
         dm      "2drop";
-        db      0;
 drop2:
         dw      $+2;
         pop     r0;
@@ -149,7 +146,6 @@ swap2_name:
         dw      dup2_name;
         db      5;
         dm      "2swap";
-        db      0;
 swap2:
         dw      $+2;
         st.w    r1_store,r1;
@@ -192,7 +188,6 @@ lit_name:
         dw      plus_name;
         db      3;
         dm      "lit";
-        db      0;
 lit:
         dw      $+2;
         ld.w    r0,(r3);
@@ -204,7 +199,6 @@ fetch_name:
         dw      lit_name;
         db      1;
         dm      "@";
-        db      0;
 fetch:
         dw      $+2;
         pop     r2;
@@ -216,7 +210,6 @@ key_name:
         dw      fetch_name;
         db      3;
         dm      "key";
-        db      0;
 key:
         dw      $+2;
         jsr     _key;
