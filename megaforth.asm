@@ -106,11 +106,11 @@ rot:
         ld.w    r1,r1_store;
         jmp     _next;
 
-rotr_name:
+nrot_name:
         dw      rot_name;
         db      4;
         dm      "rot-";
-rotr:
+nrot:
         dw      $+2;
         st.w    r1_store,r1;
         pop     r0;
@@ -122,31 +122,31 @@ rotr:
         ld.w    r1,r1_store;
         jmp     _next;
 
-drop2_name:
-        dw      rotr_name;
+twodrop_name:
+        dw      nrot_name;
         db      5;
         dm      "2drop";
-drop2:
+twodrop:
         dw      $+2;
         pop     r0;
         pop     r0;
         jmp     _next;
 
-dup2_name:
-        dw      drop2_name;
+twodup_name:
+        dw      twodrop_name;
         db      4;
         dm      "2dup";
-dup2:
+twodup:
         dw      $+2;
         ld.w    r0,(sp+0);
         ld.w    r2,(sp+2);
         jmp     _next;
 
-swap2_name:
-        dw      dup2_name;
+twoswap_name:
+        dw      twodup_name;
         db      5;
         dm      "2swap";
-swap2:
+twoswap:
         dw      $+2;
         st.w    r1_store,r1;
         st.w    r3_store,r3;
@@ -163,7 +163,7 @@ swap2:
         jmp     _next;
 
 incr2_name:
-        dw      swap2_name;
+        dw      twoswap_name;
         db      6;
         dm      "incr2";
 incr2:
