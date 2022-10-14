@@ -312,19 +312,19 @@ find_loop:
         add     r1,r2;
         st.w    (sp+2),r1;
         ld.w    r3,(sp+6);          // addr string
-find_cmp_str:                       // could move to sub routine?
+find_cmp_str:                       // move to sub routine?
         ld.b    r0,(r3++);
         ld.b    r1,(r2++);
         cmp     r0,r1;              // cmp chars
         bne     find_prev;
-        ld.w    r3,(sp+2);
-        cmp     r2,r3;
+        ld.w    r1,(sp+2);
+        cmp     r2,r1;
         bne     find_cmp_str;       // string done
 find_not_found:
-        pop     r0;
         pop     r2;
         pop     r0;
-        st.w    (sp+2),r2;
+        pop     r0;
+        st.w    (sp+0),r2;
         ld.w    r1,r1_store;
         ld.w    r3,r3_store;
         jmp     _next;
