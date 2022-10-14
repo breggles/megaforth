@@ -3,7 +3,7 @@ include "Megaprocessor_defs.asm";
 RETURN_STACK        equ 0x6000;
 
         org     0x400;
-        dw      lit,buffer,lit,0x2,find,lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
+        dw      lit,buffer,lit,0x6,find,lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
 
         org     0;
 
@@ -303,17 +303,37 @@ find:
         dw      $+2;
         st.w    r1_store,r1;
         st.w    r3_store,r3;
-        pop     r0;             // string length
-        pop     r1;             // string address
-        ld.w    r2,latest_var;
+        ld.w    r2,latest_var;   // addr of prev
+        pop     r0;              // string length
+find_loop:
+        addq    r2,#2;           // addr word length
+        push    r2;
+        ld.b    r1,(r2++);       // word length
+        cmp     r0,r1;           // cmp lengths
+        bne     find_prev;
+find_cmp_str:
+        push    r0;
+        ld.w    r3,(sp+4);       // addr string
+        ld.b    r0,(r3++);
+        ld.b    r1,(r2++);
+        cmp     r0,r1;           // cmp chars
+        bne     find_prev;
+        pop     r0;
+        addq    r0,#-1;
+        test    r0;
+        bne     find_cmp_str;    // string done
+        pop     r0;
         ld.w    r1,r1_store;
         ld.w    r3,r3_store;
         jmp     _next;
+find_prev:
+        pop     r2;
+        jmp     find_loop;
 
 // Words
 
 double_name:
-        dw      number_name;
+        dw      find_name;
         db      6;
         dm      "double";
 double:
@@ -322,7 +342,7 @@ double:
 // Variables
 
 base_name:
-        dw      latest_name;
+        dw      double_name;
         db      4;
         dm      "base";
 base:
@@ -334,7 +354,7 @@ base_var:
         db      10;
 
 latest_name:
-        dw      double_name;
+        dw      base_name;
         db      6;
         dm      "latest";
 latest:
