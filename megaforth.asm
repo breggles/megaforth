@@ -303,31 +303,37 @@ find:
         dw      $+2;
         st.w    r1_store,r1;
         st.w    r3_store,r3;
-        ld.w    r2,latest_var;   // addr of prev
-        pop     r0;              // string length
+        ld.w    r2,latest_var;
+        push    r2;                 // addr of prev
 find_loop:
-        addq    r2,#2;           // addr word length
-        push    r2;
-        ld.b    r1,(r2++);       // word length
-        cmp     r0,r1;           // cmp lengths
+        beq     find_not_found;
+        ld.w    r0,(sp+2);          // string length
+        addq    r2,#2;              // addr word length
+        ld.b    r1,(r2++);          // word length
+        cmp     r0,r1;              // cmp lengths
         bne     find_prev;
-find_cmp_str:
-        push    r0;
-        ld.w    r3,(sp+4);       // addr string
+        ld.w    r3,(sp+4);          // addr string
+find_cmp_str:                       // could move to sub routine?
         ld.b    r0,(r3++);
         ld.b    r1,(r2++);
-        cmp     r0,r1;           // cmp chars
+        cmp     r0,r1;              // cmp chars
         bne     find_prev;
-        pop     r0;
+        ld.w    r0,(sp+2);          // might be more efficient to compute end address?
         addq    r0,#-1;
-        test    r0;
-        bne     find_cmp_str;    // string done
+        st.w    (sp+2),r0;
+        bne     find_cmp_str;       // string done
+find_not_found:
+        pop     r2;
         pop     r0;
+        st.w    (sp+0),r2;
         ld.w    r1,r1_store;
         ld.w    r3,r3_store;
         jmp     _next;
 find_prev:
-        pop     r2;
+        ld.w    r2,(sp+0);
+        ld.w    r1,(r2);
+        move    r2,r1;
+        st.w    (sp+0),r2;
         jmp     find_loop;
 
 // Words
@@ -377,4 +383,4 @@ _start:
         jmp     _next;
 
 buffer:
-        dm      "latest";
+        dm      "asdf";
