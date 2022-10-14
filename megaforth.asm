@@ -3,7 +3,7 @@ include "Megaprocessor_defs.asm";
 RETURN_STACK        equ 0x6000;     // totally made up number, feel free to change
 
         org     0x400;
-        dw      lit,buffer,lit,0x5,find,lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
+        dw      lit,buffer,lit,0x4,find,tcfa,lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
 
         org     0;
 
@@ -291,6 +291,7 @@ number_1:
         jmp     _next;
 
 find_name:
+        //TODO: implement HIDDEN
         dw      number_name;
         db      4;
         dm      "find";
@@ -335,10 +336,24 @@ find_prev:
         st.w    (sp+0),r2;
         jmp     find_loop;
 
+tcfa_name:
+        dw      find_name;
+        db      4;
+        dm      ">cfa";
+tcfa:
+        dw      $+2;
+        pop     r2;
+        addq    r2,#2;
+        ld.b    r0,(r2);
+        add     r2,r0;
+        addq    r2,#2;          // zero-terminated plus one more
+        push    r2;
+        jmp     _next;
+
 // Words
 
 double_name:
-        dw      find_name;
+        dw      tcfa_name;
         db      6;
         dm      "double";
 double:
@@ -382,4 +397,4 @@ _start:
         jmp     _next;
 
 buffer:
-        dm      "2drop";
+        dm      "2dup";
