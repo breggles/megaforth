@@ -3,7 +3,7 @@ include "Megaprocessor_defs.asm";
 RETURN_STACK        equ 0x6000;     // totally made up number, feel free to change
 
         org     0x400;
-        dw      lit,buffer,lit,0x4,find,tcfa,lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
+        dw      lit,0x3,incr2,lit,buffer,lit,0x4,find,tcfa,lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
 
         org     0;
 
@@ -162,8 +162,19 @@ swap2:
         ld.w    r3,r3_store;
         jmp     _next;
 
-branch_name:
+incr2_name:
         dw      swap2_name;
+        db      6;
+        dm      "incr2";
+incr2:
+        dw      $+2;
+        pop     r0;
+        addq    r0,#2;
+        push    r0;
+        jmp     _next;
+
+branch_name:
+        dw      incr2_name;
         db      6;
         dm      "branch";
 branch:
