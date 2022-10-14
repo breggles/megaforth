@@ -1,17 +1,19 @@
 include "Megaprocessor_defs.asm";
 
-RETURN_STACK        equ 0x6000;
+RETURN_STACK        equ 0x6000;     // totally made up number, feel free to change
 
         org     0x400;
-        dw      lit,buffer,lit,0x6,find,lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
+        dw      lit,buffer,lit,0x5,find,lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
 
         org     0;
 
         jmp     _start;
 
 // NB: We're using r1 as the return stack pointer and r3 as the "instruction" pointer.
-//     They can be used in words, but their values need to be stored and and restored,
+//     They can be used in code, but their values need to be stored and restored,
 //     before calling _next.
+//
+//     Update: I might revise this and store them in memory, somewhere...
 
 _docol:
         move    r0,r3;
@@ -303,29 +305,33 @@ find:
         dw      $+2;
         st.w    r1_store,r1;
         st.w    r3_store,r3;
+        clr     r0;
+        push    r0;                 // word end
         ld.w    r2,latest_var;
         push    r2;                 // addr of prev
 find_loop:
         beq     find_not_found;
-        ld.w    r0,(sp+2);          // string length
+        ld.w    r0,(sp+4);          // string length
         addq    r2,#2;              // addr word length
         ld.b    r1,(r2++);          // word length
         cmp     r0,r1;              // cmp lengths
         bne     find_prev;
-        ld.w    r3,(sp+4);          // addr string
+        add     r1,r2;
+        st.w    (sp+2),r1;
+        ld.w    r3,(sp+6);          // addr string
 find_cmp_str:                       // could move to sub routine?
         ld.b    r0,(r3++);
         ld.b    r1,(r2++);
         cmp     r0,r1;              // cmp chars
         bne     find_prev;
-        ld.w    r0,(sp+2);          // might be more efficient to compute end address?
-        addq    r0,#-1;
-        st.w    (sp+2),r0;
+        ld.w    r3,(sp+2);
+        cmp     r2,r3;
         bne     find_cmp_str;       // string done
 find_not_found:
+        pop     r0;
         pop     r2;
         pop     r0;
-        st.w    (sp+0),r2;
+        st.w    (sp+2),r2;
         ld.w    r1,r1_store;
         ld.w    r3,r3_store;
         jmp     _next;
@@ -383,4 +389,4 @@ _start:
         jmp     _next;
 
 buffer:
-        dm      "asdf";
+        dm      "2drop";
