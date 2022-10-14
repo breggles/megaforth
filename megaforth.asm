@@ -3,7 +3,7 @@ include "Megaprocessor_defs.asm";
 RETURN_STACK        equ 0x6000;     // totally made up number, feel free to change
 
         org     0x400;
-        dw      lit,0x3,incr2,lit,buffer,lit,0x4,find,tcfa,lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
+        dw      lit,buffer,lit,0x4,find,tdfa,lit,0x3,incr2,lit,buffer,lit,0x4,find,tcfa,lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
 
         org     0;
 
@@ -370,10 +370,17 @@ double_name:
 double:
         dw      _docol,dup,plus,exit;
 
+tdfa_name:
+        dw      double_name;
+        db      6;
+        dm      "tdfa";
+tdfa:
+        dw      _docol,tcfa,incr2,exit;
+
 // Variables
 
 base_name:
-        dw      double_name;
+        dw      tdfa_name;
         db      4;
         dm      "base";
 base:
