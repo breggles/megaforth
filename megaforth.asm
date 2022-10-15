@@ -3,7 +3,7 @@ include "Megaprocessor_defs.asm";
 RETURN_STACK        equ 0x6000;     // totally made up number, feel free to change
 
         org     0x400;
-        dw      lit,buffer,lit,0x4,find,tdfa,lit,0x3,incr2,lit,buffer,lit,0x4,find,tcfa,lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
+        dw      interpret,lit,buffer,lit,0x4,find,tdfa,lit,0x3,incr2,lit,buffer,lit,0x4,find,tcfa,lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
 
         org     0;
 
@@ -138,9 +138,12 @@ twodup_name:
         dm      "2dup";
 twodup:
         dw      $+2;
+        jsr     _twodup;
+        jmp     _next;
+_twodup:
         ld.w    r0,(sp+0);
         ld.w    r2,(sp+2);
-        jmp     _next;
+        ret;
 
 twoswap_name:
         dw      twodup_name;
@@ -185,8 +188,8 @@ branch:
 
 plus_name:
         dw      branch_name;
-        db      4;
-        dm      "plus";
+        db      1;
+        dm      "+";
 plus:
         dw      $+2;
         pop     r0;
@@ -228,9 +231,8 @@ key:
         jmp     _next;
 _key:
         ld.w    r2,(currkey);
-        ld.b    r0,(r2);
-        // TODO: if r0 = 0, halt
-        addq    r2,#1;
+        ld.b    r0,(r2++);
+        // TODO: if key is 0, halt
         st.w    currkey,r2;
         ret;
 currkey:
@@ -242,25 +244,31 @@ word_name:
         dm      "word";
 word:
         dw      $+2;
+        jsr     _word;
+        push    r0;             // word ptr
+        push    r2;             // word length
+        jmp     _next;
+_word:
+        st.w    r1_store,r1;
+        st.w    r3_store,r3;
 word_2:
         jsr     _key;
-        ld.w    r2,#0x20; // Space
-        cmp     r0,r2;
+        ld.w    r1,#0x20;       // Space
+        cmp     r0,r1;
         beq     word_2;
-        st.w    r3_store,r3;
         ld.w    r3,#word_buffer;
 word_1:
         st.b    (r3++),r0;
         jsr     _key;
-        ld.w    r2,#0x20; // Space
-        cmp     r0,r2;
+        ld.w    r1,#0x20;       // Space
+        cmp     r0,r1;
         bne     word_1;
         ld.w    r0,#word_buffer;
-        push    r0;
         sub     r3,r0;
-        push    r3;
+        move    r2,r3;
         ld.w    r3,r3_store;
-        jmp     _next;
+        ld.w    r1,r1_store;
+        ret;
 word_buffer:
         ds      32;
 
@@ -272,34 +280,38 @@ number:
         //TODO: do bases > 10
         //TODO: do negative numbers
         //TODO: error handling
+        // Returns number of unparsed characters on top of stack followed by parsed number
         dw      $+2;
+        jsr     _number;
+        jmp     _next;
+_number:
         st.w    r1_store,r1;
         st.w    r3_store,r3;
         clr     r3;
 number_2:
-        ld.w    r0,(sp+0);     //string length
+        ld.w    r0,(sp+2);     //string length
         test    r0;
         beq     number_1;
         move    r0,r3;
         ld.b    r1,base_var;
         mulu;
         move    r3,r2;
-        ld.w    r0,(sp+0);     //string length
-        ld.w    r2,(sp+2);     //start address of string
+        ld.w    r0,(sp+2);     //string length
+        ld.w    r2,(sp+4);     //start address of string
         addq    r0,#-1;
-        st.w    (sp+0),r0;
+        st.w    (sp+2),r0;
         ld.w    r0,#0x30;
         ld.b    r1,(r2);
         sub     r1,r0;
         add     r3,r1;
         addq    r2,#1;
-        st.w    (sp+2),r2;
+        st.w    (sp+4),r2;
         jmp     number_2;
 number_1:
-        st.w    (sp+2),r3;
+        st.w    (sp+4),r3;      // parsed number
         ld.w    r1,r1_store;
         ld.w    r3,r3_store;
-        jmp     _next;
+        ret;
 
 find_name:
         //TODO: implement HIDDEN
@@ -308,10 +320,17 @@ find_name:
         dm      "find";
 find:
         dw      $+2;
+        pop     r2;
+        pop     r0;
+        jsr     _find;
+        push    r2;
+        jmp     _next;
+_find:
         st.w    r1_store,r1;
         st.w    r3_store,r3;
-        clr     r0;
-        push    r0;                 // word end
+        push    r0;                 // string ptr
+        push    r2;                 // string length
+        push    r0;                 // reserving space for word end
         ld.w    r2,latest_var;
         push    r2;                 // addr of prev
 find_loop:
@@ -336,10 +355,10 @@ find_not_found:
         pop     r2;
         pop     r0;
         pop     r0;
-        st.w    (sp+0),r2;
+        pop     r0;
         ld.w    r1,r1_store;
         ld.w    r3,r3_store;
-        jmp     _next;
+        ret;
 find_prev:
         ld.w    r2,(sp+0);
         ld.w    r1,(r2);
@@ -354,17 +373,46 @@ tcfa_name:
 tcfa:
         dw      $+2;
         pop     r2;
+        jsr     _tcfa;
+        push    r2;
+        jmp     _next;
+_tcfa:
         addq    r2,#2;
         ld.b    r0,(r2);
         add     r2,r0;
         addq    r2,#2;          // zero-terminated plus one more
+        ret;
+
+interpret_name:
+        dw      tcfa_name;
+        db      4;
+        dm      "interpret";
+interpret:
+        dw      $+2;
+        jsr     _word;          // r0 = string ptr, r2 = string length
+        push    r0;
         push    r2;
+        jsr     _find;          // r2 = word header ptr
+        test    r2;
+        beq     interpret_not_word;
+        jsr     _tcfa;          // r2 = codeword ptr
+        move    r0,r2;
+        jmp     (r0);
+interpret_not_word:
+        jsr     _number;
+        pop     r0;         // number of remaining chars
+        bne     interpret_nan;
         jmp     _next;
+interpret_nan:
+        // TODO handle 
+        nop;
+interpret_is_lit:
+        db      0;
 
 // Words
 
 double_name:
-        dw      tcfa_name;
+        dw      interpret_name;
         db      6;
         dm      "double";
 double:
@@ -415,4 +463,4 @@ _start:
         jmp     _next;
 
 buffer:
-        dm      "2dup";
+        dm      "2 3 + ";
