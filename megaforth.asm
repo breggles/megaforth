@@ -2,8 +2,8 @@ include "Megaprocessor_defs.asm";
 
 RETURN_STACK        equ 0x6000;     // totally made up number, feel free to change
 
-        org     0x400;
-        dw      interpret,lit,buffer,lit,0x4,find,tdfa,lit,0x3,incr2,lit,buffer,lit,0x4,find,tcfa,lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
+        org     0x2000;
+        dw      rz; //,interpret,lit,buffer,lit,0x4,find,tdfa,lit,0x3,incr2,lit,buffer,lit,0x4,find,tcfa,lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
 
         org     0;
 
@@ -223,10 +223,12 @@ fetch:
 rspstore_name:
         dw      fetch_name;
         db      4;
-        dm      "rsp!"
+        dm      "rsp!";
 rspstore:
         dw      $+2;
-        pop     r1;
+        pop     r2;
+        ld.w    r0,(r2);
+        push    r0;
         jmp     _next;
 
 key_name:
@@ -434,10 +436,17 @@ tdfa_name:
 tdfa:
         dw      _docol,tcfa,incr2,exit;
 
+quit_name:
+        dw      tdfa_name;
+        db      4;
+        dm      "quit";
+quit:
+        dw      _docol,tcfa,incr2,exit;
+
 // Constants
 
 rz_name:
-        dw      tdfa_name;
+        dw      quit_name;
         db      2;
         dm      "r0";
 rz:
@@ -482,7 +491,7 @@ _start:
         // set up return stack
         ld.w    r1,#RETURN_STACK;
 
-        ld.w    r3,#0x400;
+        ld.w    r3,#0x2000;
         jmp     _next;
 
 buffer:
