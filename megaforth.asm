@@ -220,8 +220,17 @@ fetch:
         push    r0;
         jmp     _next;
 
-key_name:
+rspstore_name:
         dw      fetch_name;
+        db      4;
+        dm      "rsp!"
+rspstore:
+        dw      $+2;
+        pop     r1;
+        jmp     _next;
+
+key_name:
+        dw      rspstore_name;
         db      3;
         dm      "key";
 key:
@@ -425,10 +434,22 @@ tdfa_name:
 tdfa:
         dw      _docol,tcfa,incr2,exit;
 
+// Constants
+
+rz_name:
+        dw      tdfa_name;
+        db      2;
+        dm      "r0";
+rz:
+        dw      $+2;
+        ld.w    r0,#RETURN_STACK;
+        push    r0;
+        jmp     _next;
+
 // Variables
 
 base_name:
-        dw      tdfa_name;
+        dw      rz_name;
         db      4;
         dm      "base";
 base:
@@ -450,6 +471,8 @@ latest:
         jmp     _next;
 latest_var:
         dw      latest_name;
+
+// Start
 
 _start:
         // set up data stack
