@@ -3,7 +3,7 @@ include "Megaprocessor_defs.asm";
 RETURN_STACK        equ 0x6000;     // totally made up number, feel free to change
 
         org     0x2000;
-        dw      rz; //,interpret,lit,buffer,lit,0x4,find,tdfa,lit,0x3,incr2,lit,buffer,lit,0x4,find,tcfa,lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
+        dw      quit,rz,rspstore; //,interpret,lit,buffer,lit,0x4,find,tdfa,lit,0x3,incr2,lit,buffer,lit,0x4,find,tcfa,lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
 
         org     0;
 
@@ -14,6 +14,23 @@ RETURN_STACK        equ 0x6000;     // totally made up number, feel free to chan
 //     before calling _next.
 //
 //     Update: I might revise this and store them in memory, somewhere...
+
+        nop;
+ext_int:
+        reti;
+        nop;
+        nop;
+        nop;
+div_zero:
+        reti;
+        nop;
+        nop;
+        nop;
+illegal:
+        reti;
+        nop;
+        nop;
+        nop;
 
 _docol:
         move    r0,r3;
@@ -193,8 +210,8 @@ plus_name:
 plus:
         dw      $+2;
         pop     r0;
-        pop     r1;
-        add     r0,r1;
+        pop     r2;
+        add     r0,r2;
         push    r0;
         jmp     _next;
 
@@ -226,9 +243,7 @@ rspstore_name:
         dm      "rsp!";
 rspstore:
         dw      $+2;
-        pop     r2;
-        ld.w    r0,(r2);
-        push    r0;
+        pop     r1;
         jmp     _next;
 
 key_name:
@@ -311,7 +326,7 @@ number_2:
         ld.w    r2,(sp+4);     //start address of string
         addq    r0,#-1;
         st.w    (sp+2),r0;
-        ld.w    r0,#0x30;
+        ld.w    r0,#0x30;      // ascii code for 0
         ld.b    r1,(r2);
         sub     r1,r0;
         add     r3,r1;
@@ -319,7 +334,7 @@ number_2:
         st.w    (sp+4),r2;
         jmp     number_2;
 number_1:
-        st.w    (sp+4),r3;      // parsed number
+        st.w    (sp+4),r3;     // parsed number
         ld.w    r1,r1_store;
         ld.w    r3,r3_store;
         ret;
@@ -401,13 +416,15 @@ interpret_name:
 interpret:
         dw      $+2;
         jsr     _word;          // r0 = string ptr, r2 = string length
-        push    r0;
+        push    r0;             // might need to parse word to number
         push    r2;
         jsr     _find;          // r2 = word header ptr
         test    r2;
         beq     interpret_not_word;
+        pop     r0;             // don't need the word, anymore
+        pop     r0;
         jsr     _tcfa;          // r2 = codeword ptr
-        move    r0,r2;
+        ld.w    r0,(r2);
         jmp     (r0);
 interpret_not_word:
         jsr     _number;
@@ -415,7 +432,7 @@ interpret_not_word:
         bne     interpret_nan;
         jmp     _next;
 interpret_nan:
-        // TODO handle 
+        // TODO handle
         nop;
 interpret_is_lit:
         db      0;
@@ -431,7 +448,7 @@ double:
 
 tdfa_name:
         dw      double_name;
-        db      6;
+        db      4;
         dm      "tdfa";
 tdfa:
         dw      _docol,tcfa,incr2,exit;
@@ -441,7 +458,10 @@ quit_name:
         db      4;
         dm      "quit";
 quit:
-        dw      _docol,tcfa,incr2,exit;
+        dw      _docol;
+        dw      rz,rspstore;
+        dw      interpret;
+        dw      branch,-8;
 
 // Constants
 
@@ -495,4 +515,4 @@ _start:
         jmp     _next;
 
 buffer:
-        dm      "2 3 + ";
+        dm      "2 3 + double ";
