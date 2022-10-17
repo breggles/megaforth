@@ -207,8 +207,19 @@ qdup_end:
 
         dw;     // alignment
 
-incr2_name:
+incr_name:
         dw      qdup_name;
+        db      2;
+        dm      "1+";
+incr:
+        dw      $+2;
+        ld.w    r0,(sp+0);
+        addq    r0,#1;
+        st.w    (sp+0),r0;
+        jmp     _next;
+
+incr2_name:
+        dw      incr_name;
         db      5;
         dm      "incr2";
 incr2:
@@ -529,4 +540,4 @@ latest_var:
 // Start
 
 buffer:
-        dm      "0 ?dup ";
+        dm      "2 ?dup 1+ ";
