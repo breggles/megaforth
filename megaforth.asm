@@ -213,9 +213,9 @@ incr_name:
         dm      "1+";
 incr:
         dw      $+2;
-        ld.w    r0,(sp+0);
+        pop     r0;
         addq    r0,#1;
-        st.w    (sp+0),r0;
+        push    r0;
         jmp     _next;
 
 decr_name:
@@ -224,15 +224,15 @@ decr_name:
         dm      "1-";
 decr:
         dw      $+2;
-        ld.w    r0,(sp+0);
+        pop     r0;
         addq    r0,#-1;
-        st.w    (sp+0),r0;
+        push    r0;
         jmp     _next;
 
 incr2_name:
         dw      decr_name;
-        db      5;
-        dm      "incr2";
+        db      2;
+        dm      "2+";
 incr2:
         dw      $+2;
         pop     r0;
@@ -240,8 +240,19 @@ incr2:
         push    r0;
         jmp     _next;
 
-branch_name:
+decr2_name:
         dw      incr2_name;
+        db      2;
+        dm      "2-";
+decr2:
+        dw      $+2;
+        pop     r0;
+        addq    r0,#-2;
+        push    r0;
+        jmp     _next;
+
+branch_name:
+        dw      decr2_name;
         db      6;
         dm      "branch";
 branch:
@@ -551,4 +562,4 @@ latest_var:
 // Start
 
 buffer:
-        dm      "2 ?dup 1+ 1- ";
+        dm      "2 ?dup 1+ 2- ";
