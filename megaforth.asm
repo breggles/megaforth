@@ -2,15 +2,13 @@ include "Megaprocessor_defs.asm";
 
 RETURN_STACK        equ 0x6000;     // totally made up number, feel free to change
 
-        org     0;
-
-        jmp     _start;
-
 // NB: We're using r1 as the return stack pointer and r3 as the "instruction" pointer.
 //     They can be used in code, but their values need to be stored and restored,
 //     before calling _next.
 //
 //     Update: I might revise this and store them in memory, somewhere...
+
+        jmp     _start;
 
         nop;
 ext_int:
@@ -40,7 +38,7 @@ _start:
         ld.w    r3,#cold_start;
         jmp     _next;
 
-        dw;
+        dw;     // padding
 
 cold_start:
         dw      quit;
