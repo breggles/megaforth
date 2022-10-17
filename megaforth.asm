@@ -2,9 +2,6 @@ include "Megaprocessor_defs.asm";
 
 RETURN_STACK        equ 0x6000;     // totally made up number, feel free to change
 
-        org     0x2000;
-        dw      quit,rz,rspstore; //,interpret,lit,buffer,lit,0x4,find,tdfa,lit,0x3,incr2,lit,buffer,lit,0x4,find,tcfa,lit,buffer,lit,0x2,number,word,key,latest,fetch,lit,0x400,fetch,lit,0x1111,lit,0x2222,plus,lit,0x4321,branch,4;
-
         org     0;
 
         jmp     _start;
@@ -31,6 +28,22 @@ illegal:
         nop;
         nop;
         nop;
+
+_start:
+        // set up data stack
+        ld.w    r0,#EXT_RAM_LEN;
+        move    sp,r0;
+
+        // set up return stack
+        ld.w    r1,#RETURN_STACK;
+
+        ld.w    r3,#cold_start;
+        jmp     _next;
+
+        dw;
+
+cold_start:
+        dw      quit;
 
 _docol:
         move    r0,r3;
@@ -502,17 +515,6 @@ latest_var:
         dw      latest_name;
 
 // Start
-
-_start:
-        // set up data stack
-        ld.w    r0,#EXT_RAM_LEN;
-        move    sp,r0;
-
-        // set up return stack
-        ld.w    r1,#RETURN_STACK;
-
-        ld.w    r3,#0x2000;
-        jmp     _next;
 
 buffer:
         dm      "2 3 + double ";
