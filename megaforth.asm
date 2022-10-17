@@ -260,14 +260,32 @@ plus_name:
         dm      "+";
 plus:
         dw      $+2;
+        nop;
+        nop;
+        nop;
         pop     r0;
         pop     r2;
         add     r0,r2;
         push    r0;
         jmp     _next;
 
-lit_name:
+minus_name:
         dw      plus_name;
+        db      1;
+        dm      "-";
+minus:
+        dw      $+2;
+        nop;
+        nop;
+        nop;
+        pop     r0;
+        pop     r2;
+        sub     r0,r2;
+        push    r0;
+        jmp     _next;
+
+lit_name:
+        dw      minus_name;
         db      3;
         dm      "lit";
 lit:
@@ -559,4 +577,4 @@ r1_store:
 r3_store:
         dw;
 buffer:
-        dm      "2 ?dup 1+ 2- ";
+        dm      "2 ?dup 1+ 2- - ";
