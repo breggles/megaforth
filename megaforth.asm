@@ -218,8 +218,19 @@ incr:
         st.w    (sp+0),r0;
         jmp     _next;
 
-incr2_name:
+decr_name:
         dw      incr_name;
+        db      2;
+        dm      "1-";
+decr:
+        dw      $+2;
+        ld.w    r0,(sp+0);
+        addq    r0,#-1;
+        st.w    (sp+0),r0;
+        jmp     _next;
+
+incr2_name:
+        dw      decr_name;
         db      5;
         dm      "incr2";
 incr2:
@@ -540,4 +551,4 @@ latest_var:
 // Start
 
 buffer:
-        dm      "2 ?dup 1+ ";
+        dm      "2 ?dup 1+ 1- ";
