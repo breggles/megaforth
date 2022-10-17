@@ -38,8 +38,6 @@ _start:
         ld.w    r3,#cold_start;
         jmp     _next;
 
-        dw;     // padding
-
 cold_start:
         dw      quit;
 
@@ -57,11 +55,6 @@ _next:
         move    r2,r0;
         ld.w    r0,(r2);
         jmp     (r0);
-
-r1_store:
-        dw;
-r3_store:
-        dw;
 
 // Primitives
 
@@ -561,5 +554,9 @@ latest_var:
 
 // Start
 
+r1_store:
+        dw;
+r3_store:
+        dw;
 buffer:
         dm      "2 ?dup 1+ 2- ";
