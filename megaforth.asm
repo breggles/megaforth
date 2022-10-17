@@ -193,9 +193,23 @@ twoswap:
         ld.w    r3,r3_store;
         jmp     _next;
 
-incr2_name:
+qdup_name:
         dw      twoswap_name;
-        db      6;
+        db      4;
+        dm      "?dup";
+qdup:
+        dw      $+2;
+        ld.w    r0,(sp+0);
+        beq     qdup_end;
+        push    r0;
+qdup_end:
+        jmp     _next;
+
+        dw;     // alignment
+
+incr2_name:
+        dw      qdup_name;
+        db      5;
         dm      "incr2";
 incr2:
         dw      $+2;
@@ -515,4 +529,4 @@ latest_var:
 // Start
 
 buffer:
-        dm      "2 3 + double ";
+        dm      "0 ?dup ";
