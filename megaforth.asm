@@ -333,7 +333,7 @@ _key:
         st.w    currkey,r2;
         ret;
 currkey:
-        dw      buffer;
+        dw      forth_buffer;
 
 word_name:
         dw      key_name;
@@ -495,10 +495,10 @@ interpret:
         pop     r0;             // don't need the word, anymore
         pop     r0;
         jsr     _tcfa;          // r2 = codeword ptr
-        ld.w    r0,state_var;
-        bne     interpret_execute;
-        jsr     _comma;
-interpret_execute:
+//        ld.w    r0,state_var;
+//        bne     interpret_execute;
+//        jsr     _comma;
+//interpret_execute:
         ld.w    r0,(r2);
         jmp     (r0);
 interpret_not_word:
@@ -586,13 +586,23 @@ latest:
         push    r0;
         jmp     _next;
 latest_var:
-        dw      latest_name;
-
-// Start
+        dw      here_name;
 
 r1_store:
         dw;
 r3_store:
         dw;
-buffer:
-        dm      "2 ?dup 1+ 2- - ";
+forth_buffer:
+        dm      "here @ ";
+
+here_name:
+        dw      latest_name;
+        db      4;
+        dm      "here";
+here:
+        dw      $+2;
+        ld.w    r0,#here_var;
+        push    r0;
+        jmp     _next;
+here_var:
+        dw      $+2;
