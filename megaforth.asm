@@ -2,6 +2,8 @@ include "Megaprocessor_defs.asm";
 
 RETURN_STACK        equ 0x6000;     // totally made up number, feel free to change
 
+F_IMMED             equ 0x80;
+
 // NB: We're using r1 as the return stack pointer and r3 as the "instruction" pointer.
 //     They can be used in code, but their values need to be stored and restored,
 //     before calling _next.
@@ -480,7 +482,7 @@ _tcfa:
 
 interpret_name:
         dw      tcfa_name;
-        db      4;
+        db      9;
         dm      "interpret";
 interpret:
         dw      $+2;
@@ -493,11 +495,15 @@ interpret:
         pop     r0;             // don't need the word, anymore
         pop     r0;
         jsr     _tcfa;          // r2 = codeword ptr
+        ld.w    r0,state_var;
+        bne     interpret_execute;
+        jsr     _comma;
+interpret_execute:
         ld.w    r0,(r2);
         jmp     (r0);
 interpret_not_word:
         jsr     _number;
-        pop     r0;         // number of remaining chars
+        pop     r0;             // number of remaining chars
         bne     interpret_nan;
         jmp     _next;
 interpret_nan:
@@ -558,8 +564,20 @@ base:
 base_var:
         db      10;
 
-latest_name:
+state_name:
         dw      base_name;
+        db      5;
+        dm      "state";
+state:
+        dw      $+2;
+        ld.w    r0,#state_var;
+        push    r0;
+        jmp     _next;
+state_var:
+        dw      0;          // 0 = executing, non-zero = compiling
+
+latest_name:
+        dw      state_name;
         db      6;
         dm      "latest";
 latest:
