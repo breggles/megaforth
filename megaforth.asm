@@ -333,7 +333,7 @@ _key:
         st.w    currkey,r2;
         ret;
 currkey:
-        dw      forth_buffer;
+        dw      input_buffer;
 
 word_name:
         dw      key_name;
@@ -488,13 +488,23 @@ create_name:
         dm      "create";
 create:
         dw      $+2;
+        st.w    r1_store,r1;
+        st.w    r3_store,r3;
         ld.w    r0,latest_var;
         ld.w    r2,here_var;
         st.w    (r2++),r0;
         pop     r0;             // word length
-        st.b    (r2++),r0
-        pop     r0;             // word ptr
-
+        st.b    (r2++),r0;
+        pop     r3;             // word ptr
+        move    r1,r3;
+        add     r1,r0;          // end of word ptr
+create_copy_word:
+        ld.b    r0,(r3++);
+        st.b    (r2++),r0;
+        cmp     r1,r3;
+        bne     create_copy_word;
+        ld.w    r3,r3_store;
+        ld.w    r1,r1_store;
         jmp     _next;
 
 interpret_name:
@@ -619,7 +629,7 @@ r1_store:
         dw;
 r3_store:
         dw;
-forth_buffer:
+input_buffer:
         dm      "word create ";
 here_var:
         dw      $+2;
