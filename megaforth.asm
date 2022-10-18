@@ -480,8 +480,25 @@ _tcfa:
         addq    r2,#2;          // zero-terminated plus one more
         ret;
 
-interpret_name:
+        nop;
+
+create_name:
         dw      tcfa_name;
+        db      6;
+        dm      "create";
+create:
+        dw      $+2;
+        ld.w    r0,latest_var;
+        ld.w    r2,here_var;
+        st.w    (r2++),r0;
+        pop     r0;             // word length
+        st.b    (r2++),r0
+        pop     r0;             // word ptr
+
+        jmp     _next;
+
+interpret_name:
+        dw      create_name;
         db      9;
         dm      "interpret";
 interpret:
@@ -576,8 +593,18 @@ state:
 state_var:
         dw      0;          // 0 = executing, non-zero = compiling
 
-latest_name:
+here_name:
         dw      state_name;
+        db      4;
+        dm      "here";
+here:
+        dw      $+2;
+        ld.w    r0,#here_var;
+        push    r0;
+        jmp     _next;
+
+latest_name:
+        dw      here_name;
         db      6;
         dm      "latest";
 latest:
@@ -586,23 +613,13 @@ latest:
         push    r0;
         jmp     _next;
 latest_var:
-        dw      here_name;
+        dw      latest_name;
 
 r1_store:
         dw;
 r3_store:
         dw;
 forth_buffer:
-        dm      "here @ ";
-
-here_name:
-        dw      latest_name;
-        db      4;
-        dm      "here";
-here:
-        dw      $+2;
-        ld.w    r0,#here_var;
-        push    r0;
-        jmp     _next;
+        dm      "word create ";
 here_var:
         dw      $+2;
