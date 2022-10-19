@@ -573,9 +573,14 @@ interpret:
         jsr     _find;          // r2 = word header ptr
         test    r2;
         beq     interpret_not_word;
-        pop     r0;             // don't need the word, anymore
+        pop     r0;             // don't need the word string, anymore
         pop     r0;
+        addq    r2,#2;
+        ld.b    r0,(r2);
+        push    r0;
+        addq    r2,#-2;
         jsr     _tcfa;          // r2 = codeword ptr
+
         ld.w    r0,state_var;
         beq     interpret_execute;
         move    r0,r2;
@@ -647,6 +652,16 @@ colon:
         dw      rbrac;
         dw      exit;
 
+semicolon_name:
+        dw      colon_name;
+        db      1;
+        dm      ";";
+semicolon:
+        dw      _docol;
+        dw      lit,exit,comma;
+        dw      lbrac;
+        dw      exit;
+
 // Constants
         nop;
         nop;
@@ -660,7 +675,7 @@ colon:
         nop;
 
 rz_name:
-        dw      colon_name;
+        dw      semicolon_name;
         db      2;
         dm      "r0";
 rz:
