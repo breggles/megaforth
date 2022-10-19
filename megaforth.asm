@@ -2,7 +2,8 @@ include "Megaprocessor_defs.asm";
 
 RETURN_STACK        equ 0x6000;     // totally made up number, feel free to change
 
-F_IMMED             equ 0x80;
+_F_IMMED            equ 0x80;
+_F_LENMASK          equ 0x1f;
 
 // NB: We're using r1 as the return stack pointer and r3 as the "instruction" pointer.
 //     They can be used in code, but their values need to be stored and restored,
@@ -435,6 +436,8 @@ find_loop:
         ld.w    r0,(sp+4);          // string length
         addq    r2,#2;              // addr word length
         ld.b    r1,(r2++);          // word length
+        ld.b    r3,#_F_LENMASK;
+        and     r1,r3;
         cmp     r0,r1;              // cmp lengths
         bne     find_prev;
         add     r1,r2;
@@ -472,13 +475,17 @@ tcfa:
         nop;
         nop;
         nop;
-        pop     r2;
+        pop     r2;             // link ptr
         jsr     _tcfa;
         push    r2;
         jmp     _next;
 _tcfa:
         addq    r2,#2;
         ld.b    r0,(r2);
+        push    r2;
+        ld.b    r2,#_F_LENMASK;
+        and     r0,r2;
+        pop     r2;
         add     r2,r0;
         addq    r2,#2;          // zero-terminated plus one more
         ret;
@@ -506,8 +513,18 @@ _comma:
         nop;
         nop;
 
-rbrac_name:
+lbrac_name:
         dw      comma_name;
+        db      _F_IMMED+1;
+        dm      "[";
+lbrac:
+        dw      $+2;
+        clr     r0;
+        st.w    state_var,r0;
+        jmp     _next;
+
+rbrac_name:
+        dw      lbrac_name;
         db      1;
         dm      "]";
 rbrac:
@@ -652,10 +669,20 @@ rz:
         push    r0;
         jmp     _next;
 
+f_lenmask_name:
+        dw      rz_name;
+        db      9;
+        dm      "f_lenmask";
+f_lenmask:
+        dw      $+2;
+        ld.w    r0,#_F_LENMASK;
+        push    r0;
+        jmp     _next;
+
 // Variables
 
 base_name:
-        dw      rz_name;
+        dw      f_lenmask_name;
         db      4;
         dm      "base";
 base:
@@ -705,6 +732,6 @@ r1_store:
 r3_store:
         dw;
 input_buffer:
-        dm      ": 3+ 3 + - ";
+        dm      "[ ] ";
 here_var:
         dw      $+2;
