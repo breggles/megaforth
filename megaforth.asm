@@ -493,11 +493,14 @@ comma_name:
         dm      ",";
 comma:
         dw      $+2;
-        ld.w    r2,here_var;
         pop     r0;
+        jsr     _comma;
+        jmp     _next;
+_comma:
+        ld.w    r2,here_var;
         st.w    (r2++),r0;
         st.w    here_var,r2;
-        jmp     _next;
+        ret;
 
         nop;
         nop;
@@ -556,16 +559,19 @@ interpret:
         pop     r0;             // don't need the word, anymore
         pop     r0;
         jsr     _tcfa;          // r2 = codeword ptr
-//        ld.w    r0,state_var;
-//        bne     interpret_execute;
-//        jsr     _comma;
-//interpret_execute:
+        ld.w    r0,state_var;
+        beq     interpret_execute;
+        move    r0,r2;
+        jsr     _comma;
+        jmp     interpret_next;
+interpret_execute:
         ld.w    r0,(r2);
         jmp     (r0);
 interpret_not_word:
         jsr     _number;
         pop     r0;             // number of remaining chars
         bne     interpret_nan;
+interpret_next:
         jmp     _next;
 interpret_nan:
         // TODO handle
@@ -675,6 +681,6 @@ r1_store:
 r3_store:
         dw;
 input_buffer:
-        dm      ": 3+ 4 ";
+        dm      ": 3+ + - ";
 here_var:
         dw      $+2;
