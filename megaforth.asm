@@ -599,10 +599,21 @@ quit:
         dw      interpret;
         dw      branch,-8;
 
+colon_name:
+        dw      quit_name;
+        db      1;
+        dm      ":";
+colon:
+        dw      _docol;
+        dw      word,create;
+        dw      lit,_docol,comma;
+        dw      rbrac;
+        dw      exit;
+
 // Constants
 
 rz_name:
-        dw      quit_name;
+        dw      colon_name;
         db      2;
         dm      "r0";
 rz:
@@ -664,6 +675,6 @@ r1_store:
 r3_store:
         dw;
 input_buffer:
-        dm      "] ";
+        dm      ": 3+ 4 ";
 here_var:
         dw      $+2;
