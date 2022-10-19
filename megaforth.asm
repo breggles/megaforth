@@ -499,8 +499,22 @@ comma:
         st.w    here_var,r2;
         jmp     _next;
 
-create_name:
+        nop;
+        nop;
+        nop;
+
+rbrac_name:
         dw      comma_name;
+        db      1;
+        dm      "]";
+rbrac:
+        dw      $+2;
+        ld.w    r0,#1;
+        st.w    state_var,r0;
+        jmp     _next;
+
+create_name:
+        dw      rbrac_name;
         db      6;
         dm      "create";
 create:
@@ -650,6 +664,6 @@ r1_store:
 r3_store:
         dw;
 input_buffer:
-        dm      "4 , ";
+        dm      "] ";
 here_var:
         dw      $+2;
