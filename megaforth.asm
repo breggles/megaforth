@@ -44,6 +44,8 @@ _start:
 cold_start:
         dw      quit;
 
+        nop;
+
 _docol:
         move    r0,r3;
         move    r3,r2;
@@ -475,17 +477,17 @@ tcfa:
         nop;
         nop;
         nop;
+        st.w    r3_store,r3;
         pop     r2;             // link ptr
         jsr     _tcfa;
         push    r2;
+        ld.w    r3,r3_store;
         jmp     _next;
 _tcfa:
         addq    r2,#2;
         ld.b    r0,(r2);
-        push    r2;
-        ld.b    r2,#_F_LENMASK;
-        and     r0,r2;
-        pop     r2;
+        ld.b    r3,#_F_LENMASK;
+        and     r0,r3;
         add     r2,r0;
         addq    r2,#2;          // zero-terminated plus one more
         ret;
@@ -567,6 +569,7 @@ interpret_name:
         dm      "interpret";
 interpret:
         dw      $+2;
+        st.w    r3_store,r3;
         jsr     _word;          // r0 = string ptr, r2 = string length
         push    r0;             // might need to parse word to number
         push    r2;
@@ -575,18 +578,21 @@ interpret:
         beq     interpret_not_word;
         pop     r0;             // don't need the word string, anymore
         pop     r0;
-        addq    r2,#2;
-        ld.b    r0,(r2);
-        push    r0;
-        addq    r2,#-2;
+        push    r2;
         jsr     _tcfa;          // r2 = codeword ptr
-
+        pop     r3;
+        addq    r3,#2;
+        ld.b    r0,(r3);        // length+flags
+        ld.w    r3,#_F_IMMED;
+        and     r0,r3;
+        bne     interpret_execute;
         ld.w    r0,state_var;
         beq     interpret_execute;
         move    r0,r2;
         jsr     _comma;
         jmp     interpret_next;
 interpret_execute:
+        ld.w    r3,r3_store;
         ld.w    r0,(r2);
         jmp     (r0);
 interpret_not_word:
@@ -603,6 +609,7 @@ interpret_not_word:
         pop     r0;
         jsr     _comma;
 interpret_next:
+        ld.w    r3,r3_store;
         jmp     _next;
 interpret_nan:
         // TODO handle
@@ -654,7 +661,7 @@ colon:
 
 semicolon_name:
         dw      colon_name;
-        db      1;
+        db      _F_IMMED+1;
         dm      ";";
 semicolon:
         dw      _docol;
@@ -747,6 +754,6 @@ r1_store:
 r3_store:
         dw;
 input_buffer:
-        dm      "[ ] ";
+        dm      ": 3+ 3 + ; 4 3+ ";
 here_var:
         dw      $+2;
