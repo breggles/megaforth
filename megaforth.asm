@@ -503,6 +503,9 @@ create_copy_word:
         st.b    (r2++),r0;
         cmp     r1,r3;
         bne     create_copy_word;
+        ld.w    r3,here_var;
+        st.w    latest_var,r3;
+        st.w    here_var,r2;
         ld.w    r3,r3_store;
         ld.w    r1,r1_store;
         jmp     _next;
@@ -630,6 +633,6 @@ r1_store:
 r3_store:
         dw;
 input_buffer:
-        dm      "word create ";
+        dm      "word test create ";
 here_var:
         dw      $+2;
