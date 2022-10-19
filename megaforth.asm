@@ -469,6 +469,9 @@ tcfa_name:
         dm      ">cfa";
 tcfa:
         dw      $+2;
+        nop;
+        nop;
+        nop;
         pop     r2;
         jsr     _tcfa;
         push    r2;
@@ -481,9 +484,23 @@ _tcfa:
         ret;
 
         nop;
+        nop;
+        nop;
+
+comma_name:
+        dw      tcfa_name;
+        db      1;
+        dm      ",";
+comma:
+        dw      $+2;
+        ld.w    r2,here_var;
+        pop     r0;
+        st.w    (r2++),r0;
+        st.w    here_var,r2;
+        jmp     _next;
 
 create_name:
-        dw      tcfa_name;
+        dw      comma_name;
         db      6;
         dm      "create";
 create:
@@ -633,6 +650,6 @@ r1_store:
 r3_store:
         dw;
 input_buffer:
-        dm      "word test create ";
+        dm      "4 , ";
 here_var:
         dw      $+2;
