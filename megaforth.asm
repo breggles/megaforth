@@ -570,14 +570,24 @@ interpret_execute:
 interpret_not_word:
         jsr     _number;
         pop     r0;             // number of remaining chars
+        pop     r2;             // number
+        test    r0;
         bne     interpret_nan;
+        ld.w    r0,state_var;
+        beq     interpret_next;
+        push    r2;             // push back as _comma splats r2
+        ld.w    r0,#lit;
+        jsr     _comma;
+        pop     r0;
+        jsr     _comma;
 interpret_next:
         jmp     _next;
 interpret_nan:
         // TODO handle
+
         nop;
-interpret_is_lit:
-        db      0;
+        nop;
+        nop;
 
 // Words
 
@@ -605,6 +615,10 @@ quit:
         dw      interpret;
         dw      branch,-8;
 
+        nop;
+        nop;
+        nop;
+
 colon_name:
         dw      quit_name;
         db      1;
@@ -617,6 +631,16 @@ colon:
         dw      exit;
 
 // Constants
+        nop;
+        nop;
+        nop;
+        nop;
+        nop;
+        nop;
+        nop;
+        nop;
+        nop;
+        nop;
 
 rz_name:
         dw      colon_name;
@@ -681,6 +705,6 @@ r1_store:
 r3_store:
         dw;
 input_buffer:
-        dm      ": 3+ + - ";
+        dm      ": 3+ 3 + - ";
 here_var:
         dw      $+2;
