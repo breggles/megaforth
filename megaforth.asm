@@ -556,6 +556,8 @@ create_copy_word:
         st.b    (r2++),r0;
         cmp     r1,r3;
         bne     create_copy_word;
+        ld.b    r0,#0;
+        st.b    (r2++),r0;      // MP strings are zero terminated
         ld.w    r3,here_var;
         st.w    latest_var,r3;
         st.w    here_var,r2;
@@ -597,13 +599,11 @@ interpret_execute:
         jmp     (r0);
 interpret_not_word:
         jsr     _number;
-        pop     r0;             // number of remaining chars
-        pop     r2;             // number
+        pop     r0;             // number of remaining chars, number now top of data stack
         test    r0;
         bne     interpret_nan;
         ld.w    r0,state_var;
         beq     interpret_next;
-        push    r2;             // push back as _comma splats r2
         ld.w    r0,#lit;
         jsr     _comma;
         pop     r0;
@@ -754,6 +754,6 @@ r1_store:
 r3_store:
         dw;
 input_buffer:
-        dm      ": 3+ 3 + ; 4 3+ ";
+        dm      ": 3+ 3 + ; 4 3+ 6 ";
 here_var:
         dw      $+2;
