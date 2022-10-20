@@ -3,6 +3,7 @@
 // TODO Try to compile jonesforth.f
 // TODO Halt somehow
 // TODO Write to display
+// TODO Better number parsing
 
 include "Megaprocessor_defs.asm";
 
@@ -296,8 +297,20 @@ minus:
         push    r0;
         jmp     _next;
 
-lit_name:
+mul_name:
         dw      minus_name;
+        db      1;
+        dm      "*";
+mul:
+        dw      $+2;
+        pop     r0;
+        pop     r1;
+        muls;
+        push    r2;             // ignore overflow
+        jmp     _next;
+
+lit_name:
+        dw      mul_name;
         db      3;
         dm      "lit";
 lit:
@@ -761,6 +774,6 @@ r1_store:
 r3_store:
         dw;
 input_buffer:
-        dm      ": 3+ 3 + ; 4 3+ 6 ";
+        dm      "2 3 * ";
 here_var:
         dw      $+2;
