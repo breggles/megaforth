@@ -1,3 +1,9 @@
+// TODO Error handling
+// TODO Implement more primitives
+// TODO Try to compile jonesforth.f
+// TODO Halt somehow
+// TODO Write to display
+
 include "Megaprocessor_defs.asm";
 
 RETURN_STACK        equ 0x6000;     // totally made up number, feel free to change
@@ -53,7 +59,8 @@ _docol:
         move    r2,r1;
         st.w    (r2),r0;
         addq    r3,#2;
-        jmp     _next;
+
+        // fall through to _next
 
 _next:
         ld.w    r0,(r3++);
