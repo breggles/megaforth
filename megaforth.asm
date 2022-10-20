@@ -49,11 +49,6 @@ _start:
         ld.w    r3,#cold_start;
         jmp     _next;
 
-cold_start:
-        dw      quit;
-
-        nop;
-
 _docol:
         move    r0,r3;
         move    r3,r2;
@@ -72,65 +67,35 @@ _next:
 
 // Primitives
 
-exit_name:
-        dw      0;
-        db      4;
-        dm      "exit";
-exit:
-        dw      $+2;
+exit_code:
         move    r2,r1;
         ld.w    r0,(r2);
         addq    r1,#2;
         move    r3,r0;
         jmp     _next;
 
-drop_name:
-        dw      exit_name;
-        db      4;
-        dm      "drop";
-drop:
-        dw      $+2;
+drop_code:
         pop     r0;
         jmp     _next;
 
-swap_name:
-        dw      drop_name;
-        db      4;
-        dm      "swap";
-swap:
-        dw      $+2;
+swap_code:
         pop     r0;
         pop     r2;
         push    r0;
         push    r2;
         jmp     _next;
 
-dup_name:
-        dw      swap_name;
-        db      3;
-        dm      "dup";
-dup:
-        dw      $+2;
+dup_code:
         ld.w    r0,(sp+0);
         push    r0;
         jmp     _next;
 
-over_name:
-        dw      dup_name;
-        db      4;
-        dm      "over";
-over:
-        dw      $+2;
+over_code:
         ld.w    r0,(sp+2);
         push    r0;
         jmp     _next;
 
-rot_name:
-        dw      over_name;
-        db      3;
-        dm      "rot";
-rot:
-        dw      $+2;
+rot_code:
         st.w    r1_store,r1;
         pop     r0;
         pop     r1;
@@ -141,12 +106,7 @@ rot:
         ld.w    r1,r1_store;
         jmp     _next;
 
-nrot_name:
-        dw      rot_name;
-        db      4;
-        dm      "rot-";
-nrot:
-        dw      $+2;
+nrot_code:
         st.w    r1_store,r1;
         pop     r0;
         pop     r1;
@@ -157,22 +117,12 @@ nrot:
         ld.w    r1,r1_store;
         jmp     _next;
 
-twodrop_name:
-        dw      nrot_name;
-        db      5;
-        dm      "2drop";
-twodrop:
-        dw      $+2;
+twodrop_code:
         pop     r0;
         pop     r0;
         jmp     _next;
 
-twodup_name:
-        dw      twodrop_name;
-        db      4;
-        dm      "2dup";
-twodup:
-        dw      $+2;
+twodup_code:
         jsr     _twodup;
         jmp     _next;
 _twodup:
@@ -180,12 +130,7 @@ _twodup:
         ld.w    r2,(sp+2);
         ret;
 
-twoswap_name:
-        dw      twodup_name;
-        db      5;
-        dm      "2swap";
-twoswap:
-        dw      $+2;
+twoswap_code:
         st.w    r1_store,r1;
         st.w    r3_store,r3;
         pop     r0;
@@ -200,80 +145,43 @@ twoswap:
         ld.w    r3,r3_store;
         jmp     _next;
 
-qdup_name:
-        dw      twoswap_name;
-        db      4;
-        dm      "?dup";
-qdup:
-        dw      $+2;
+qdup_code:
         ld.w    r0,(sp+0);
         beq     qdup_end;
         push    r0;
 qdup_end:
         jmp     _next;
 
-        dw;     // alignment
-
-incr_name:
-        dw      qdup_name;
-        db      2;
-        dm      "1+";
-incr:
-        dw      $+2;
+incr_code:
         pop     r0;
         addq    r0,#1;
         push    r0;
         jmp     _next;
 
-decr_name:
-        dw      incr_name;
-        db      2;
-        dm      "1-";
-decr:
-        dw      $+2;
+decr_code:
         pop     r0;
         addq    r0,#-1;
         push    r0;
         jmp     _next;
 
-incr2_name:
-        dw      decr_name;
-        db      2;
-        dm      "2+";
-incr2:
-        dw      $+2;
+incr2_code:
         pop     r0;
         addq    r0,#2;
         push    r0;
         jmp     _next;
 
-decr2_name:
-        dw      incr2_name;
-        db      2;
-        dm      "2-";
-decr2:
-        dw      $+2;
+decr2_code:
         pop     r0;
         addq    r0,#-2;
         push    r0;
         jmp     _next;
 
-branch_name:
-        dw      decr2_name;
-        db      6;
-        dm      "branch";
-branch:
-        dw      $+2;
+branch_code:
         ld.w    r0,(r3);
         add     r3,r0;      // add 2 more?
         jmp     _next;
 
-plus_name:
-        dw      branch_name;
-        db      1;
-        dm      "+";
-plus:
-        dw      $+2;
+plus_code:
         nop;
         nop;
         nop;
@@ -283,12 +191,7 @@ plus:
         push    r0;
         jmp     _next;
 
-minus_name:
-        dw      plus_name;
-        db      1;
-        dm      "-";
-minus:
-        dw      $+2;
+minus_code:
         nop;
         nop;
         nop;
@@ -298,12 +201,7 @@ minus:
         push    r0;
         jmp     _next;
 
-mul_name:
-        dw      minus_name;
-        db      1;
-        dm      "*";
-mul:
-        dw      $+2;
+mul_code:
         st.w    r1_store,r1;
         st.w    r3_store,r3;    // r3 gets set by muls, although not currently read
         pop     r0;
@@ -314,12 +212,7 @@ mul:
         ld.w    r1,r1_store;
         jmp     _next;
 
-divmod_name:
-        dw      mul_name;
-        db      4;
-        dm      "/mod";
-divmod:
-        dw      $+2;
+divmod_code:
         st.w    r1_store,r1;
         st.w    r3_store,r3;
         pop     r1;             // divisor
@@ -331,45 +224,23 @@ divmod:
         ld.w    r1,r1_store;
         jmp     _next;
 
-        nop;
-
-lit_name:
-        dw      divmod_name;
-        db      3;
-        dm      "lit";
-lit:
-        dw      $+2;
+lit_code:
         ld.w    r0,(r3);
         push    r0;
         addq    r3,#2;
         jmp     _next;
 
-fetch_name:
-        dw      lit_name;
-        db      1;
-        dm      "@";
-fetch:
-        dw      $+2;
+fetch_code:
         pop     r2;
         ld.w    r0,(r2);
         push    r0;
         jmp     _next;
 
-rspstore_name:
-        dw      fetch_name;
-        db      4;
-        dm      "rsp!";
-rspstore:
-        dw      $+2;
+rspstore_code:
         pop     r1;
         jmp     _next;
 
-key_name:
-        dw      rspstore_name;
-        db      3;
-        dm      "key";
-key:
-        dw      $+2;
+key_code:
         jsr     _key;
         push    r0;
         jmp     _next;
@@ -379,15 +250,8 @@ _key:
         // TODO: if key is 0, halt
         st.w    currkey,r2;
         ret;
-currkey:
-        dw      input_buffer;
 
-word_name:
-        dw      key_name;
-        db      4;
-        dm      "word";
-word:
-        dw      $+2;
+word_code:
         jsr     _word;
         push    r0;             // word ptr
         push    r2;             // word length
@@ -413,19 +277,12 @@ word_1:
         ld.w    r3,r3_store;
         ld.w    r1,r1_store;
         ret;
-word_buffer:
-        ds      32;
 
-number_name:
-        dw      word_name;
-        db      6;
-        dm      "number";
-number:
+number_code:
         //TODO: do bases > 10
         //TODO: do negative numbers
         //TODO: error handling
         // Returns number of unparsed characters on top of stack followed by parsed number
-        dw      $+2;
         jsr     _number;
         jmp     _next;
 _number:
@@ -457,13 +314,8 @@ number_1:
         ld.w    r3,r3_store;
         ret;
 
-find_name:
+find_code:
         //TODO: implement HIDDEN
-        dw      number_name;
-        db      4;
-        dm      "find";
-find:
-        dw      $+2;
         pop     r2;
         pop     r0;
         jsr     _find;
@@ -512,12 +364,7 @@ find_prev:
         st.w    (sp+0),r2;
         jmp     find_loop;
 
-tcfa_name:
-        dw      find_name;
-        db      4;
-        dm      ">cfa";
-tcfa:
-        dw      $+2;
+tcfa_code:
         nop;
         nop;
         nop;
@@ -536,16 +383,7 @@ _tcfa:
         addq    r2,#2;          // zero-terminated plus one more
         ret;
 
-        nop;
-        nop;
-        nop;
-
-comma_name:
-        dw      tcfa_name;
-        db      1;
-        dm      ",";
-comma:
-        dw      $+2;
+comma_code:
         pop     r0;
         jsr     _comma;
         jmp     _next;
@@ -555,36 +393,17 @@ _comma:
         st.w    here_var,r2;
         ret;
 
-        nop;
-        nop;
-        nop;
-
-lbrac_name:
-        dw      comma_name;
-        db      _F_IMMED+1;
-        dm      "[";
-lbrac:
-        dw      $+2;
+lbrac_code:
         clr     r0;
         st.w    state_var,r0;
         jmp     _next;
 
-rbrac_name:
-        dw      lbrac_name;
-        db      1;
-        dm      "]";
-rbrac:
-        dw      $+2;
+rbrac_code:
         ld.w    r0,#1;
         st.w    state_var,r0;
         jmp     _next;
 
-create_name:
-        dw      rbrac_name;
-        db      6;
-        dm      "create";
-create:
-        dw      $+2;
+create_code:
         st.w    r1_store,r1;
         st.w    r3_store,r3;
         ld.w    r0,latest_var;
@@ -609,12 +428,7 @@ create_copy_word:
         ld.w    r1,r1_store;
         jmp     _next;
 
-interpret_name:
-        dw      create_name;
-        db      9;
-        dm      "interpret";
-interpret:
-        dw      $+2;
+interpret_code:
         st.w    r3_store,r3;
         jsr     _word;          // r0 = string ptr, r2 = string length
         push    r0;             // might need to parse word to number
@@ -657,10 +471,276 @@ interpret_next:
         jmp     _next;
 interpret_nan:
         // TODO handle
+        nop;
 
-        nop;
-        nop;
-        nop;
+// Constants
+
+rz_code:
+        ld.w    r0,#RETURN_STACK;
+        push    r0;
+        jmp     _next;
+
+f_lenmask_code:
+        ld.w    r0,#_F_LENMASK;
+        push    r0;
+        jmp     _next;
+
+// Variables
+
+base_code:
+        ld.w    r0,#base_var;
+        push    r0;
+        jmp     _next;
+
+state_code:
+        ld.w    r0,#state_var;
+        push    r0;
+        jmp     _next;
+
+here_code:
+        ld.w    r0,#here_var;
+        push    r0;
+        jmp     _next;
+
+latest_code:
+        ld.w    r0,#latest_var;
+        push    r0;
+        jmp     _next;
+
+        org     0x4000;
+
+// Dictionary
+
+exit_name:
+        dw      0;
+        db      4;
+        dm      "exit";
+exit:
+        dw      exit_code;
+
+drop_name:
+        dw      exit_name;
+        db      4;
+        dm      "drop";
+drop:
+        dw      drop_code;
+
+swap_name:
+        dw      drop_name;
+        db      4;
+        dm      "swap";
+swap:
+        dw      swap_code;
+
+dup_name:
+        dw      swap_name;
+        db      3;
+        dm      "dup";
+dup:
+        dw      dup_code;
+
+over_name:
+        dw      dup_name;
+        db      4;
+        dm      "over";
+over:
+        dw      over_code;
+
+rot_name:
+        dw      over_name;
+        db      3;
+        dm      "rot";
+rot:
+        dw      rot_code;
+
+nrot_name:
+        dw      rot_name;
+        db      4;
+        dm      "rot-";
+nrot:
+        dw      nrot_code;
+
+twodrop_name:
+        dw      nrot_name;
+        db      5;
+        dm      "2drop";
+twodrop:
+        dw      twodrop_code;
+
+twodup_name:
+        dw      twodrop_name;
+        db      4;
+        dm      "2dup";
+twodup:
+        dw      twodup_code;
+
+twoswap_name:
+        dw      twodup_name;
+        db      5;
+        dm      "2swap";
+twoswap:
+        dw      twoswap_code;
+
+qdup_name:
+        dw      twoswap_name;
+        db      4;
+        dm      "?dup";
+qdup:
+        dw      qdup_code;
+
+incr_name:
+        dw      qdup_name;
+        db      2;
+        dm      "1+";
+incr:
+        dw      incr_code;
+
+decr_name:
+        dw      incr_name;
+        db      2;
+        dm      "1-";
+decr:
+        dw      decr_code;
+
+incr2_name:
+        dw      decr_name;
+        db      2;
+        dm      "2+";
+incr2:
+        dw      incr2_code;
+
+decr2_name:
+        dw      incr2_name;
+        db      2;
+        dm      "2-";
+decr2:
+        dw      decr2_code;
+
+branch_name:
+        dw      decr2_name;
+        db      6;
+        dm      "branch";
+branch:
+        dw      branch_code;
+
+plus_name:
+        dw      branch_name;
+        db      1;
+        dm      "+";
+plus:
+        dw      plus_code;
+
+minus_name:
+        dw      plus_name;
+        db      1;
+        dm      "-";
+minus:
+        dw      minus_code;
+
+mul_name:
+        dw      minus_name;
+        db      1;
+        dm      "*";
+mul:
+        dw      mul_code;
+
+divmod_name:
+        dw      mul_name;
+        db      4;
+        dm      "/mod";
+divmod:
+        dw      divmod_code;
+
+lit_name:
+        dw      divmod_name;
+        db      3;
+        dm      "lit";
+lit:
+        dw      lit_code;
+
+fetch_name:
+        dw      lit_name;
+        db      1;
+        dm      "@";
+fetch:
+        dw      fetch_code;
+
+rspstore_name:
+        dw      fetch_name;
+        db      4;
+        dm      "rsp!";
+rspstore:
+        dw      rspstore_code;
+
+key_name:
+        dw      rspstore_name;
+        db      3;
+        dm      "key";
+key:
+        dw      key_code;
+
+word_name:
+        dw      key_name;
+        db      4;
+        dm      "word";
+word:
+        dw      word_code;
+
+number_name:
+        dw      word_name;
+        db      6;
+        dm      "number";
+number:
+        dw      number_code;
+
+find_name:
+        dw      number_name;
+        db      4;
+        dm      "find";
+find:
+        dw      find_code;
+
+tcfa_name:
+        dw      find_name;
+        db      4;
+        dm      ">cfa";
+tcfa:
+        dw      tcfa_code;
+
+comma_name:
+        dw      tcfa_name;
+        db      1;
+        dm      ",";
+comma:
+        dw      comma_code;
+
+lbrac_name:
+        dw      comma_name;
+        db      _F_IMMED+1;
+        dm      "[";
+lbrac:
+        dw      lbrac_code;
+
+rbrac_name:
+        dw      lbrac_name;
+        db      1;
+        dm      "]";
+rbrac:
+        dw      rbrac_code;
+
+create_name:
+        dw      rbrac_name;
+        db      6;
+        dm      "create";
+create:
+        dw      create_code;
+
+interpret_name:
+        dw      create_name;
+        db      9;
+        dm      "interpret";
+interpret:
+        dw      interpret_code;
 
 // Words
 
@@ -688,10 +768,6 @@ quit:
         dw      interpret;
         dw      branch,-8;
 
-        nop;
-        nop;
-        nop;
-
 colon_name:
         dw      quit_name;
         db      1;
@@ -714,36 +790,20 @@ semicolon:
         dw      exit;
 
 // Constants
-        nop;
-        nop;
-        nop;
-        nop;
-        nop;
-        nop;
-        nop;
-        nop;
-        nop;
-        nop;
 
 rz_name:
         dw      semicolon_name;
         db      2;
         dm      "r0";
 rz:
-        dw      $+2;
-        ld.w    r0,#RETURN_STACK;
-        push    r0;
-        jmp     _next;
+        dw      rz_code;
 
 f_lenmask_name:
         dw      rz_name;
         db      9;
         dm      "f_lenmask";
 f_lenmask:
-        dw      $+2;
-        ld.w    r0,#_F_LENMASK;
-        push    r0;
-        jmp     _next;
+        dw      f_lenmask_code;
 
 // Variables
 
@@ -752,52 +812,55 @@ base_name:
         db      4;
         dm      "base";
 base:
-        dw      $+2;
-        ld.w    r0,#base_var;
-        push    r0;
-        jmp     _next;
-base_var:
-        db      10;
+        dw      base_code;
 
 state_name:
         dw      base_name;
         db      5;
         dm      "state";
 state:
-        dw      $+2;
-        ld.w    r0,#state_var;
-        push    r0;
-        jmp     _next;
-state_var:
-        dw      0;          // 0 = executing, non-zero = compiling
+        dw      state_code;
 
 here_name:
         dw      state_name;
         db      4;
         dm      "here";
 here:
-        dw      $+2;
-        ld.w    r0,#here_var;
-        push    r0;
-        jmp     _next;
+        dw      here_code;
 
 latest_name:
         dw      here_name;
         db      6;
         dm      "latest";
 latest:
-        dw      $+2;
-        ld.w    r0,#latest_var;
-        push    r0;
-        jmp     _next;
+        dw      latest_code;
+
+cold_start:
+        dw      quit;
+
+currkey:
+        dw      input_buffer;
+
+word_buffer:
+        ds      32;
+
+base_var:
+        db      10;
+
+state_var:
+        dw      0;          // 0 = executing, non-zero = compiling
+
 latest_var:
         dw      latest_name;
 
 r1_store:
         dw;
+
 r3_store:
         dw;
+
 input_buffer:
         dm      ": / /mod swap drop ; 21 3 / ";
+
 here_var:
         dw      $+2;
