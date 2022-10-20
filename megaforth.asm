@@ -56,10 +56,10 @@ cold_start:
 _docol:
         move    r0,r3;
         move    r3,r2;
+        addq    r3,#2;
         addq    r1,#-2;
         move    r2,r1;
         st.w    (r2),r0;
-        addq    r3,#2;
 
         // fall through to _next
 
