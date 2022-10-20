@@ -304,10 +304,14 @@ mul_name:
         dm      "*";
 mul:
         dw      $+2;
+        st.w    r1_store,r1;
+        st.w    r3_store,r3;    // r3 gets set by muls, although not currently read
         pop     r0;
         pop     r1;
         muls;
         push    r2;             // ignore overflow
+        ld.w    r3,r3_store;
+        ld.w    r1,r1_store;
         jmp     _next;
 
 divmod_name:
@@ -316,12 +320,18 @@ divmod_name:
         dm      "/mod";
 divmod:
         dw      $+2;
+        st.w    r1_store,r1;
+        st.w    r3_store,r3;
         pop     r1;             // divisor
         pop     r0;             // dividend
         divs;
         push    r3;             // remainder
         push    r2;             // quotient
+        ld.w    r3,r3_store;
+        ld.w    r1,r1_store;
         jmp     _next;
+
+        nop;
 
 lit_name:
         dw      divmod_name;
@@ -344,17 +354,6 @@ fetch:
         ld.w    r0,(r2);
         push    r0;
         jmp     _next;
-
-        nop;
-        nop;
-        nop;
-        nop;
-        nop;
-        nop;
-        nop;
-        nop;
-        nop;
-        nop;
 
 rspstore_name:
         dw      fetch_name;
@@ -799,6 +798,6 @@ r1_store:
 r3_store:
         dw;
 input_buffer:
-        dm      "21 3 /mod ";
+        dm      ": / /mod swap drop ; 21 3 / ";
 here_var:
         dw      $+2;
