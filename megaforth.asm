@@ -4,6 +4,7 @@
 // TODO Halt somehow
 // TODO Write to display
 // TODO Better number parsing
+// TODO Tidy up NOPs
 
 include "Megaprocessor_defs.asm";
 
@@ -309,8 +310,21 @@ mul:
         push    r2;             // ignore overflow
         jmp     _next;
 
-lit_name:
+divmod_name:
         dw      mul_name;
+        db      4;
+        dm      "/mod";
+divmod:
+        dw      $+2;
+        pop     r1;             // divisor
+        pop     r0;             // dividend
+        divs;
+        push    r3;             // remainder
+        push    r2;             // quotient
+        jmp     _next;
+
+lit_name:
+        dw      divmod_name;
         db      3;
         dm      "lit";
 lit:
@@ -330,6 +344,17 @@ fetch:
         ld.w    r0,(r2);
         push    r0;
         jmp     _next;
+
+        nop;
+        nop;
+        nop;
+        nop;
+        nop;
+        nop;
+        nop;
+        nop;
+        nop;
+        nop;
 
 rspstore_name:
         dw      fetch_name;
@@ -774,6 +799,6 @@ r1_store:
 r3_store:
         dw;
 input_buffer:
-        dm      "2 3 * ";
+        dm      "21 3 /mod ";
 here_var:
         dw      $+2;
