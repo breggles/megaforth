@@ -335,37 +335,54 @@ word_1:
         ret;
 
 number_code:
-        //TODO: do bases > 10
-        //TODO: do negative numbers
-        //TODO: error handling
         // Returns number of unparsed characters on top of stack followed by parsed number
+        //TODO: bases > 10, need to parse a - z
+        //TODO: error handling
         jsr     _number;
         jmp     _next;
 _number:
         st.w    r1_store,r1;
         st.w    r3_store,r3;
-        ld.w    r0,(sp+2);     //string length
-        beq     number_end;
+        clr     r0;
+        addq    r0,#1;
+        push    r0;
+        ld.w    r2,(sp+6);     // string ptr
+        ld.b    r1,(r2);       // str ascii
+        ld.b    r0,#0x2d;       // hyphen
+        cmp     r0,r1;
+        bne     number_pos;
+        clr     r0;
+        addq    r0,#-1;
+        st.w    (sp+0),r0;
+        ld.w    r0,(sp+4);     //string length
+        addq    r0,#-1;
+        st.w    (sp+4),r0;
+        addq    r2,#1;
+        st.w    (sp+6),r2;
+number_pos:
         clr     r3;
 number_loop:
-        ld.w    r2,(sp+4);     // string ptr
         ld.b    r1,(r2);       // str ascii
         addq    r2,#1;
-        st.w    (sp+4),r2;
+        st.w    (sp+6),r2;
         ld.w    r0,#0x30;      // ascii code for 0
         sub     r1,r0;
         add     r3,r1;
-        ld.w    r0,(sp+2);     //string length
+        ld.w    r0,(sp+4);     //string length
         addq    r0,#-1;
-        st.w    (sp+2),r0;
+        st.w    (sp+4),r0;
         beq     number_end;
         move    r0,r3;
         ld.b    r1,base_var;
         mulu;
         move    r3,r2;
+        ld.w    r2,(sp+6);     // string ptr
         jmp     number_loop;
 number_end:
-        st.w    (sp+4),r3;     // parsed number
+        pop     r0;
+        move    r1,r3;
+        muls;
+        st.w    (sp+4),r2;     // parsed number
         ld.w    r1,r1_store;
         ld.w    r3,r3_store;
         ret;
@@ -944,7 +961,7 @@ r3_store:
         dw;
 
 input_buffer:
-        dm      "43 2 > : / /mod swap drop ; ";
+        dm      "-43 2 > : / /mod swap drop ; ";
 
 here_var:
         dw      $+2;
