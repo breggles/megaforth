@@ -4,7 +4,6 @@
 // TODO Halt somehow
 // TODO Write to display
 // TODO Better number parsing
-// TODO Tidy up NOPs
 
 include "Megaprocessor_defs.asm";
 
@@ -18,6 +17,12 @@ _F_LENMASK          equ 0x1f;
 //     before calling _next.
 //
 //     Update: I might revise this and store them in memory, somewhere...
+
+// NB: In Jones Forth, the headers and code are together in one place, but the
+//     Megaprocessor does not handle mixnig code and data well. It sometimes thinks
+//     data just before code is code and then it gets everything wrong, after that,
+//     and it can only be fixed by adding random padding. Hence, I've split headers
+//     and code into two separate sections for Mega Forth.
 
         jmp     _start;
 
@@ -507,9 +512,9 @@ latest_code:
         push    r0;
         jmp     _next;
 
-        org     0x4000;
-
 // Dictionary
+
+// Primitives Headers
 
 exit_name:
         dw      0;
@@ -742,7 +747,7 @@ interpret_name:
 interpret:
         dw      interpret_code;
 
-// Words
+// Built-in Words
 
 double_name:
         dw      interpret_name;
@@ -789,7 +794,7 @@ semicolon:
         dw      lbrac;
         dw      exit;
 
-// Constants
+// Constant Headers
 
 rz_name:
         dw      semicolon_name;
@@ -805,7 +810,7 @@ f_lenmask_name:
 f_lenmask:
         dw      f_lenmask_code;
 
-// Variables
+// Variable Headers
 
 base_name:
         dw      f_lenmask_name;
