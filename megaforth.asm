@@ -229,6 +229,27 @@ divmod_code:
         ld.w    r1,r1_store;
         jmp     _next;
 
+equals_code:
+        pop     r0;
+        pop     r2;
+        sub     r0,r2;          // 0 is falsy, all-1s is truthy
+        beq     equals_equal;
+        ld.w    r0,#0xffff;
+equals_equal:
+        inv     r0;
+        push    r0;
+        jmp     _next;
+
+notequals_code:
+        pop     r0;
+        pop     r2;
+        sub     r0,r2;
+        beq     notequals_equal;
+        ld.w    r0,#0xffff;
+notequals_equal:
+        push    r0;
+        jmp     _next;
+
 lit_code:
         ld.w    r0,(r3);
         push    r0;
@@ -656,8 +677,22 @@ divmod_name:
 divmod:
         dw      divmod_code;
 
-lit_name:
+equals_name:
         dw      divmod_name;
+        db      1;
+        dm      "=";
+equals:
+        dw      equals_code;
+
+notequals_name:
+        dw      equals_name;
+        db      2;
+        dm      "<>";
+notequals:
+        dw      notequals_code;
+
+lit_name:
+        dw      notequals_name;
         db      3;
         dm      "lit";
 lit:
@@ -865,7 +900,7 @@ r3_store:
         dw;
 
 input_buffer:
-        dm      ": / /mod swap drop ; 21 3 / ";
+        dm      "2 2 <> : / /mod swap drop ; ";
 
 here_var:
         dw      $+2;
