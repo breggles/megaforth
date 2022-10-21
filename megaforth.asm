@@ -234,7 +234,8 @@ equals_code:
         pop     r2;
         sub     r0,r2;          // 0 is falsy, all-1s is truthy
         beq     equals_equal;
-        ld.w    r0,#0xffff;
+        clr     r0;
+        addq    r0,#-1;
 equals_equal:
         inv     r0;
         push    r0;
@@ -245,8 +246,37 @@ notequals_code:
         pop     r2;
         sub     r0,r2;
         beq     notequals_equal;
-        ld.w    r0,#0xffff;
+        clr     r0;
+        addq    r0,#-1;
 notequals_equal:
+        push    r0;
+        jmp     _next;
+
+lessthan_code:
+        pop     r0;
+        pop     r2;
+        cmp     r2,r0;
+        blt     lessthan_lt;
+        clr     r0;
+        jmp     lessthan_ret;
+lessthan_lt:
+        clr     r0;
+        addq    r0,#-1;
+lessthan_ret:
+        push    r0;
+        jmp     _next;
+
+greaterthan_code:
+        pop     r0;
+        pop     r2;
+        cmp     r2,r0;
+        bgt     greaterthan_gt;
+        clr     r0;
+        jmp     greaterthan_ret;
+greaterthan_gt:
+        clr     r0;
+        addq    r0,#-1;
+greaterthan_ret:
         push    r0;
         jmp     _next;
 
@@ -691,8 +721,22 @@ notequals_name:
 notequals:
         dw      notequals_code;
 
-lit_name:
+lessthan_name:
         dw      notequals_name;
+        db      1;
+        dm      "<";
+lessthan:
+        dw      lessthan_code;
+
+greaterthan_name:
+        dw      lessthan_name;
+        db      1;
+        dm      ">";
+greaterthan:
+        dw      greaterthan_code;
+
+lit_name:
+        dw      greaterthan_name;
         db      3;
         dm      "lit";
 lit:
@@ -900,7 +944,7 @@ r3_store:
         dw;
 
 input_buffer:
-        dm      "2 2 <> : / /mod swap drop ; ";
+        dm      "3 2 > : / /mod swap drop ; ";
 
 here_var:
         dw      $+2;
