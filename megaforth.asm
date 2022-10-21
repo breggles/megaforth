@@ -344,27 +344,27 @@ number_code:
 _number:
         st.w    r1_store,r1;
         st.w    r3_store,r3;
-        clr     r3;
-number_2:
         ld.w    r0,(sp+2);     //string length
-        test    r0;
-        beq     number_1;
+        beq     number_end;
+        clr     r3;
+number_loop:
+        ld.w    r2,(sp+4);     // string ptr
+        ld.b    r1,(r2);       // str ascii
+        addq    r2,#1;
+        st.w    (sp+4),r2;
+        ld.w    r0,#0x30;      // ascii code for 0
+        sub     r1,r0;
+        add     r3,r1;
+        ld.w    r0,(sp+2);     //string length
+        addq    r0,#-1;
+        st.w    (sp+2),r0;
+        beq     number_end;
         move    r0,r3;
         ld.b    r1,base_var;
         mulu;
         move    r3,r2;
-        ld.w    r0,(sp+2);     //string length
-        ld.w    r2,(sp+4);     //start address of string
-        addq    r0,#-1;
-        st.w    (sp+2),r0;
-        ld.w    r0,#0x30;      // ascii code for 0
-        ld.b    r1,(r2);
-        sub     r1,r0;
-        add     r3,r1;
-        addq    r2,#1;
-        st.w    (sp+4),r2;
-        jmp     number_2;
-number_1:
+        jmp     number_loop;
+number_end:
         st.w    (sp+4),r3;     // parsed number
         ld.w    r1,r1_store;
         ld.w    r3,r3_store;
@@ -944,7 +944,7 @@ r3_store:
         dw;
 
 input_buffer:
-        dm      "3 2 > : / /mod swap drop ; ";
+        dm      "43 2 > : / /mod swap drop ; ";
 
 here_var:
         dw      $+2;
