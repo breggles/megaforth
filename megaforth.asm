@@ -292,6 +292,20 @@ lessthanorequal_ret:
         push    r0;
         jmp     _next;
 
+greaterthanorequal_code:
+        pop     r0;
+        pop     r2;
+        cmp     r2,r0;
+        bge     greaterthanorequal_gt;
+        clr     r0;
+        jmp     greaterthanorequal_ret;
+greaterthanorequal_gt:
+        clr     r0;
+        addq    r0,#-1;
+greaterthanorequal_ret:
+        push    r0;
+        jmp     _next;
+
 lit_code:
         ld.w    r0,(r3);
         push    r0;
@@ -768,8 +782,15 @@ lessthanorequal_header:
 lessthanorequal:
         dw      lessthanorequal_code;
 
-lit_header:
+greaterthanorequal_header:
         dw      lessthanorequal_header;
+        db      2;
+        dm      ">=";
+greaterthanorequal:
+        dw      greaterthanorequal_code;
+
+lit_header:
+        dw      greaterthanorequal_header;
         db      3;
         dm      "lit";
 lit:
@@ -977,7 +998,7 @@ r3_store:
         dw;
 
 input_buffer:
-        dm      "3 2 <= : / /mod swap drop ; ";
+        dm      "1 2 >= : / /mod swap drop ; ";
 
 here_var:
         dw      $+2;
