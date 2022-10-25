@@ -191,9 +191,6 @@ branch_code:
         jmp     _next;
 
 plus_code:
-        nop;
-        nop;
-        nop;
         pop     r0;
         pop     r2;
         add     r0,r2;
@@ -201,9 +198,6 @@ plus_code:
         jmp     _next;
 
 minus_code:
-        nop;
-        nop;
-        nop;
         pop     r0;
         pop     r2;
         sub     r0,r2;
@@ -281,6 +275,20 @@ greaterthan_gt:
         clr     r0;
         addq    r0,#-1;
 greaterthan_ret:
+        push    r0;
+        jmp     _next;
+
+lessthanorequal_code:
+        pop     r0;
+        pop     r2;
+        cmp     r2,r0;
+        ble     lessthanorequal_lt;
+        clr     r0;
+        jmp     lessthanorequal_ret;
+lessthanorequal_lt:
+        clr     r0;
+        addq    r0,#-1;
+lessthanorequal_ret:
         push    r0;
         jmp     _next;
 
@@ -442,9 +450,6 @@ find_prev:
         jmp     find_loop;
 
 tcfa_code:
-        nop;
-        nop;
-        nop;
         st.w    r3_store,r3;
         pop     r2;             // link ptr
         jsr     _tcfa;
@@ -756,8 +761,15 @@ greaterthan_header:
 greaterthan:
         dw      greaterthan_code;
 
-lit_header:
+lessthanorequal_header:
         dw      greaterthan_header;
+        db      2;
+        dm      "<=";
+lessthanorequal:
+        dw      lessthanorequal_code;
+
+lit_header:
+        dw      lessthanorequal_header;
         db      3;
         dm      "lit";
 lit:
@@ -965,7 +977,7 @@ r3_store:
         dw;
 
 input_buffer:
-        dm      "-43 2 + : / /mod swap drop ; ";
+        dm      "3 2 <= : / /mod swap drop ; ";
 
 here_var:
         dw      $+2;
