@@ -4,6 +4,8 @@
 // TODO Halt somehow
 // TODO Write to display
 // TODO Better number parsing
+// TODO "Multi-line" strings
+// TODO Implement "hidden"?
 
 include "Megaprocessor_defs.asm";
 
@@ -584,260 +586,260 @@ latest_code:
 
 // Primitives Headers
 
-exit_name:
+exit_header:
         dw      0;
         db      4;
         dm      "exit";
 exit:
         dw      exit_code;
 
-drop_name:
-        dw      exit_name;
+drop_header:
+        dw      exit_header;
         db      4;
         dm      "drop";
 drop:
         dw      drop_code;
 
-swap_name:
-        dw      drop_name;
+swap_header:
+        dw      drop_header;
         db      4;
         dm      "swap";
 swap:
         dw      swap_code;
 
-dup_name:
-        dw      swap_name;
+dup_header:
+        dw      swap_header;
         db      3;
         dm      "dup";
 dup:
         dw      dup_code;
 
-over_name:
-        dw      dup_name;
+over_header:
+        dw      dup_header;
         db      4;
         dm      "over";
 over:
         dw      over_code;
 
-rot_name:
-        dw      over_name;
+rot_header:
+        dw      over_header;
         db      3;
         dm      "rot";
 rot:
         dw      rot_code;
 
-nrot_name:
-        dw      rot_name;
+nrot_header:
+        dw      rot_header;
         db      4;
         dm      "rot-";
 nrot:
         dw      nrot_code;
 
-twodrop_name:
-        dw      nrot_name;
+twodrop_header:
+        dw      nrot_header;
         db      5;
         dm      "2drop";
 twodrop:
         dw      twodrop_code;
 
-twodup_name:
-        dw      twodrop_name;
+twodup_header:
+        dw      twodrop_header;
         db      4;
         dm      "2dup";
 twodup:
         dw      twodup_code;
 
-twoswap_name:
-        dw      twodup_name;
+twoswap_header:
+        dw      twodup_header;
         db      5;
         dm      "2swap";
 twoswap:
         dw      twoswap_code;
 
-qdup_name:
-        dw      twoswap_name;
+qdup_header:
+        dw      twoswap_header;
         db      4;
         dm      "?dup";
 qdup:
         dw      qdup_code;
 
-incr_name:
-        dw      qdup_name;
+incr_header:
+        dw      qdup_header;
         db      2;
         dm      "1+";
 incr:
         dw      incr_code;
 
-decr_name:
-        dw      incr_name;
+decr_header:
+        dw      incr_header;
         db      2;
         dm      "1-";
 decr:
         dw      decr_code;
 
-incr2_name:
-        dw      decr_name;
+incr2_header:
+        dw      decr_header;
         db      2;
         dm      "2+";
 incr2:
         dw      incr2_code;
 
-decr2_name:
-        dw      incr2_name;
+decr2_header:
+        dw      incr2_header;
         db      2;
         dm      "2-";
 decr2:
         dw      decr2_code;
 
-branch_name:
-        dw      decr2_name;
+branch_header:
+        dw      decr2_header;
         db      6;
         dm      "branch";
 branch:
         dw      branch_code;
 
-plus_name:
-        dw      branch_name;
+plus_header:
+        dw      branch_header;
         db      1;
         dm      "+";
 plus:
         dw      plus_code;
 
-minus_name:
-        dw      plus_name;
+minus_header:
+        dw      plus_header;
         db      1;
         dm      "-";
 minus:
         dw      minus_code;
 
-mul_name:
-        dw      minus_name;
+mul_header:
+        dw      minus_header;
         db      1;
         dm      "*";
 mul:
         dw      mul_code;
 
-divmod_name:
-        dw      mul_name;
+divmod_header:
+        dw      mul_header;
         db      4;
         dm      "/mod";
 divmod:
         dw      divmod_code;
 
-equals_name:
-        dw      divmod_name;
+equals_header:
+        dw      divmod_header;
         db      1;
         dm      "=";
 equals:
         dw      equals_code;
 
-notequals_name:
-        dw      equals_name;
+notequals_header:
+        dw      equals_header;
         db      2;
         dm      "<>";
 notequals:
         dw      notequals_code;
 
-lessthan_name:
-        dw      notequals_name;
+lessthan_header:
+        dw      notequals_header;
         db      1;
         dm      "<";
 lessthan:
         dw      lessthan_code;
 
-greaterthan_name:
-        dw      lessthan_name;
+greaterthan_header:
+        dw      lessthan_header;
         db      1;
         dm      ">";
 greaterthan:
         dw      greaterthan_code;
 
-lit_name:
-        dw      greaterthan_name;
+lit_header:
+        dw      greaterthan_header;
         db      3;
         dm      "lit";
 lit:
         dw      lit_code;
 
-fetch_name:
-        dw      lit_name;
+fetch_header:
+        dw      lit_header;
         db      1;
         dm      "@";
 fetch:
         dw      fetch_code;
 
-rspstore_name:
-        dw      fetch_name;
+rspstore_header:
+        dw      fetch_header;
         db      4;
         dm      "rsp!";
 rspstore:
         dw      rspstore_code;
 
-key_name:
-        dw      rspstore_name;
+key_header:
+        dw      rspstore_header;
         db      3;
         dm      "key";
 key:
         dw      key_code;
 
-word_name:
-        dw      key_name;
+word_header:
+        dw      key_header;
         db      4;
         dm      "word";
 word:
         dw      word_code;
 
-number_name:
-        dw      word_name;
+number_header:
+        dw      word_header;
         db      6;
         dm      "number";
 number:
         dw      number_code;
 
-find_name:
-        dw      number_name;
+find_header:
+        dw      number_header;
         db      4;
         dm      "find";
 find:
         dw      find_code;
 
-tcfa_name:
-        dw      find_name;
+tcfa_header:
+        dw      find_header;
         db      4;
         dm      ">cfa";
 tcfa:
         dw      tcfa_code;
 
-comma_name:
-        dw      tcfa_name;
+comma_header:
+        dw      tcfa_header;
         db      1;
         dm      ",";
 comma:
         dw      comma_code;
 
-lbrac_name:
-        dw      comma_name;
+lbrac_header:
+        dw      comma_header;
         db      _F_IMMED+1;
         dm      "[";
 lbrac:
         dw      lbrac_code;
 
-rbrac_name:
-        dw      lbrac_name;
+rbrac_header:
+        dw      lbrac_header;
         db      1;
         dm      "]";
 rbrac:
         dw      rbrac_code;
 
-create_name:
-        dw      rbrac_name;
+create_header:
+        dw      rbrac_header;
         db      6;
         dm      "create";
 create:
         dw      create_code;
 
-interpret_name:
-        dw      create_name;
+interpret_header:
+        dw      create_header;
         db      9;
         dm      "interpret";
 interpret:
@@ -845,22 +847,22 @@ interpret:
 
 // Built-in Words
 
-double_name:
-        dw      interpret_name;
+double_header:
+        dw      interpret_header;
         db      6;
         dm      "double";
 double:
         dw      _docol,dup,plus,exit;
 
-tdfa_name:
-        dw      double_name;
+tdfa_header:
+        dw      double_header;
         db      4;
         dm      "tdfa";
 tdfa:
         dw      _docol,tcfa,incr2,exit;
 
-quit_name:
-        dw      tdfa_name;
+quit_header:
+        dw      tdfa_header;
         db      4;
         dm      "quit";
 quit:
@@ -869,8 +871,8 @@ quit:
         dw      interpret;
         dw      branch,-8;
 
-colon_name:
-        dw      quit_name;
+colon_header:
+        dw      quit_header;
         db      1;
         dm      ":";
 colon:
@@ -880,8 +882,8 @@ colon:
         dw      rbrac;
         dw      exit;
 
-semicolon_name:
-        dw      colon_name;
+semicolon_header:
+        dw      colon_header;
         db      _F_IMMED+1;
         dm      ";";
 semicolon:
@@ -892,15 +894,15 @@ semicolon:
 
 // Constant Headers
 
-rz_name:
-        dw      semicolon_name;
+rz_header:
+        dw      semicolon_header;
         db      2;
         dm      "r0";
 rz:
         dw      rz_code;
 
-f_lenmask_name:
-        dw      rz_name;
+f_lenmask_header:
+        dw      rz_header;
         db      9;
         dm      "f_lenmask";
 f_lenmask:
@@ -908,29 +910,29 @@ f_lenmask:
 
 // Variable Headers
 
-base_name:
-        dw      f_lenmask_name;
+base_header:
+        dw      f_lenmask_header;
         db      4;
         dm      "base";
 base:
         dw      base_code;
 
-state_name:
-        dw      base_name;
+state_header:
+        dw      base_header;
         db      5;
         dm      "state";
 state:
         dw      state_code;
 
-here_name:
-        dw      state_name;
+here_header:
+        dw      state_header;
         db      4;
         dm      "here";
 here:
         dw      here_code;
 
-latest_name:
-        dw      here_name;
+latest_header:
+        dw      here_header;
         db      6;
         dm      "latest";
 latest:
@@ -952,7 +954,7 @@ state_var:
         dw      0;          // 0 = executing, non-zero = compiling
 
 latest_var:
-        dw      latest_name;
+        dw      latest_header;
 
 r1_store:
         dw;
@@ -961,7 +963,7 @@ r3_store:
         dw;
 
 input_buffer:
-        dm      "-43 2 > : / /mod swap drop ; ";
+        dm      "-43 2 + : / /mod swap drop ; ";
 
 here_var:
         dw      $+2;
