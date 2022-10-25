@@ -1,10 +1,10 @@
-// TODO Error handling
+// TODO Error handling - need figure out MP error system
 // TODO Implement more primitives
 // TODO Try to compile jonesforth.f
-// TODO Halt somehow
-// TODO Write to display
+// TODO Halt somehow - busy loop?
+// TODO Write to display - need figure out how to write to display and how to do it from Forth
 // TODO Better number parsing
-// TODO "Multi-line" strings
+// TODO "Multi-line" strings - treat null as white space, require double null to terminate input?
 // TODO Implement "hidden"?
 
 include "Megaprocessor_defs.asm";
@@ -71,6 +71,8 @@ _next:
         move    r2,r0;
         ld.w    r0,(r2);
         jmp     (r0);
+
+// Code
 
 // Primitives
 
@@ -582,7 +584,7 @@ latest_code:
         push    r0;
         jmp     _next;
 
-// Dictionary
+// Headers
 
 // Primitives Headers
 
