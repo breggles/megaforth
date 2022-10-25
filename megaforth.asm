@@ -4,7 +4,6 @@
 // TODO Halt somehow - busy loop?
 // TODO Write to display - need figure out how to write to display and how to do it from Forth
 // TODO Better number parsing
-// TODO "Multi-line" strings - treat null as white space, require double null to terminate input?
 // TODO Implement "hidden"?
 
 include "Megaprocessor_defs.asm";
@@ -343,16 +342,24 @@ _word:
         st.w    r3_store,r3;
 word_2:
         jsr     _key;
-        ld.w    r1,#0x20;       // Space
+        ld.b    r1,#0x20;       // Space
+        cmp     r0,r1;
+        beq     word_2;
+        ld.b    r1,#0;          // Null
         cmp     r0,r1;
         beq     word_2;
         ld.w    r3,#word_buffer;
 word_1:
         st.b    (r3++),r0;
         jsr     _key;
-        ld.w    r1,#0x20;       // Space
+        ld.b    r1,#0x20;       // Space
         cmp     r0,r1;
-        bne     word_1;
+        beq     word_3;
+        ld.b    r1,#0;          // Null
+        cmp     r0,r1;
+        beq     word_3;
+        jmp     word_1;
+word_3:
         ld.w    r0,#word_buffer;
         sub     r3,r0;
         move    r2,r3;
@@ -998,7 +1005,8 @@ r3_store:
         dw;
 
 input_buffer:
-        dm      "1 2 >= : / /mod swap drop ; ";
+        dm      "1";
+        dm      "2 >= : / /mod swap drop ; ";
 
 here_var:
         dw      $+2;
