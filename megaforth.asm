@@ -1,10 +1,9 @@
 // TODO Error handling - need figure out MP error system
 // TODO Implement more primitives
 // TODO Try to compile jonesforth.f
-// TODO Halt somehow - busy loop?
 // TODO Write to display - need figure out how to write to display and how to do it from Forth
 // TODO Better number parsing
-// TODO Implement "hidden"?
+// TODO Implement "hidden"? Prevents recursive definitions
 
 include "Megaprocessor_defs.asm";
 
