@@ -1,7 +1,7 @@
+// TODO Write to display - need figure out how to encode chars, write to display and how to do it from Forth
 // TODO Error handling - need figure out MP error system
 // TODO Implement more primitives
 // TODO Try to compile jonesforth.f
-// TODO Write to display - need figure out how to write to display and how to do it from Forth
 // TODO Better number parsing
 // TODO Implement "hidden"? Prevents recursive definitions
 
@@ -42,6 +42,10 @@ illegal:
         nop;
         nop;
         nop;
+
+_halt:                      // busy loop
+        nop;
+        jmp     _halt;
 
 _start:
         // set up data stack
@@ -346,7 +350,7 @@ word_2:
         beq     word_2;
         ld.b    r1,#0;          // Null
         cmp     r0,r1;
-        beq     word_halt;
+        beq     _halt;
         ld.w    r3,#word_buffer;
 word_1:
         st.b    (r3++),r0;
@@ -365,9 +369,6 @@ word_3:
         ld.w    r3,r3_store;
         ld.w    r1,r1_store;
         ret;
-word_halt:                      // busy loop
-        nop;
-        jmp     word_halt;
 
 number_code:
         // Returns number of unparsed characters on top of stack followed by parsed number
