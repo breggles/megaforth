@@ -347,7 +347,7 @@ word_2:
         beq     word_2;
         ld.b    r1,#0;          // Null
         cmp     r0,r1;
-        beq     word_2;
+        beq     word_halt;
         ld.w    r3,#word_buffer;
 word_1:
         st.b    (r3++),r0;
@@ -366,6 +366,9 @@ word_3:
         ld.w    r3,r3_store;
         ld.w    r1,r1_store;
         ret;
+word_halt:                      // busy loop
+        nop;
+        jmp     word_halt;
 
 number_code:
         // Returns number of unparsed characters on top of stack followed by parsed number
@@ -1007,6 +1010,7 @@ r3_store:
 input_buffer:
         dm      "1";
         dm      "2 >= : / /mod swap drop ; ";
+        db      0;                              // halt
 
 here_var:
         dw      $+2;
