@@ -47,20 +47,21 @@ illegal:
 
 _start:
 
-        ld.w    r2,#INT_RAM_START;
+        ld.w    r2,#INT_RAM_START+2;
         ld.b    r3,#0x10;
         add     r3,r2;      // last row of char
-        ld.w    r0,_c_a;
-lp:
+        ld.w    r0,_c_b;
+prn_char:
         ld.w    r1,#CHAR_MASK;
         and     r1,r0;
+        lsl     r1,#4;
         st.w    (r2),r1;
         cmp     r2,r3;
         beq     done;
         ld.b    r1,#4;
         add     r2,r1;
         lsr     r0,#3;
-        jmp     lp;
+        jmp     prn_char;
 
 done:
         // set up data stack
@@ -1032,6 +1033,8 @@ input_buffer:
 
 _c_a:
         dw      0b0101101111101010;
+_c_b:
+        dw      0b0011101011101011;
 _c_i:
         dw      0b0010010010010010;
 
