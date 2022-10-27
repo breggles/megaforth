@@ -12,6 +12,8 @@ RETURN_STACK        equ 0x6000;     // totally made up number, feel free to chan
 _F_IMMED            equ 0x80;
 _F_LENMASK          equ 0x1f;
 
+CHAR_MASK           equ 0x07;
+
 // NB: We're using r1 as the return stack pointer and r3 as the "instruction" pointer.
 //     They can be used in code, but their values need to be stored and restored,
 //     before calling _next.
@@ -45,8 +47,25 @@ illegal:
 
 _start:
 
-        ld.w    r0,_c_i;
-        st.w    INT_RAM_START,r0;
+        ld.w    r2,#INT_RAM_START;
+        ld.b    r3,#0x10;
+        add     r3,r2;      // last row of char
+        ld.w    r0,_c_a;
+lp:
+        ld.w    r1,#CHAR_MASK;
+        and     r1,r0;
+        st.w    (r2),r1;
+        cmp     r2,r3;
+        beq     done;
+        ld.b    r1,#4;
+        add     r2,r1;
+        lsr     r0,#3;
+        jmp     lp;
+
+done:
+        // set up data stack
+        ld.w    r0,#EXT_RAM_LEN;
+        move    sp,r0;
 
         // set up return stack
         ld.w    r1,#RETURN_STACK;
@@ -1011,6 +1030,8 @@ input_buffer:
         dm      "2 >= : / /mod swap drop ; ";
         db      0;                              // halt
 
+_c_a:
+        dw      0b0101101111101010;
 _c_i:
         dw      0b0010010010010010;
 
