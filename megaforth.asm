@@ -47,26 +47,49 @@ illegal:
 
 _start:
 
-        ld.w    r2,#INT_RAM_START+2;
-        ld.b    r3,#0x10;
-        add     r3,r2;      // last row of char
-        ld.w    r0,_c_b;
-prn_char:
-        ld.w    r1,#CHAR_MASK;
-        and     r1,r0;
-        lsl     r1,#4;
-        st.w    (r2),r1;
-        cmp     r2,r3;
-        beq     done;
-        ld.b    r1,#4;
-        add     r2,r1;
-        lsr     r0,#3;
-        jmp     prn_char;
-
-done:
         // set up data stack
         ld.w    r0,#EXT_RAM_LEN;
         move    sp,r0;
+
+        clr     r0;
+        dec     r0;
+prn_chrs:
+        inc     r0;
+        push    r0;                     // char num
+        ld.w    r2,#INT_RAM_START;
+        lsr     r0,#1;                  // div by 2
+        push    ps;                     // carry = remainder
+        add     r2,r0;
+        ld.b    r3,#0x10;
+        add     r3,r2;                  // last row of char
+        ld.w    r0,_c_b;
+        push    r0;                     // char
+prn_char:
+        ld.w    r1,#CHAR_MASK;
+        and     r1,r0;
+        ld.b    r0,(sp+2);
+        btst    r0,#5;                  // carry set?
+        beq     prn_chr_even;
+        lsl     r1,#4;
+prn_chr_even:
+        ld.w    r0,(r2);
+        or      r1,r0;
+        st.w    (r2),r1;
+        cmp     r2,r3;
+        beq     prn_chr_done;
+        ld.b    r1,#4;
+        add     r2,r1;
+        ld.w    r0,(sp+0);
+        lsr     r0,#3;
+        st.w    (sp+0),r0;
+        jmp     prn_char;
+prn_chr_done:
+        pop     r0;
+        pop     ps;
+        pop     r0;
+        ld.w    r1,#3;
+        cmp     r0,r1;
+        bne     prn_chrs;
 
         // set up return stack
         ld.w    r1,#RETURN_STACK;
