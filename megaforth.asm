@@ -43,10 +43,6 @@ illegal:
         nop;
         nop;
 
-_halt:                      // busy loop
-        nop;
-        jmp     _halt;
-
 _start:
         // set up data stack
         ld.w    r0,#EXT_RAM_LEN;
@@ -369,6 +365,10 @@ word_3:
         ld.w    r3,r3_store;
         ld.w    r1,r1_store;
         ret;
+
+_halt:                      // busy loop
+        nop;
+        jmp     _halt;
 
 number_code:
         // Returns number of unparsed characters on top of stack followed by parsed number
