@@ -44,9 +44,9 @@ illegal:
         nop;
 
 _start:
-        // set up data stack
-        ld.w    r0,#EXT_RAM_LEN;
-        move    sp,r0;
+
+        ld.w    r0,_c_i;
+        st.w    INT_RAM_START,r0;
 
         // set up return stack
         ld.w    r1,#RETURN_STACK;
@@ -327,7 +327,6 @@ key_code:
 _key:
         ld.w    r2,(currkey);
         ld.b    r0,(r2++);
-        // TODO: if key is 0, halt
         st.w    currkey,r2;
         ret;
 
@@ -1012,5 +1011,13 @@ input_buffer:
         dm      "2 >= : / /mod swap drop ; ";
         db      0;                              // halt
 
+_c_i:
+        dw      0b0010010010010010;
+
 here_var:
         dw      $+2;
+
+        // clr internal RAM
+        org    INT_RAM_START;
+
+        ds      256, 0;
