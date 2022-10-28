@@ -57,21 +57,15 @@ _start:
 
         clr     r0;
         dec     r0;
+        ld.w    r2,#INT_RAM_START;
 prn_chrs:
+        push    r2;                     // char start ptr
         inc     r0;
         push    r0;                     // char num
-        ld.w    r2,#INT_RAM_START;
-        ld.b    r1,#3;
-        lsr.wt  r0,r1;                  // div by 8
-        bne     prn_chrs_same_line;
-        ld.b    r1,#24;
-        add     r2,r1;                 // 6 x 4 = char height x bytes per line
-prn_chrs_same_line:
         lsr     r0,#1;                  // div by 2
         push    ps;                     // carry = remainder
-        add     r2,r0;
         ld.b    r3,#CHAR_BYTE_WIDTH;
-        add     r3,r2;                  // last byte of char
+        add     r3,r2;                  // char end ptr
         ld.w    r0,_c_b;
         push    r0;                     // char
 prn_char:
@@ -97,6 +91,9 @@ prn_chr_done:
         pop     r0;
         pop     ps;
         pop     r0;
+        pop     r2;
+        lsr     r0,#1;                  // div by 2
+        add     r2,r0;
         ld.w    r1,#9;
         cmp     r0,r1;
         bne     prn_chrs;
