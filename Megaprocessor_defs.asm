@@ -13,6 +13,7 @@
 // =======
 // definition for interrupt enable bit
 PS_INT_ENABLE_BIT               equ     0x01;
+PS_INT_CARRY_BIT                equ     0x05;
 
 // ================================================================
 //

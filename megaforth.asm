@@ -13,6 +13,10 @@ _F_IMMED            equ 0x80;
 _F_LENMASK          equ 0x1f;
 
 CHAR_MASK           equ 0x07;
+DISPLAY_CHAR_WIDTH  equ 0x04;
+DISPLAY_CHAR_HEIGHT equ 0x06;
+ENC_CHAR_WIDTH      equ 0x03;
+CHAR_BYTE_WIDTH     equ 0x10;
 
 // NB: We're using r1 as the return stack pointer and r3 as the "instruction" pointer.
 //     They can be used in code, but their values need to be stored and restored,
@@ -21,7 +25,7 @@ CHAR_MASK           equ 0x07;
 //     Update: I might revise this and store them in memory, somewhere...
 
 // NB: In Jones Forth, the headers and code are together in one place, but the
-//     Megaprocessor does not handle mixnig code and data well. It sometimes thinks
+//     Megaprocessor does not handle mixing code and data well. It sometimes thinks
 //     data just before code is code and then it gets everything wrong, after that,
 //     and it can only be fixed by adding random padding. Hence, I've split headers
 //     and code into two separate sections for Mega Forth.
@@ -57,37 +61,43 @@ prn_chrs:
         inc     r0;
         push    r0;                     // char num
         ld.w    r2,#INT_RAM_START;
+        ld.b    r1,#3;
+        lsr.wt  r0,r1;                  // div by 8
+        bne     prn_chrs_same_line;
+        ld.b    r1,#24;
+        add     r2,r1;                 // 6 x 4 = char height x bytes per line
+prn_chrs_same_line:
         lsr     r0,#1;                  // div by 2
         push    ps;                     // carry = remainder
         add     r2,r0;
-        ld.b    r3,#0x10;
-        add     r3,r2;                  // last row of char
+        ld.b    r3,#CHAR_BYTE_WIDTH;
+        add     r3,r2;                  // last byte of char
         ld.w    r0,_c_b;
         push    r0;                     // char
 prn_char:
         ld.w    r1,#CHAR_MASK;
         and     r1,r0;
         ld.b    r0,(sp+2);
-        btst    r0,#5;                  // carry set?
+        btst    r0,#PS_INT_CARRY_BIT;                  // carry set?
         beq     prn_chr_even;
-        lsl     r1,#4;
+        lsl     r1,#DISPLAY_CHAR_WIDTH;
 prn_chr_even:
         ld.w    r0,(r2);
         or      r1,r0;
         st.w    (r2),r1;
         cmp     r2,r3;
         beq     prn_chr_done;
-        ld.b    r1,#4;
+        ld.b    r1,#INT_RAM_BYTES_ACROSS;
         add     r2,r1;
         ld.w    r0,(sp+0);
-        lsr     r0,#3;
+        lsr     r0,#ENC_CHAR_WIDTH;
         st.w    (sp+0),r0;
         jmp     prn_char;
 prn_chr_done:
         pop     r0;
         pop     ps;
         pop     r0;
-        ld.w    r1,#3;
+        ld.w    r1,#9;
         cmp     r0,r1;
         bne     prn_chrs;
 
