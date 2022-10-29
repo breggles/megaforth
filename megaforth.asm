@@ -401,6 +401,16 @@ fetch_code:
         push    r0;
         jmp     _next;
 
+addstore_code:
+        pop     r2;         // address
+        pop     r0;         // add amount
+        push    r1;
+        ld.w    r1,(r2);
+        add     r0,r1;
+        st.w    (r2),r0;
+        pop     r1;
+        jmp     _next;
+
 rspstore_code:
         pop     r1;
         jmp     _next;
@@ -912,8 +922,15 @@ fetch_header:
 fetch:
         dw      fetch_code;
 
-rspstore_header:
+addstore_header:
         dw      fetch_header;
+        db      2;
+        dm      "+!";
+addstore:
+        dw      addstore_code;
+
+rspstore_header:
+        dw      addstore_header;
         db      4;
         dm      "rsp!";
 rspstore:
@@ -1170,7 +1187,7 @@ test_str:
         dm      "HELLO WORLD";
 
 input_buffer:
-        dm      "3 here @ !";
+        dm      "3 here @ ! 4 here @ +!";
         //dm      "1488 11 tell"
         dm      "1";
         dm      "2 >= : / /mod swap drop ; ";
