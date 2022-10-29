@@ -50,8 +50,16 @@ illegal:
         nop;
 
 prn_chr_x_y:
+        push    r2;                     // y
         push    r1;                     // x
         push    r0;                     // char
+        ld.b    r3,#0x41;
+        sub     r0,r3;
+        lsl     r0,#1;
+        ld.w    r3,#_c_a;
+        add     r3,r0;
+        ld.w    r0,(r3);
+        push    r0;                     // char encoding
         move    r3,r2;
         lsl     r2,#4;                  // y * 24
         lsl     r3,#3;
@@ -65,7 +73,7 @@ prn_chr_x_y:
 prn_chr_loop:
         ld.w    r1,#CHAR_MASK;
         and     r1,r0;
-        ld.b    r0,(sp+2);
+        ld.b    r0,(sp+4);
         btst    r0,#0;
         beq     prn_chr_even;
         lsl     r1,#DISPLAY_CHAR_WIDTH;
@@ -83,7 +91,34 @@ prn_chr_even:
         jmp     prn_chr_loop;
 prn_chr_done:
         pop     r0;
+        pop     r0;
         pop     r1;
+        pop     r2;
+        ret;
+
+prn_str:
+        push    r2;          // str ptr
+        push    r0;          // str len
+        move    r3,r2;
+        ld.b    r1,#0;
+        ld.b    r2,#0;
+prn_str_loop:
+        ld.b    r0,(r3++);
+        push    r3;
+        jsr     prn_chr_x_y;
+        pop     r3;
+        addq    r1,#1;
+        btst    r1,#3;
+        beq     prn_str_same_row;
+        clr     r1;
+        addq    r2,#1;
+prn_str_same_row:
+        ld.b    r0,(sp+0);
+        addq    r0,#-1;
+        st.b    (sp+0),r0;
+        bne     prn_str_loop;
+        pop     r0;
+        pop     r2;
         ret;
 
 _start:
@@ -92,15 +127,19 @@ _start:
         ld.w    r0,#EXT_RAM_LEN;
         move    sp,r0;
 
-        ld.w    r0,_c_b;        // char
-        ld.w    r1,#1;          // x
-        ld.w    r2,#1;          // y
-        jsr     prn_chr_x_y;
+//        ld.w    r0,_c_b;        // char
+//        ld.w    r1,#1;          // x
+//        ld.w    r2,#1;          // y
+//        jsr     prn_chr_x_y;
+//
+//        ld.w    r0,_c_a;        // char
+//        ld.w    r1,#3;          // x
+//        ld.w    r2,#3;          // y
+//        jsr     prn_chr_x_y;
 
-        ld.w    r0,_c_a;        // char
-        ld.w    r1,#3;          // x
-        ld.w    r2,#3;          // y
-        jsr     prn_chr_x_y;
+        ld.b    r0,#9;
+        ld.w    r2,#test_str;
+        jsr     prn_str;
 
 /*
         clr     r0;
@@ -1115,6 +1154,9 @@ _c_b:
         dw      0b0011101011101011;
 _c_i:
         dw      0b0010010010010010;
+
+test_str:
+        dm      "ABABBABAA";
 
 here_var:
         dw      $+2;
