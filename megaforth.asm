@@ -49,142 +49,16 @@ illegal:
         nop;
         nop;
 
-prn_chr_x_y:
-        push    r2;                     // y
-        push    r1;                     // x
-        push    r0;                     // char
-        ld.b    r3,#0x41;
-        sub     r0,r3;
-        lsl     r0,#1;
-        ld.w    r3,#_c_a;
-        add     r3,r0;
-        ld.w    r0,(r3);
-        push    r0;                     // char encoding
-        move    r3,r2;
-        lsl     r2,#4;                  // y * 24
-        lsl     r3,#3;
-        add     r2,r3;
-        lsr     r1,#1;                  // x / 2
-        add     r2,r1;
-        ld.w    r3,#INT_RAM_START;
-        add     r2,r3;
-        ld.b    r3,#CHAR_BYTE_WIDTH;
-        add     r3,r2;                  // char end ptr
-prn_chr_loop:
-        ld.w    r1,#CHAR_MASK;
-        and     r1,r0;
-        ld.b    r0,(sp+4);
-        btst    r0,#0;
-        beq     prn_chr_even;
-        lsl     r1,#DISPLAY_CHAR_WIDTH;
-prn_chr_even:
-        ld.b    r0,(r2);
-        or      r1,r0;
-        st.b    (r2),r1;
-        cmp     r2,r3;
-        beq     prn_chr_done;
-        ld.b    r1,#INT_RAM_BYTES_ACROSS;
-        add     r2,r1;
-        ld.w    r0,(sp+0);
-        lsr     r0,#ENC_CHAR_WIDTH;
-        st.w    (sp+0),r0;
-        jmp     prn_chr_loop;
-prn_chr_done:
-        pop     r0;
-        pop     r0;
-        pop     r1;
-        pop     r2;
-        ret;
-
-prn_str:
-        push    r2;          // str ptr
-        push    r0;          // str len
-        move    r3,r2;
-        ld.b    r1,#0;
-        ld.b    r2,#0;
-prn_str_loop:
-        ld.b    r0,(r3++);
-        push    r3;
-        jsr     prn_chr_x_y;
-        pop     r3;
-        addq    r1,#1;
-        btst    r1,#3;
-        beq     prn_str_same_row;
-        clr     r1;
-        addq    r2,#1;
-prn_str_same_row:
-        ld.b    r0,(sp+0);
-        addq    r0,#-1;
-        st.b    (sp+0),r0;
-        bne     prn_str_loop;
-        pop     r0;
-        pop     r2;
-        ret;
-
 _start:
 
         // set up data stack
         ld.w    r0,#EXT_RAM_LEN;
         move    sp,r0;
 
-//        ld.w    r0,_c_b;        // char
-//        ld.w    r1,#1;          // x
-//        ld.w    r2,#1;          // y
-//        jsr     prn_chr_x_y;
-//
-//        ld.w    r0,_c_a;        // char
-//        ld.w    r1,#3;          // x
-//        ld.w    r2,#3;          // y
-//        jsr     prn_chr_x_y;
-
         ld.b    r0,#11;
         ld.w    r2,#test_str;
-        jsr     prn_str;
+        jsr     _prn_str;
 
-/*
-        clr     r0;
-        dec     r0;
-        ld.w    r2,#INT_RAM_START;
-prn_chrs:
-        push    r2;                     // char start ptr
-        inc     r0;
-        push    r0;                     // char num
-        lsr     r0,#1;                  // div by 2
-        push    ps;                     // carry = remainder
-        ld.b    r3,#CHAR_BYTE_WIDTH;
-        add     r3,r2;                  // char end ptr
-        ld.w    r0,_c_b;
-        push    r0;                     // char
-prn_char:
-        ld.w    r1,#CHAR_MASK;
-        and     r1,r0;
-        ld.b    r0,(sp+2);
-        btst    r0,#PS_INT_CARRY_BIT;                  // carry set?
-        beq     prn_chr_even;
-        lsl     r1,#DISPLAY_CHAR_WIDTH;
-prn_chr_even:
-        ld.w    r0,(r2);
-        or      r1,r0;
-        st.w    (r2),r1;
-        cmp     r2,r3;
-        beq     prn_chr_done;
-        ld.b    r1,#INT_RAM_BYTES_ACROSS;
-        add     r2,r1;
-        ld.w    r0,(sp+0);
-        lsr     r0,#ENC_CHAR_WIDTH;
-        st.w    (sp+0),r0;
-        jmp     prn_char;
-prn_chr_done:
-        pop     r0;
-        pop     ps;
-        pop     r0;
-        pop     r2;
-        lsr     r0,#1;                  // div by 2
-        add     r2,r0;
-        ld.w    r1,#9;
-        cmp     r0,r1;
-        bne     prn_chrs;
-*/
         // set up return stack
         ld.w    r1,#RETURN_STACK;
 
@@ -207,7 +81,79 @@ _next:
         ld.w    r0,(r2);
         jmp     (r0);
 
-// Code
+_prn_chr:
+        push    r2;                     // y
+        push    r1;                     // x
+        push    r0;                     // char
+        ld.b    r3,#0x41;
+        sub     r0,r3;
+        lsl     r0,#1;
+        ld.w    r3,#_c_a;
+        add     r3,r0;
+        ld.w    r0,(r3);
+        push    r0;                     // char encoding
+        move    r3,r2;
+        lsl     r2,#4;                  // y * 24
+        lsl     r3,#3;
+        add     r2,r3;
+        lsr     r1,#1;                  // x / 2
+        add     r2,r1;
+        ld.w    r3,#INT_RAM_START;
+        add     r2,r3;
+        ld.b    r3,#CHAR_BYTE_WIDTH;
+        add     r3,r2;                  // char end ptr
+_prn_chr_loop:
+        ld.w    r1,#CHAR_MASK;
+        and     r1,r0;
+        ld.b    r0,(sp+4);
+        btst    r0,#0;
+        beq     _prn_chr_even;
+        lsl     r1,#DISPLAY_CHAR_WIDTH;
+_prn_chr_even:
+        ld.b    r0,(r2);
+        or      r1,r0;
+        st.b    (r2),r1;
+        cmp     r2,r3;
+        beq     _prn_chr_done;
+        ld.b    r1,#INT_RAM_BYTES_ACROSS;
+        add     r2,r1;
+        ld.w    r0,(sp+0);
+        lsr     r0,#ENC_CHAR_WIDTH;
+        st.w    (sp+0),r0;
+        jmp     _prn_chr_loop;
+_prn_chr_done:
+        pop     r0;
+        pop     r0;
+        pop     r1;
+        pop     r2;
+        ret;
+
+_prn_str:
+        push    r2;          // str ptr
+        push    r0;          // str len
+        move    r3,r2;
+        ld.b    r1,#0;
+        ld.b    r2,#0;
+_prn_str_loop:
+        ld.b    r0,(r3++);
+        push    r3;
+        jsr     _prn_chr;
+        pop     r3;
+        addq    r1,#1;
+        btst    r1,#3;
+        beq     _prn_str_same_row;
+        clr     r1;
+        addq    r2,#1;
+_prn_str_same_row:
+        ld.b    r0,(sp+0);
+        addq    r0,#-1;
+        st.b    (sp+0),r0;
+        bne     _prn_str_loop;
+        pop     r0;
+        pop     r2;
+        ret;
+
+// Code Dictionary
 
 // Primitives
 
