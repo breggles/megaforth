@@ -137,7 +137,7 @@ _start:
 //        ld.w    r2,#3;          // y
 //        jsr     prn_chr_x_y;
 
-        ld.b    r0,#26;
+        ld.b    r0,#11;
         ld.w    r2,#test_str;
         jsr     prn_str;
 
@@ -1202,7 +1202,7 @@ _c_z:
         dw      0b0111001010100111;
 
 test_str:
-        dm      "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        dm      "HELLO WORLD";
 
 here_var:
         dw      $+2;
