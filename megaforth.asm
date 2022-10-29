@@ -389,6 +389,12 @@ lit_code:
         addq    r3,#2;
         jmp     _next;
 
+store_code:
+        pop     r2;         // address to store at
+        pop     r0;         // data to store
+        st.w    (r2),r0;
+        jmp     _next;
+
 fetch_code:
         pop     r2;
         ld.w    r0,(r2);
@@ -892,8 +898,15 @@ lit_header:
 lit:
         dw      lit_code;
 
-fetch_header:
+store_header:
         dw      lit_header;
+        db      1;
+        dm      "!";
+store:
+        dw      store_code;
+
+fetch_header:
+        dw      store_header;
         db      1;
         dm      "@";
 fetch:
@@ -1157,7 +1170,9 @@ test_str:
         dm      "HELLO WORLD";
 
 input_buffer:
-        dm      "1488 11 tell 1";
+        dm      "3 here @ !";
+        //dm      "1488 11 tell"
+        dm      "1";
         dm      "2 >= : / /mod swap drop ; ";
         db      0;                              // halt
 
