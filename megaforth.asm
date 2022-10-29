@@ -1,4 +1,3 @@
-// TODO Write to display - need figure out how to encode chars, write to display and how to do it from Forth
 // TODO Error handling - need figure out MP error system
 // TODO Implement more primitives
 // TODO Try to compile jonesforth.f
@@ -55,10 +54,6 @@ _start:
         ld.w    r0,#EXT_RAM_LEN;
         move    sp,r0;
 
-        ld.b    r0,#11;
-        ld.w    r2,#test_str;
-        jsr     _prn_str;
-
         // set up return stack
         ld.w    r1,#RETURN_STACK;
 
@@ -82,6 +77,7 @@ _next:
         jmp     (r0);
 
 _prn_chr:
+        // TODO: what happens if print outside internal RAM?
         push    r2;                     // y
         push    r1;                     // x
         push    r0;                     // char
@@ -616,6 +612,14 @@ create_copy_word:
         ld.w    r1,r1_store;
         jmp     _next;
 
+tell_code:
+        pop     r0;             // str len
+        pop     r2;             // str ptr
+        push    r3;
+        jsr     _prn_str;
+        pop     r3;
+        jmp     _next;
+
 interpret_code:
         st.w    r3_store,r3;
         jsr     _word;          // r0 = string ptr, r2 = string length
@@ -965,8 +969,15 @@ create_header:
 create:
         dw      create_code;
 
-interpret_header:
+tell_header:
         dw      create_header;
+        db      4;
+        dm      "tell";
+tell:
+        dw      tell_code;
+
+interpret_header:
+        dw      tell_header;
         db      9;
         dm      "interpret";
 interpret:
@@ -1089,11 +1100,6 @@ r1_store:
 r3_store:
         dw;
 
-input_buffer:
-        dm      "1";
-        dm      "2 >= : / /mod swap drop ; ";
-        db      0;                              // halt
-
 _c_a:
         dw      0b0101101111101010;
 _c_b:
@@ -1149,6 +1155,11 @@ _c_z:
 
 test_str:
         dm      "HELLO WORLD";
+
+input_buffer:
+        dm      "1488 11 tell 1";
+        dm      "2 >= : / /mod swap drop ; ";
+        db      0;                              // halt
 
 here_var:
         dw      $+2;
