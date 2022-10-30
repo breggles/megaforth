@@ -1280,9 +1280,15 @@ input_buffer:
 //        dm      "3 here @ ! 4 here @ +! 2 here @ -!";
 //        dm      "1";
 //        dm      "2 >=";
+
 //        dm      ": / /mod swap drop ;";
-        dm      ": mod /mod drop ;";
-        dm      "4 2 mod";
+//        dm      ": mod /mod drop ;";
+//        dm      ": '\n' 10 ;";
+        dm      ": bl 32 ;";
+        dm      ": space bl emit ;";
+
+        dm      "space 65 emit";
+//        dm      "4 2 mod";
         db      0;                              // halt
 
 here_var:
