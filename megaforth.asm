@@ -1274,12 +1274,15 @@ test_str:
         dm      "HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD ASDF";
 
 input_buffer:
-        dm      "65 emit 66 emit";
-        dm      "1597 88 tell";
-        dm      "4 here @ c! here @ c@";
-        dm      "3 here @ ! 4 here @ +! 2 here @ -!";
-        dm      "1";
-        dm      "2 >= : / /mod swap drop ; ";
+//        dm      "65 emit 66 emit";
+//        dm      "1597 88 tell";
+//        dm      "4 here @ c! here @ c@";
+//        dm      "3 here @ ! 4 here @ +! 2 here @ -!";
+//        dm      "1";
+//        dm      "2 >=";
+//        dm      ": / /mod swap drop ;";
+        dm      ": mod /mod drop ;";
+        dm      "4 2 mod";
         db      0;                              // halt
 
 here_var:
