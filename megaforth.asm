@@ -133,23 +133,34 @@ _prn_str:
         push    r2;          // str ptr
         push    r0;          // str len
         move    r3,r2;
-        ld.b    r1,#0;
-        ld.b    r2,#0;
+        ld.b    r1,cur_out_pos;
+        ld.b    r2,cur_out_pos+1;
 _prn_str_loop:
         ld.b    r0,(r3++);
         push    r3;
         jsr     _prn_chr;
-        pop     r3;
+        ld.b    r3,#7;
+        cmp     r1,r3;          // 8 chars in a row
+        beq     _prn_str_new_row;
         addq    r1,#1;
-        btst    r1,#3;
-        beq     _prn_str_same_row;
+        jmp     _prn_str_same_row_or_grid;
+_prn_str_new_row:
         clr     r1;
+        ld.b    r3,#9;
+        cmp     r2,r3;          // 10 rows in the grid
+        beq     _prn_str_new_grid;
         addq    r2,#1;
-_prn_str_same_row:
+        jmp     _prn_str_same_row_or_grid;
+_prn_str_new_grid:
+        clr     r2;
+_prn_str_same_row_or_grid:
+        pop     r3;
         ld.b    r0,(sp+0);
         addq    r0,#-1;
         st.b    (sp+0),r0;
         bne     _prn_str_loop;
+        st.b    cur_out_pos,r1;
+        st.b    cur_out_pos+1,r2;
         pop     r0;
         pop     r2;
         ret;
@@ -1154,6 +1165,8 @@ latest_header:
 latest:
         dw      latest_code;
 
+// Headers dictionary end
+
 cold_start:
         dw      quit;
 
@@ -1177,6 +1190,10 @@ r1_store:
 
 r3_store:
         dw;
+
+cur_out_pos:
+        db      0;          // x
+        db      0;          // y
 
 _c_space:
         dw      0b0000000000000000;
@@ -1234,10 +1251,10 @@ _c_z:
         dw      0b0111001010100111;
 
 test_str:
-        dm      "HELLO WORLD";
+        dm      "HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD ASDF";
 
 input_buffer:
-        dm      "1574 11 tell";
+        dm      "1597 88 tell";
         dm      "4 here @ c! here @ c@";
         dm      "3 here @ ! 4 here @ +! 2 here @ -!";
         dm      "1";
