@@ -81,10 +81,15 @@ _prn_chr:
         push    r2;                     // y
         push    r1;                     // x
         push    r0;                     // char
-        ld.b    r3,#0x41;
+        ld.b    r3,#0x20;               // space ascii
+        cmp     r0,r3;
+        bne     _prn_chr_not_space;
+        ld.b    r0,#0x40;
+_prn_chr_not_space:
+        ld.b    r3,#0x40;
         sub     r0,r3;
-        lsl     r0,#1;
-        ld.w    r3,#_c_a;
+        lsl     r0,#1;                  // char encoding is 2 bytes wide
+        ld.w    r3,#_c_space;
         add     r3,r0;
         ld.w    r0,(r3);
         push    r0;                     // char encoding
@@ -105,9 +110,9 @@ _prn_chr_loop:
         btst    r0,#0;
         beq     _prn_chr_even;
         lsl     r1,#DISPLAY_CHAR_WIDTH;
-_prn_chr_even:
         ld.b    r0,(r2);
         or      r1,r0;
+_prn_chr_even:
         st.b    (r2),r1;
         cmp     r2,r3;
         beq     _prn_chr_done;
@@ -425,6 +430,12 @@ storebyte_code:
         pop     r2;         // address to store at
         pop     r0;         // data to store
         st.b    (r2),r0;
+        jmp     _next;
+
+fetchbyte_code:
+        pop     r2;
+        ld.b    r0,(r2);
+        push    r0;
         jmp     _next;
 
 rspstore_code:
@@ -959,8 +970,15 @@ storebyte_header:
 storebyte:
         dw      storebyte_code;
 
-rspstore_header:
+fetchbyte_header:
         dw      storebyte_header;
+        db      2;
+        dm      "c@";
+fetchbyte:
+        dw      fetchbyte_code;
+
+rspstore_header:
+        dw      fetchbyte_header;
         db      4;
         dm      "rsp!";
 rspstore:
@@ -1160,6 +1178,8 @@ r1_store:
 r3_store:
         dw;
 
+_c_space:
+        dw      0b0000000000000000;
 _c_a:
         dw      0b0101101111101010;
 _c_b:
@@ -1217,9 +1237,9 @@ test_str:
         dm      "HELLO WORLD";
 
 input_buffer:
-        dm      "4 here @ c!";
+        dm      "1574 11 tell";
+        dm      "4 here @ c! here @ c@";
         dm      "3 here @ ! 4 here @ +! 2 here @ -!";
-        //dm      "1488 11 tell"
         dm      "1";
         dm      "2 >= : / /mod swap drop ; ";
         db      0;                              // halt
