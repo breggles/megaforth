@@ -421,6 +421,12 @@ substore_code:
         pop     r1;
         jmp     _next;
 
+storebyte_code:
+        pop     r2;         // address to store at
+        pop     r0;         // data to store
+        st.b    (r2),r0;
+        jmp     _next;
+
 rspstore_code:
         pop     r1;
         jmp     _next;
@@ -946,8 +952,15 @@ substore_header:
 substore:
         dw      substore_code;
 
-rspstore_header:
+storebyte_header:
         dw      substore_header;
+        db      2;
+        dm      "c!";
+storebyte:
+        dw      storebyte_code;
+
+rspstore_header:
+        dw      storebyte_header;
         db      4;
         dm      "rsp!";
 rspstore:
@@ -1204,6 +1217,7 @@ test_str:
         dm      "HELLO WORLD";
 
 input_buffer:
+        dm      "4 here @ c!";
         dm      "3 here @ ! 4 here @ +! 2 here @ -!";
         //dm      "1488 11 tell"
         dm      "1";
