@@ -463,6 +463,16 @@ _key:
         st.w    currkey,r2;
         ret;
 
+emit_code:
+        pop     r0;
+        st.b    emit_scratch,r0;
+        ld.w    r2,#emit_scratch;  // str ptr
+        ld.b    r0,#1;             // str len
+        push    r3;
+        jsr     _prn_str;
+        pop     r3;
+        jmp     _next;
+
 word_code:
         jsr     _word;
         push    r0;             // word ptr
@@ -1002,8 +1012,15 @@ key_header:
 key:
         dw      key_code;
 
-word_header:
+emit_header:
         dw      key_header;
+        db      4;
+        dm      "emit";
+emit:
+        dw      emit_code;
+
+word_header:
+        dw      emit_header;
         db      4;
         dm      "word";
 word:
@@ -1173,6 +1190,9 @@ cold_start:
 currkey:
         dw      input_buffer;
 
+emit_scratch:
+        db;
+
 word_buffer:
         ds      32;
 
@@ -1254,6 +1274,7 @@ test_str:
         dm      "HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD ASDF";
 
 input_buffer:
+        dm      "65 emit 66 emit";
         dm      "1597 88 tell";
         dm      "4 here @ c! here @ c@";
         dm      "3 here @ ! 4 here @ +! 2 here @ -!";
