@@ -468,9 +468,11 @@ emit_code:
         st.b    emit_scratch,r0;
         ld.w    r2,#emit_scratch;  // str ptr
         ld.b    r0,#1;             // str len
+        push    r1;
         push    r3;
         jsr     _prn_str;
         pop     r3;
+        pop     r1;
         jmp     _next;
 
 word_code:
@@ -1274,6 +1276,9 @@ test_str:
         dm      "HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD ASDF";
 
 input_buffer:
+
+// Scratch
+
 //        dm      "65 emit 66 emit";
 //        dm      "1597 88 tell";
 //        dm      "4 here @ c! here @ c@";
@@ -1281,14 +1286,18 @@ input_buffer:
 //        dm      "1";
 //        dm      "2 >=";
 
+// Words
+
 //        dm      ": / /mod swap drop ;";
 //        dm      ": mod /mod drop ;";
-//        dm      ": '\n' 10 ;";
+        dm      ": '\n' 10 ;";
         dm      ": bl 32 ;";
         dm      ": space bl emit ;";
 
+// Test
         dm      "space 65 emit";
 //        dm      "4 2 mod";
+
         db      0;                              // halt
 
 here_var:
