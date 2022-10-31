@@ -680,12 +680,12 @@ _comma:
 
 lbrac_code:
         clr     r0;
-        st.w    state_var,r0;
+        st.b    state_var,r0;
         jmp     _next;
 
 rbrac_code:
-        ld.w    r0,#1;
-        st.w    state_var,r0;
+        ld.b    r0,#1;
+        st.b    state_var,r0;
         jmp     _next;
 
 create_code:
@@ -739,7 +739,7 @@ interpret_code:
         ld.w    r3,#_F_IMMED;
         and     r0,r3;
         bne     interpret_execute;
-        ld.w    r0,state_var;
+        ld.b    r0,state_var;
         beq     interpret_execute;
         move    r0,r2;
         jsr     _comma;
@@ -753,7 +753,7 @@ interpret_not_word:
         pop     r0;             // number of remaining chars, number now top of data stack
         test    r0;
         bne     interpret_nan;
-        ld.w    r0,state_var;
+        ld.b    r0,state_var;
         beq     interpret_next;
         ld.w    r0,#lit;
         jsr     _comma;
@@ -804,7 +804,7 @@ base_code:
         jmp     _next;
 
 state_code:
-        ld.w    r0,#state_var;
+        ld.b    r0,#state_var;
         push    r0;
         jmp     _next;
 
@@ -1181,7 +1181,7 @@ char:
 
 immediate_header:
         dw      char_header;
-        db      9;
+        db      _F_IMMED+9;
         dm      "immediate";
 immediate:
         dw      immediate_code;
@@ -1297,7 +1297,7 @@ base_var:
         db      10;
 
 state_var:
-        dw      0;          // 0 = executing, non-zero = compiling
+        db      0;          // 0 = executing, non-zero = compiling
 
 latest_var:
         dw      latest_header;
@@ -1374,9 +1374,9 @@ input_buffer:
 
 // Scratch
 
-        dm      "1 2 and 7 or 2 xor 0 invert";
-        dm      "char :";
-        dm      "immediate";
+//        dm      "1 2 and 7 or 2 xor 0 invert";
+//        dm      "char :";
+//        dm      "immediate";
 //        dm      "65 emit 66 emit";
 //        dm      "1597 88 tell";
 //        dm      "4 here @ c! here @ c@";
@@ -1406,9 +1406,12 @@ input_buffer:
         dm      "   ,";
         dm      ";";
 
+        dm      ": ':' [ char : ] literal ;";
+
 // Test
 
-        dm      "0 not";
+        dm      "':'";
+//        dm      "0 not";
 //        dm      "space 65 emit";
 //        dm      "4 2 mod";
 
