@@ -545,7 +545,7 @@ word_3:
         ld.w    r1,r1_store;
         ret;
 
-_halt:                      // busy loop
+_halt:
         nop;
         jmp     _halt;
 
@@ -1388,11 +1388,19 @@ input_buffer:
 
 //        dm      ": / /mod swap drop ;";
 //        dm      ": mod /mod drop ;";
+
         dm      ": '\n' 10 ;";
+
         dm      ": bl 32 ;";
+
         dm      ": space bl emit ;";
+
         dm      ": true -1 ;";
+
         dm      ": false 0 ;";
+
+        dm      ": not invert ;";
+
         dm      ": literal immediate";
         dm      "   ' lit ,";
         dm      "   ,";
@@ -1400,7 +1408,8 @@ input_buffer:
 
 // Test
 
-        dm      "space 65 emit";
+        dm      "0 not";
+//        dm      "space 65 emit";
 //        dm      "4 2 mod";
 
         db      0;                              // halt
