@@ -477,6 +477,7 @@ emit_code:
 
 // NB: Leading null halts, trailing null is white space...
 word_code:
+        // TODO swap r0 & r2 around, r2 is index register, so should contain ptr...
         jsr     _word;
         push    r0;             // word ptr
         push    r2;             // word length
@@ -489,6 +490,9 @@ word_2:
         ld.b    r1,#0x20;       // Space
         cmp     r0,r1;
         beq     word_2;
+        ld.b    r1,#0x0a;       // Newline
+        cmp     r0,r1;
+        beq     word_2;
         ld.b    r1,#0;          // Null
         cmp     r0,r1;
         beq     _halt;
@@ -497,6 +501,9 @@ word_1:
         st.b    (r3++),r0;
         jsr     _key;
         ld.b    r1,#0x20;       // Space
+        cmp     r0,r1;
+        beq     word_3;
+        ld.b    r1,#0x0a;       // Newline
         cmp     r0,r1;
         beq     word_3;
         ld.b    r1,#0;          // Null
@@ -731,6 +738,13 @@ interpret_next:
 interpret_nan:
         // TODO handle
         nop;
+
+char_code:
+        jsr     _word;
+        move    r2,r0;
+        ld.b    r0,(r2);
+        push    r0;
+        jmp     _next;
 
 immediate_code:
         push    r1;
@@ -1103,8 +1117,15 @@ interpret_header:
 interpret:
         dw      interpret_code;
 
-immediate_header:
+char_header:
         dw      interpret_header;
+        db      4;
+        dm      "char";
+char:
+        dw      char_code;
+
+immediate_header:
+        dw      char_header;
         db      9;
         dm      "immediate";
 immediate:
@@ -1298,6 +1319,7 @@ input_buffer:
 
 // Scratch
 
+        dm      "char :";
         dm      "immediate";
 //        dm      "65 emit 66 emit";
 //        dm      "1597 88 tell";
@@ -1313,6 +1335,10 @@ input_buffer:
         dm      ": '\n' 10 ;";
         dm      ": bl 32 ;";
         dm      ": space bl emit ;";
+        dm      ": literal immediate";
+        dm      "   ' lit ,";
+        dm      "   ,";
+        dm      ";";
 
 // Test
 
