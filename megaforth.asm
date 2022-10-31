@@ -475,6 +475,7 @@ emit_code:
         pop     r1;
         jmp     _next;
 
+// NB: Leading null halts, trailing null is white space...
 word_code:
         jsr     _word;
         push    r0;             // word ptr
@@ -730,6 +731,17 @@ interpret_next:
 interpret_nan:
         // TODO handle
         nop;
+
+immediate_code:
+        push    r1;
+        ld.w    r2,latest_var;
+        addq    r2,#2;
+        ld.b    r1,(r2);
+        ld.b    r0,#_F_IMMED;
+        xor     r1,r0;
+        st.b    (r2),r1;
+        pop     r1;
+        jmp     _next;
 
 // Constants
 
@@ -1091,10 +1103,17 @@ interpret_header:
 interpret:
         dw      interpret_code;
 
+immediate_header:
+        dw      interpret_header;
+        db      9;
+        dm      "immediate";
+immediate:
+        dw      immediate_code;
+
 // Built-in Words
 
 double_header:
-        dw      interpret_header;
+        dw      immediate_header;
         db      6;
         dm      "double";
 double:
@@ -1279,6 +1298,7 @@ input_buffer:
 
 // Scratch
 
+        dm      "immediate";
 //        dm      "65 emit 66 emit";
 //        dm      "1597 88 tell";
 //        dm      "4 here @ c! here @ c@";
@@ -1295,6 +1315,7 @@ input_buffer:
         dm      ": space bl emit ;";
 
 // Test
+
         dm      "space 65 emit";
 //        dm      "4 2 mod";
 
