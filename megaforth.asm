@@ -399,6 +399,33 @@ greaterthanorequal_ret:
         push    r0;
         jmp     _next;
 
+and_code:
+        pop     r0;
+        pop     r2;
+        and     r0,r2;
+        push    r0;
+        jmp     _next;
+
+or_code:
+        pop     r0;
+        pop     r2;
+        or      r0,r2;
+        push    r0;
+        jmp     _next;
+
+xor_code:
+        pop     r0;
+        pop     r2;
+        xor     r0,r2;
+        push    r0;
+        jmp     _next;
+
+invert_code:
+        pop     r0;
+        inv     r0;
+        push    r0;
+        jmp     _next;
+
 lit_code:
         ld.w    r0,(r3);
         push    r0;
@@ -977,8 +1004,36 @@ greaterthanorequal_header:
 greaterthanorequal:
         dw      greaterthanorequal_code;
 
-lit_header:
+and_header:
         dw      greaterthanorequal_header;
+        db      3;
+        dm      "and";
+and_:
+        dw      and_code;
+
+or_header:
+        dw      and_header;
+        db      2;
+        dm      "or";
+or_:
+        dw      or_code;
+
+xor_header:
+        dw      or_header;
+        db      3;
+        dm      "xor";
+xor_:
+        dw      xor_code;
+
+invert_header:
+        dw      xor_header;
+        db      6;
+        dm      "invert";
+invert_:
+        dw      invert_code;
+
+lit_header:
+        dw      invert_header;
         db      3;
         dm      "lit";
 lit:
@@ -1319,6 +1374,7 @@ input_buffer:
 
 // Scratch
 
+        dm      "1 2 and 7 or 2 xor 0 invert";
         dm      "char :";
         dm      "immediate";
 //        dm      "65 emit 66 emit";
@@ -1335,6 +1391,8 @@ input_buffer:
         dm      ": '\n' 10 ;";
         dm      ": bl 32 ;";
         dm      ": space bl emit ;";
+        dm      ": true -1 ;";
+        dm      ": false 0 ;";
         dm      ": literal immediate";
         dm      "   ' lit ,";
         dm      "   ,";
