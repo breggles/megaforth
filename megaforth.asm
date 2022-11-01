@@ -278,6 +278,14 @@ decr2_code:
         push    r0;
         jmp     _next;
 
+// NB: only works in compiled code, can use
+//     word, find, >cfa to make work in immediate mode
+// C.f. lit...
+tick_code:
+        ld.w    r0,(r3++);
+        push    r0;
+        jmp     _next;
+
 branch_code:
         ld.w    r0,(r3);
         add     r3,r0;      // add 2 more?
@@ -427,9 +435,8 @@ invert_code:
         jmp     _next;
 
 lit_code:
-        ld.w    r0,(r3);
+        ld.w    r0,(r3++);
         push    r0;
-        addq    r3,#2;
         jmp     _next;
 
 store_code:
@@ -927,8 +934,15 @@ decr2_header:
 decr2:
         dw      decr2_code;
 
-branch_header:
+tick_header:
         dw      decr2_header;
+        db      4;
+        dm      "'";
+tick:
+        dw      tick_code;
+
+branch_header:
+        dw      tick_header;
         db      6;
         dm      "branch";
 branch:
@@ -1389,7 +1403,7 @@ input_buffer:
 //        dm      ": / /mod swap drop ;";
 //        dm      ": mod /mod drop ;";
 
-        dm      ": '\n' 10 ;";
+        dm      ": '\\n' 10 ;";
 
         dm      ": bl 32 ;";
 
