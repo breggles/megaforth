@@ -1409,7 +1409,7 @@ input_buffer:
 
         dm      ": space bl emit ;";
 
-        dm      ": true -1 ;";
+        dm      ": true -1 ;";              // 0xFFFF, or all 1s
 
         dm      ": false 0 ;";
 
@@ -1420,11 +1420,19 @@ input_buffer:
         dm      "   ,";
         dm      ";";
 
-        dm      ": ':' [ char : ] literal ;";
+        dm      ": ':' [ char : ] literal ;"; // do we need ] here?
+        dm      ": ';' [ char ; ] literal ;";
+        dm      ": '(' [ char ( ] literal ;";
+        dm      ": ')' [ char ) ] literal ;";
+        dm      ": '\"' [ char \" ] literal ;";
+        dm      ": 'A' [ char A ] literal ;";
+        dm      ": '0' [ char 0 ] literal ;";
+        dm      ": '-' [ char - ] literal ;";
+        dm      ": '.' [ char . ] literal ;";
 
 // Test
 
-        dm      "':'";
+        dm      "'\"'";
 //        dm      "0 not";
 //        dm      "space 65 emit";
 //        dm      "4 2 mod";
