@@ -130,6 +130,8 @@ _prn_chr_done:
         ret;
 
 _prn_str:
+        push    r1;
+        push    r3;
         push    r2;          // str ptr
         push    r0;          // str len
         move    r3,r2;
@@ -163,6 +165,8 @@ _prn_str_same_row_or_grid:
         st.b    cur_out_pos+1,r2;
         pop     r0;
         pop     r2;
+        pop     r3;
+        pop     r1;
         ret;
 
 // Code Dictionary
@@ -502,11 +506,7 @@ emit_code:
         st.b    emit_scratch,r0;
         ld.w    r2,#emit_scratch;  // str ptr
         ld.b    r0,#1;             // str len
-        push    r1;
-        push    r3;
         jsr     _prn_str;
-        pop     r3;
-        pop     r1;
         jmp     _next;
 
 // NB: Leading null halts, trailing null is white space...
@@ -723,9 +723,7 @@ create_copy_word:
 tell_code:
         pop     r0;             // str len
         pop     r2;             // str ptr
-        push    r3;
         jsr     _prn_str;
-        pop     r3;
         jmp     _next;
 
 interpret_code:
@@ -770,7 +768,9 @@ interpret_next:
         ld.w    r3,r3_store;
         jmp     _next;
 interpret_nan:
-        // TODO handle
+        ld.w    r2,#interpret_error;
+        ld.b    r0,interpret_error_end-interpret_error;
+        jsr     _prn_str;
         nop;
 
 char_code:
@@ -1381,6 +1381,10 @@ _c_y:
 _c_z:
         dw      0b0111001010100111;
 
+interpret_error:
+        dm      "PARSE ERROR: ";
+interpret_error_end:
+        nop;
 test_str:
         dm      "HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD ASDF";
 
@@ -1388,6 +1392,7 @@ input_buffer:
 
 // Scratch
 
+        dm      "asdf";
 //        dm      "1 2 and 7 or 2 xor 0 invert";
 //        dm      "char :";
 //        dm      "immediate";
@@ -1403,32 +1408,32 @@ input_buffer:
 //        dm      ": / /mod swap drop ;";
 //        dm      ": mod /mod drop ;";
 
-        dm      ": '\\n' 10 ;";
-
-        dm      ": bl 32 ;";
-
-        dm      ": space bl emit ;";
-
-        dm      ": true -1 ;";              // 0xFFFF, or all 1s
-
-        dm      ": false 0 ;";
-
-        dm      ": not invert ;";
-
-        dm      ": literal immediate";
-        dm      "   ' lit ,";
-        dm      "   ,";
-        dm      ";";
-
-        dm      ": ':' [ char : ] literal ;"; // do we need ] here?
-        dm      ": ';' [ char ; ] literal ;";
-        dm      ": '(' [ char ( ] literal ;";
-        dm      ": ')' [ char ) ] literal ;";
-        dm      ": '\"' [ char \" ] literal ;";
-        dm      ": 'A' [ char A ] literal ;";
-        dm      ": '0' [ char 0 ] literal ;";
-        dm      ": '-' [ char - ] literal ;";
-        dm      ": '.' [ char . ] literal ;";
+//        dm      ": '\\n' 10 ;";
+//
+//        dm      ": bl 32 ;";
+//
+//        dm      ": space bl emit ;";
+//
+//        dm      ": true -1 ;";              // 0xFFFF, or all 1s
+//
+//        dm      ": false 0 ;";
+//
+//        dm      ": not invert ;";
+//
+//        dm      ": literal immediate";
+//        dm      "   ' lit ,";
+//        dm      "   ,";
+//        dm      ";";
+//
+//        dm      ": ':' [ char : ] literal ;"; // do we need ] here?
+//        dm      ": ';' [ char ; ] literal ;";
+//        dm      ": '(' [ char ( ] literal ;";
+//        dm      ": ')' [ char ) ] literal ;";
+//        dm      ": '\"' [ char \" ] literal ;";
+//        dm      ": 'A' [ char A ] literal ;";
+//        dm      ": '0' [ char 0 ] literal ;";
+//        dm      ": '-' [ char - ] literal ;";
+//        dm      ": '.' [ char . ] literal ;";
 
 // Test
 
