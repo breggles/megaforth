@@ -81,12 +81,13 @@ _prn_chr:
         push    r2;                     // y
         push    r1;                     // x
         push    r0;                     // char
+        ld.b    r3,#'Z';
+        cmp     r3,r0;
+        bcc     _prn_chr_in_range;
+        ld.b    r3,#0x20;               // 0x20 = 'a' - 'A', the assumption being it's a lower case char
+        sub     r0,r3;
+_prn_chr_in_range:
         ld.b    r3,#' ';
-        cmp     r0,r3;
-        bne     _prn_chr_not_space;
-        ld.b    r0,#'@';                // just before A, we'll "relocate" space here
-_prn_chr_not_space:
-        ld.b    r3,#'@';
         sub     r0,r3;
         lsl     r0,#1;                  // char encoding is 2 bytes wide
         ld.w    r3,#_c_space;
@@ -782,6 +783,18 @@ interpret_nan:
         ld.w    r2,#interpret_error;
         ld.b    r0,#(interpret_error_end-interpret_error-1); // -1 cuz MP strings are 0-terminated
         jsr     _prn_str;
+        ld.w    r0,(currkey);
+        move    r2,r0;
+        ld.w    r3,#input_buffer;
+        sub     r0,r3;
+        ld.b    r1,#40;
+        cmp     r0,r1;
+        ble     interpret_lt40;
+        ld.b    r0,#40;
+interpret_lt40:
+        sub     r2,r0;
+        jsr     _prn_str;
+        jmp     _halt;
 
 char_code:
         jsr     _word;
@@ -1338,57 +1351,121 @@ cur_out_pos:
 
 _c_space:
         dw      0b0000000000000000;
-_c_a:
+_c_exclamation_mark:
+        dw      0b0010000010010010;
+_c_double_quote:
+        dw      0b0000000000101101;
+_c_hash:
+        dw      0b0101111101111101;
+_c_dollar:
+        dw      0b1111111111111111;
+_c_percent:
+        dw      0b1111111111111111;
+_c_ampersand:
+        dw      0b1111111111111111;
+_c_single_quote:
+        dw      0b1111111111111111;
+_c_open_parenthesis:
+        dw      0b1111111111111111;
+_c_close_parenthesis:
+        dw      0b1111111111111111;
+_c_asterisk:
+        dw      0b1111111111111111;
+_c_plus:
+        dw      0b1111111111111111;
+_c_comma:
+        dw      0b1111111111111111;
+_c_hyphen:
+        dw      0b1111111111111111;
+_c_period:
+        dw      0b1111111111111111;
+_c_slash:
+        dw      0b1111111111111111;
+_c_0:
+        dw      0b0111101101101111;
+_c_1:
+        dw      0b0111010010011010;
+_c_2:
+        dw      0b0111001010100011;
+_c_3:
+        dw      0b0011100010100011;
+_c_4:
+        dw      0b0100100111101101;
+_c_5:
+        dw      0b0011100011001111;
+_c_6:
+        dw      0b0010101011001110;
+_c_7:
+        dw      0b0010101010100111;
+_c_8:
+        dw      0b0010101010101010;
+_c_9:
+        dw      0b0011100110101010;
+_c_colon:
+        dw      0b0000010000010000;
+_c_semicolon:
+        dw      0b1111111111111111;
+_c_less_than:
+        dw      0b1111111111111111;
+_c_equals:
+        dw      0b1111111111111111;
+_c_greater_than:
+        dw      0b1111111111111111;
+_c_question_mark:
+        dw      0b1111111111111111;
+_c_at:
+        dw      0b1111111111111111;
+_c_A:
         dw      0b0101101111101010;
-_c_b:
+_c_B:
         dw      0b0011101011101011;
-_c_c:
+_c_C:
         dw      0b0010101001101010;
-_c_d:
+_c_D:
         dw      0b0011101101101011;
-_c_e:
+_c_E:
         dw      0b0111001111001111;
-_c_f:
+_c_F:
         dw      0b0001001111001111;
-_c_g:
+_c_G:
         dw      0b0110101001001110;
-_c_h:
+_c_H:
         dw      0b0101101111101101;
-_c_i:
+_c_I:
         dw      0b0010010010010010;
-_c_j:
+_c_J:
         dw      0b0010101100100100;
-_c_k:
+_c_K:
         dw      0b0101101011101101;
-_c_l:
+_c_L:
         dw      0b0111001001001001;
-_c_m:
+_c_M:
         dw      0b0101101101111101;
-_c_n:
+_c_N:
         dw      0b0101101101101011;
-_c_o:
+_c_O:
         dw      0b0010101101101010;
-_c_p:
+_c_P:
         dw      0b0001001011101011;
-_c_q:
+_c_Q:
         dw      0b0110111101101010;
-_c_r:
+_c_R:
         dw      0b0101101011101011;
-_c_s:
+_c_S:
         dw      0b0011100010001110;
-_c_t:
+_c_T:
         dw      0b0010010010010111;
-_c_u:
+_c_U:
         dw      0b0111101101101101;
-_c_v:
+_c_V:
         dw      0b0010111101101101;
-_c_w:
+_c_W:
         dw      0b0101111101101101;
-_c_x:
+_c_X:
         dw      0b0101101010101101;
-_c_y:
+_c_Y:
         dw      0b0010010111101101;
-_c_z:
+_c_Z:
         dw      0b0111001010100111;
 
 interpret_error:
