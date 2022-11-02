@@ -1403,7 +1403,7 @@ input_buffer:
 
 // Scratch
 
-        dm      "9 10 16 base ! A 1A 2a";
+        dm      "9 10 16 base ! A 1A 3 base ! 2 10 3 2a";
 //        dm      "1 2 and 7 or 2 xor 0 invert";
 //        dm      "char :";
 //        dm      "immediate";
