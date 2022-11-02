@@ -293,7 +293,13 @@ tick_code:
 
 branch_code:
         ld.w    r0,(r3);
-        add     r3,r0;      // add 2 more?
+        add     r3,r0;
+        jmp     _next;
+
+zerobranch_code:
+        pop     r0;
+        beq     branch_code;
+        addq    r3,#2;
         jmp     _next;
 
 plus_code:
@@ -566,7 +572,7 @@ _number:
         st.w    r1_store,r1;
         st.w    r3_store,r3;
         clr     r0;
-        push    r0;            // 0 = pos, FFFF = neg
+        push    r0;            // 0 = pos, FFFF = neg TODO can use PS U bit for this?
         ld.w    r2,(sp+6);     // string ptr
         ld.b    r1,(r2);       // str ascii
         ld.b    r0,#'-';
@@ -959,7 +965,7 @@ decr2:
 
 tick_header:
         dw      decr2_header;
-        db      4;
+        db      1;
         dm      "'";
 tick:
         dw      tick_code;
@@ -971,8 +977,15 @@ branch_header:
 branch:
         dw      branch_code;
 
-plus_header:
+zerobranch_header:
         dw      branch_header;
+        db      7;
+        dm      "0branch";
+zerobranch:
+        dw      zerobranch_code;
+
+plus_header:
+        dw      zerobranch_header;
         db      1;
         dm      "+";
 plus:
@@ -1364,7 +1377,7 @@ _c_percent:
 _c_ampersand:
         dw      0b1111111111111111;
 _c_single_quote:
-        dw      0b1111111111111111;
+        dw      0b0000000000010010;
 _c_open_parenthesis:
         dw      0b1111111111111111;
 _c_close_parenthesis:
@@ -1479,7 +1492,7 @@ input_buffer:
 
 // Scratch
 
-        dm      "9 10 16 base ! A 1A 3 base ! 2 10 3 2a";
+//        dm      "9 10 16 base ! A 1A 3 base ! 2 10 3 2a";
 //        dm      "1 2 and 7 or 2 xor 0 invert";
 //        dm      "char :";
 //        dm      "immediate";
@@ -1506,25 +1519,33 @@ input_buffer:
 //        dm      ": false 0 ;";
 //
 //        dm      ": not invert ;";
-//
-//        dm      ": literal immediate";
-//        dm      "   ' lit ,";
-//        dm      "   ,";
-//        dm      ";";
-//
-//        dm      ": ':' [ char : ] literal ;"; // do we need ] here?
-//        dm      ": ';' [ char ; ] literal ;";
-//        dm      ": '(' [ char ( ] literal ;";
-//        dm      ": ')' [ char ) ] literal ;";
-//        dm      ": '\"' [ char \" ] literal ;";
-//        dm      ": 'A' [ char A ] literal ;";
-//        dm      ": '0' [ char 0 ] literal ;";
-//        dm      ": '-' [ char - ] literal ;";
-//        dm      ": '.' [ char . ] literal ;";
+
+        dm      ": literal immediate";
+        dm      "   ' lit ,";
+        dm      "   ,";
+        dm      ";";
+
+        dm      ": ':' [ char : ] literal ;"; // do we need ] here? (testing says 'non')
+        dm      ": ';' [ char ; ] literal ;";
+        dm      ": '(' [ char ( ] literal ;";
+        dm      ": ')' [ char ) ] literal ;";
+        dm      ": '\"' [ char \" ] literal ;";
+        dm      ": 'A' [ char A ] literal ;";
+        dm      ": '0' [ char 0 ] literal ;";
+        dm      ": '-' [ char - ] literal ;";
+        dm      ": '.' [ char . ] literal ;";
+
+        // NB: control structures only work in compile mode
+
+        dm      ": if immediate";
+        dm      "   ' 0branch ,'";
+        dm      "   here @";
+        dm      "   0 ,";
+        dm      ";";
 
 // Test
 
-//        dm      "'\"'";
+        dm      "'\"'";
 //        dm      "0 not";
 //        dm      "space 65 emit";
 //        dm      "4 2 mod";
