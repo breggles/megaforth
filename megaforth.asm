@@ -81,12 +81,12 @@ _prn_chr:
         push    r2;                     // y
         push    r1;                     // x
         push    r0;                     // char
-        ld.b    r3,#0x20;               // space ascii
+        ld.b    r3,#' ';
         cmp     r0,r3;
         bne     _prn_chr_not_space;
-        ld.b    r0,#0x40;
+        ld.b    r0,#'@';                // just before A, we'll "relocate" space here
 _prn_chr_not_space:
-        ld.b    r3,#0x40;
+        ld.b    r3,#'@';
         sub     r0,r3;
         lsl     r0,#1;                  // char encoding is 2 bytes wide
         ld.w    r3,#_c_space;
@@ -521,26 +521,26 @@ _word:
         st.w    r3_store,r3;
 word_2:
         jsr     _key;
-        ld.b    r1,#0x20;       // Space
+        ld.b    r1,#' ';
         cmp     r0,r1;
         beq     word_2;
-        ld.b    r1,#0x0a;       // Newline
+        ld.b    r1,#'\n';
         cmp     r0,r1;
         beq     word_2;
-        ld.b    r1,#0;          // Null
+        ld.b    r1,#0;
         cmp     r0,r1;
         beq     _halt;
         ld.w    r3,#word_buffer;
 word_1:
         st.b    (r3++),r0;
         jsr     _key;
-        ld.b    r1,#0x20;       // Space
+        ld.b    r1,#' ';
         cmp     r0,r1;
         beq     word_3;
-        ld.b    r1,#0x0a;       // Newline
+        ld.b    r1,#'\n';
         cmp     r0,r1;
         beq     word_3;
-        ld.b    r1,#0;          // Null
+        ld.b    r1,#0;
         cmp     r0,r1;
         beq     word_3;
         jmp     word_1;
@@ -558,23 +558,20 @@ _halt:
 
 number_code:
         // Returns number of unparsed characters on top of stack followed by parsed number
-        //TODO: bases > 10, need to parse a - z
-        //TODO: error handling
+        //TODO: lower case letters for base > 10?
         jsr     _number;
         jmp     _next;
 _number:
         st.w    r1_store,r1;
         st.w    r3_store,r3;
         clr     r0;
-        addq    r0,#1;
-        push    r0;
+        push    r0;            // 0 = pos, FFFF = neg
         ld.w    r2,(sp+6);     // string ptr
         ld.b    r1,(r2);       // str ascii
-        ld.b    r0,#0x2d;       // hyphen
+        ld.b    r0,#'-';
         cmp     r0,r1;
         bne     number_pos;
-        clr     r0;
-        addq    r0,#-1;
+        inv     r0;
         st.w    (sp+0),r0;
         ld.w    r0,(sp+4);     //string length
         addq    r0,#-1;
@@ -584,27 +581,41 @@ _number:
 number_pos:
         clr     r3;
 number_loop:
-        ld.b    r1,(r2);       // str ascii
-        addq    r2,#1;
+        ld.b    r1,(r2++);       // str ascii
         st.w    (sp+6),r2;
-        ld.w    r0,#0x30;      // ascii code for 0
-        sub     r1,r0;
+        ld.b    r0,#'0';
+        sub     r1,r0;           // < '0'?
+        bcs     number_end;
+        ld.b    r0,#10;           // < '10'?
+        cmp     r1,r0;
+        bcs     number_digit;
+        ld.b    r0,#17;
+        sub     r1,r0;           // < 'A'? (17 = 'A' - '0')
+        bcs     number_end;
+        ld.b    r0,#10;
+        add     r1,r0;
+number_digit:
+        ld.b    r0,base_var;
+        cmp     r1,r0;
+        bge     number_end;
         add     r3,r1;
-        ld.w    r0,(sp+4);     //string length
-        addq    r0,#-1;
-        st.w    (sp+4),r0;
+        ld.w    r1,(sp+4);     //string length
+        addq    r1,#-1;
+        st.w    (sp+4),r1;
         beq     number_end;
-        move    r0,r3;
-        ld.b    r1,base_var;
+        move    r1,r3;
         mulu;
         move    r3,r2;
         ld.w    r2,(sp+6);     // string ptr
         jmp     number_loop;
 number_end:
         pop     r0;
-        move    r1,r3;
-        muls;
-        st.w    (sp+4),r2;     // parsed number
+        beq     number_pos_2;
+        ld.b    r0,#0;
+        sub     r0,r3;
+        move    r3,r0;
+number_pos_2:
+        st.w    (sp+4),r3;     // parsed number
         ld.w    r1,r1_store;
         ld.w    r3,r3_store;
         ret;
@@ -1392,7 +1403,7 @@ input_buffer:
 
 // Scratch
 
-        dm      "asdf";
+        dm      "9 10 16 base ! A 1A 2a";
 //        dm      "1 2 and 7 or 2 xor 0 invert";
 //        dm      "char :";
 //        dm      "immediate";
@@ -1437,7 +1448,7 @@ input_buffer:
 
 // Test
 
-        dm      "'\"'";
+//        dm      "'\"'";
 //        dm      "0 not";
 //        dm      "space 65 emit";
 //        dm      "4 2 mod";
