@@ -780,9 +780,8 @@ interpret_next:
         jmp     _next;
 interpret_nan:
         ld.w    r2,#interpret_error;
-        ld.b    r0,interpret_error_end-interpret_error;
+        ld.b    r0,#(interpret_error_end-interpret_error-1); // -1 cuz MP strings are 0-terminated
         jsr     _prn_str;
-        nop;
 
 char_code:
         jsr     _word;
