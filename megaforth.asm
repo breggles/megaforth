@@ -1558,9 +1558,17 @@ input_buffer:
         dm      "   swap !";
         dm      ";";
 
+        dm      ": else immediate";
+        dm      "   ' branch ,";
+        dm      "   here @";
+        dm      "   0 ,";
+        dm      "   swap dup";
+        dm      "   here @ swap -";
+        dm      "   swap !";
+        dm      ";";
 // Test
 
-        dm      ": test 0 if 3 then 4 ;";
+        dm      ": test 1 if 3 else 5 then 4 ;";
         dm      "test";
 //        dm      "'\"'";
 //        dm      "0 not";
