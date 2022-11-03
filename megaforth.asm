@@ -231,11 +231,10 @@ twodrop_code:
         jmp     _next;
 
 twodup_code:
-        jsr     _twodup;
-        jmp     _next;
-_twodup:
         ld.w    r0,(sp+0);
         ld.w    r2,(sp+2);
+        push    r2;
+        push    r0;
         ret;
 
 twoswap_code:
@@ -1566,9 +1565,18 @@ input_buffer:
         dm      "   here @ swap -";
         dm      "   swap !";
         dm      ";";
+
+        dm      ": begin immediate";
+        dm      "   here @";
+        dm      ";";
+
+        dm      ": until immediate";
+        dm      "   ' 0branch ,";
+        dm      "   here @ - ,";
+        dm      ";";
 // Test
 
-        dm      ": test 1 if 3 else 5 then 4 ;";
+        dm      ": test 5 begin dup 1- dup until ;";
         dm      "test";
 //        dm      "'\"'";
 //        dm      "0 not";
