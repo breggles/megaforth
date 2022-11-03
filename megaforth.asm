@@ -1527,13 +1527,21 @@ input_buffer:
         dm      ";";
 
         dm      ": ':' [ char : ] literal ;"; // do we need ] here? (testing says 'non')
+
         dm      ": ';' [ char ; ] literal ;";
+
         dm      ": '(' [ char ( ] literal ;";
+
         dm      ": ')' [ char ) ] literal ;";
+
         dm      ": '\"' [ char \" ] literal ;";
+
         dm      ": 'A' [ char A ] literal ;";
+
         dm      ": '0' [ char 0 ] literal ;";
+
         dm      ": '-' [ char - ] literal ;";
+
         dm      ": '.' [ char . ] literal ;";
 
         // NB: control structures only work in compile mode
