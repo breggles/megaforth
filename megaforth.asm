@@ -313,8 +313,8 @@ plus_code:
 minus_code:
         pop     r0;
         pop     r2;
-        sub     r0,r2;
-        push    r0;
+        sub     r2,r0;
+        push    r2;
         jmp     _next;
 
 mul_code:
@@ -1521,28 +1521,28 @@ input_buffer:
 //
 //        dm      ": not invert ;";
 
-        dm      ": literal immediate";
-        dm      "   ' lit ,";
-        dm      "   ,";
-        dm      ";";
-
-        dm      ": ':' [ char : ] literal ;"; // do we need ] here? (testing says 'non')
-
-        dm      ": ';' [ char ; ] literal ;";
-
-        dm      ": '(' [ char ( ] literal ;";
-
-        dm      ": ')' [ char ) ] literal ;";
-
-        dm      ": '\"' [ char \" ] literal ;";
-
-        dm      ": 'A' [ char A ] literal ;";
-
-        dm      ": '0' [ char 0 ] literal ;";
-
-        dm      ": '-' [ char - ] literal ;";
-
-        dm      ": '.' [ char . ] literal ;";
+//        dm      ": literal immediate";
+//        dm      "   ' lit ,";
+//        dm      "   ,";
+//        dm      ";";
+//
+//        dm      ": ':' [ char : ] literal ;"; // do we need ] here? (testing says 'non')
+//
+//        dm      ": ';' [ char ; ] literal ;";
+//
+//        dm      ": '(' [ char ( ] literal ;";
+//
+//        dm      ": ')' [ char ) ] literal ;";
+//
+//        dm      ": '\"' [ char \" ] literal ;";
+//
+//        dm      ": 'A' [ char A ] literal ;";
+//
+//        dm      ": '0' [ char 0 ] literal ;";
+//
+//        dm      ": '-' [ char - ] literal ;";
+//
+//        dm      ": '.' [ char . ] literal ;";
 
         // NB: control structures only work in compile mode
 
@@ -1553,12 +1553,16 @@ input_buffer:
         dm      ";";
 
         dm      ": then immediate";
-        dm      "   here @ swap !";
+        dm      "   dup";
+        dm      "   here @ swap -";
+        dm      "   swap !";
         dm      ";";
 
 // Test
 
-        dm      "'\"'";
+        dm      ": test 0 if 3 then 4 ;";
+        dm      "test";
+//        dm      "'\"'";
 //        dm      "0 not";
 //        dm      "space 65 emit";
 //        dm      "4 2 mod";
