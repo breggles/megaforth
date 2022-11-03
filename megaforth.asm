@@ -3,6 +3,7 @@
 // TODO Try to compile jonesforth.f
 // TODO Better number parsing
 // TODO Implement "hidden"? Prevents recursive definitions
+// TODO investigate absolute branching
 
 include "Megaprocessor_defs.asm";
 
@@ -1538,9 +1539,13 @@ input_buffer:
         // NB: control structures only work in compile mode
 
         dm      ": if immediate";
-        dm      "   ' 0branch ,'";
+        dm      "   ' 0branch ,";
         dm      "   here @";
         dm      "   0 ,";
+        dm      ";";
+
+        dm      ": then immediate";
+        dm      "   here @ swap !";
         dm      ";";
 
 // Test
