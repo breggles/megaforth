@@ -531,9 +531,6 @@ word_2:
         ld.b    r1,#' ';
         cmp     r0,r1;
         beq     word_2;
-        ld.b    r1,#'\n';
-        cmp     r0,r1;
-        beq     word_2;
         ld.b    r1,#0;
         cmp     r0,r1;
         beq     word_halt;
@@ -542,9 +539,6 @@ word_1:
         st.b    (r3++),r0;
         jsr     _key;
         ld.b    r1,#' ';
-        cmp     r0,r1;
-        beq     word_3;
-        ld.b    r1,#'\n';
         cmp     r0,r1;
         beq     word_3;
         ld.b    r1,#0;
@@ -1605,6 +1599,11 @@ input_buffer:
 //        dm      ": '-' [ char - ] literal ;";
 //
 //        dm      ": '.' [ char . ] literal ;";
+
+        dm      ": recurse immediate";
+        dm      "   latest @";
+        dm      "   >cfa ,";
+        dm      ";";
 
         // NB: control structures only work in compile mode
 
