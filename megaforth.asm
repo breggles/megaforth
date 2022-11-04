@@ -622,7 +622,6 @@ number_pos_2:
         ret;
 
 find_code:
-        //TODO: implement HIDDEN
         pop     r2;
         pop     r0;
         jsr     _find;
@@ -641,7 +640,7 @@ find_loop:
         ld.w    r0,(sp+4);          // string length
         addq    r2,#2;              // addr word length
         ld.b    r1,(r2++);          // word length
-        ld.b    r3,#_F_LENMASK;
+        ld.b    r3,#(_F_LENMASK|_F_HIDDEN);     // slight of hand, means hidden words won't be found as their length won't match
         and     r1,r3;
         cmp     r0,r1;              // cmp lengths
         bne     find_prev;
@@ -1426,19 +1425,19 @@ _c_ampersand:
 _c_single_quote:
         dw      0b0000000000010010;
 _c_open_parenthesis:
-        dw      0b1111111111111111;
+        dw      0b0100010010010100;
 _c_close_parenthesis:
-        dw      0b1111111111111111;
+        dw      0b0001010010010001;
 _c_asterisk:
         dw      0b1111111111111111;
 _c_plus:
         dw      0b1111111111111111;
 _c_comma:
-        dw      0b1111111111111111;
+        dw      0b0001010000000000;
 _c_hyphen:
-        dw      0b1111111111111111;
+        dw      0b0000000111000000;
 _c_period:
-        dw      0b1111111111111111;
+        dw      0b0010000000000000;
 _c_slash:
         dw      0b1111111111111111;
 _c_0:
@@ -1468,7 +1467,7 @@ _c_semicolon:
 _c_less_than:
         dw      0b1111111111111111;
 _c_equals:
-        dw      0b1111111111111111;
+        dw      0b0000111000111000;
 _c_greater_than:
         dw      0b1111111111111111;
 _c_question_mark:
@@ -1539,7 +1538,7 @@ input_buffer:
 
 // Scratch
 
-//        dm      "hide latest";
+//        dm      "latest latest";
 //        dm      "latest @ hidden";
 //        dm      "9 10 16 base ! A 1A 3 base ! 2 10 3 2a";
 //        dm      "1 2 and 7 or 2 xor 0 invert";
