@@ -1520,18 +1520,18 @@ input_buffer:
 //
 //        dm      ": not invert ;";
 
-//        dm      ": literal immediate";
-//        dm      "   ' lit ,";
-//        dm      "   ,";
-//        dm      ";";
-//
+        dm      ": literal immediate";
+        dm      "   ' lit ,";
+        dm      "   ,";
+        dm      ";";
+
 //        dm      ": ':' [ char : ] literal ;"; // do we need ] here? (testing says 'non')
 //
 //        dm      ": ';' [ char ; ] literal ;";
 //
-//        dm      ": '(' [ char ( ] literal ;";
-//
-//        dm      ": ')' [ char ) ] literal ;";
+        dm      ": '(' [ char ( ] literal ;";
+
+        dm      ": ')' [ char ) ] literal ;";
 //
 //        dm      ": '\"' [ char \" ] literal ;";
 //
@@ -1574,9 +1574,25 @@ input_buffer:
         dm      "   ' 0branch ,";
         dm      "   here @ - ,";
         dm      ";";
+
+        dm      ": ( immediate";
+        dm      "   1";
+        dm      "   begin";
+        dm      "   key";
+        dm      "   dup '(' = if";
+        dm      "       drop";
+        dm      "       1+";
+        dm      "   else";
+        dm      "       ')' = if";
+        dm      "           1-";
+        dm      "       then";
+        dm      "   then";
+        dm      "   dup 0 = until";
+        dm      "   drop";
+        dm      ";";
 // Test
 
-        dm      ": test 5 begin dup 1- dup until ;";
+        dm      ": test ( -- ) 5 begin dup 1- dup 0 = until ;";
         dm      "test";
 //        dm      "'\"'";
 //        dm      "0 not";
