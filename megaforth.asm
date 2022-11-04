@@ -536,7 +536,7 @@ word_2:
         beq     word_2;
         ld.b    r1,#0;
         cmp     r0,r1;
-        beq     _halt;
+        beq     word_halt;
         ld.w    r3,#word_buffer;
 word_1:
         st.b    (r3++),r0;
@@ -558,6 +558,11 @@ word_3:
         ld.w    r3,r3_store;
         ld.w    r1,r1_store;
         ret;
+word_halt:
+        ld.w    r2,#eoi_msg;
+        ld.b    r0,#(eoi_msg_end-eoi_msg-1); // -1 cuz MP strings are 0-terminated
+        jsr     _prn_str;
+        jmp     _halt;
 
 _halt:
         nop;
@@ -1536,6 +1541,10 @@ _c_Z:
 interpret_error:
         dm      "PARSE ERROR: ";
 interpret_error_end:
+        nop;
+eoi_msg:
+        dm      "EOI";
+eoi_msg_end:
         nop;
 test_str:
         dm      "HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD HELLO WORLD ASDF";
