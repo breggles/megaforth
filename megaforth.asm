@@ -9,6 +9,7 @@ include "Megaprocessor_defs.asm";
 
 RETURN_STACK        equ 0x6000;     // totally made up number, feel free to change
 
+_F_HIDDEN           equ 0x20;
 _F_IMMED            equ 0x80;
 _F_LENMASK          equ 0x1f;
 
@@ -344,8 +345,7 @@ equals_code:
         pop     r2;
         sub     r0,r2;          // 0 is falsy, all-1s is truthy
         beq     equals_equal;
-        clr     r0;
-        addq    r0,#-1;
+        ld.b    r0,#-1;
 equals_equal:
         inv     r0;
         push    r0;
@@ -356,8 +356,7 @@ notequals_code:
         pop     r2;
         sub     r0,r2;
         beq     notequals_equal;
-        clr     r0;
-        addq    r0,#-1;
+        ld.b    r0,#-1;
 notequals_equal:
         push    r0;
         jmp     _next;
@@ -370,8 +369,7 @@ lessthan_code:
         clr     r0;
         jmp     lessthan_ret;
 lessthan_lt:
-        clr     r0;
-        addq    r0,#-1;
+        ld.b    r0,#-1;
 lessthan_ret:
         push    r0;
         jmp     _next;
@@ -384,8 +382,7 @@ greaterthan_code:
         clr     r0;
         jmp     greaterthan_ret;
 greaterthan_gt:
-        clr     r0;
-        addq    r0,#-1;
+        ld.b    r0,#-1;
 greaterthan_ret:
         push    r0;
         jmp     _next;
@@ -398,8 +395,7 @@ lessthanorequal_code:
         clr     r0;
         jmp     lessthanorequal_ret;
 lessthanorequal_lt:
-        clr     r0;
-        addq    r0,#-1;
+        ld.b    r0,#-1;
 lessthanorequal_ret:
         push    r0;
         jmp     _next;
@@ -412,8 +408,7 @@ greaterthanorequal_code:
         clr     r0;
         jmp     greaterthanorequal_ret;
 greaterthanorequal_gt:
-        clr     r0;
-        addq    r0,#-1;
+        ld.b    r0,#-1;
 greaterthanorequal_ret:
         push    r0;
         jmp     _next;
@@ -820,10 +815,31 @@ immediate_code:
         pop     r1;
         jmp     _next;
 
+hidden_code:
+        pop     r2;             // dictionary entry ptr
+        push    r1;
+        addq    r2,#2;          // point to name/flags byte
+        ld.b    r0,(r2);
+        ld.b    r1,#_F_HIDDEN;
+        xor     r0,r1;
+        st.b    (r2),r0;
+        pop     r1;
+        jmp     _next;
+
 // Constants
 
 rz_code:
         ld.w    r0,#RETURN_STACK;
+        push    r0;
+        jmp     _next;
+
+f_hidden_code:
+        ld.w    r0,#_F_HIDDEN;
+        push    r0;
+        jmp     _next;
+
+f_immed_code:
+        ld.w    r0,#_F_IMMED;
         push    r0;
         jmp     _next;
 
@@ -1236,10 +1252,17 @@ immediate_header:
 immediate:
         dw      immediate_code;
 
+hidden_header:
+        dw      immediate_header;
+        db      6;
+        dm      "hidden";
+hidden:
+        dw      hidden_code;
+
 // Built-in Words
 
 double_header:
-        dw      immediate_header;
+        dw      hidden_header;
         db      6;
         dm      "double";
 double:
@@ -1292,8 +1315,22 @@ rz_header:
 rz:
         dw      rz_code;
 
-f_lenmask_header:
+f_hidden_header:
         dw      rz_header;
+        db      8;
+        dm      "f_hidden";
+f_hidden:
+        dw      f_hidden_code;
+
+f_immed_header:
+        dw      f_hidden_header;
+        db      7;
+        dm      "f_immed";
+f_immed:
+        dw      f_immed_code;
+
+f_lenmask_header:
+        dw      f_immed_header;
         db      9;
         dm      "f_lenmask";
 f_lenmask:
@@ -1492,6 +1529,7 @@ input_buffer:
 
 // Scratch
 
+        dm      "latest @ hidden";
 //        dm      "9 10 16 base ! A 1A 3 base ! 2 10 3 2a";
 //        dm      "1 2 and 7 or 2 xor 0 invert";
 //        dm      "char :";
