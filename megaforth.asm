@@ -1,9 +1,8 @@
-// TODO Error handling - need figure out MP error system
-// TODO Implement more primitives
-// TODO Try to compile jonesforth.f
-// TODO Better number parsing
+// TODO Error handling - try to figure out MP error system
 // TODO Implement "hidden"? Prevents recursive definitions
-// TODO investigate absolute branching
+// TODO investigate "absolute" branching
+// TODO replace rx_store with storing on stack, as faster
+// TODO put forth code/input_buffer at bottom of available space, once it's compiled it can be overriden
 
 include "Megaprocessor_defs.asm";
 
@@ -1293,6 +1292,7 @@ colon:
         dw      _docol;
         dw      word,create;
         dw      lit,_docol,comma;
+        dw      latest,fetch,hidden;  // could create return new word addr, so we don't have to latest,fetch?
         dw      rbrac;
         dw      exit;
 
@@ -1303,6 +1303,7 @@ semicolon_header:
 semicolon:
         dw      _docol;
         dw      lit,exit,comma;
+        dw      latest,fetch,hidden;
         dw      lbrac;
         dw      exit;
 
@@ -1538,7 +1539,7 @@ input_buffer:
 
 // Scratch
 
-        dm      "hide latest";
+//        dm      "hide latest";
 //        dm      "latest @ hidden";
 //        dm      "9 10 16 base ! A 1A 3 base ! 2 10 3 2a";
 //        dm      "1 2 and 7 or 2 xor 0 invert";
@@ -1558,7 +1559,7 @@ input_buffer:
 
 //        dm      ": '\\n' 10 ;";
 //
-//        dm      ": bl 32 ;";
+        dm      ": bl 32 ;";
 //
 //        dm      ": space bl emit ;";
 //
