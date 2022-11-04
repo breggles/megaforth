@@ -344,7 +344,8 @@ equals_code:
         pop     r2;
         sub     r0,r2;          // 0 is falsy, all-1s is truthy
         beq     equals_equal;
-        ld.b    r0,#-1;
+        clr     r0;
+        addq    r0,#-1;
 equals_equal:
         inv     r0;
         push    r0;
@@ -355,7 +356,8 @@ notequals_code:
         pop     r2;
         sub     r0,r2;
         beq     notequals_equal;
-        ld.b    r0,#-1;
+        clr     r0;
+        addq    r0,#-1;
 notequals_equal:
         push    r0;
         jmp     _next;
@@ -368,7 +370,8 @@ lessthan_code:
         clr     r0;
         jmp     lessthan_ret;
 lessthan_lt:
-        ld.b    r0,#-1;
+        clr     r0;
+        addq    r0,#-1;
 lessthan_ret:
         push    r0;
         jmp     _next;
@@ -381,7 +384,8 @@ greaterthan_code:
         clr     r0;
         jmp     greaterthan_ret;
 greaterthan_gt:
-        ld.b    r0,#-1;
+        clr     r0;
+        addq    r0,#-1;
 greaterthan_ret:
         push    r0;
         jmp     _next;
@@ -394,7 +398,8 @@ lessthanorequal_code:
         clr     r0;
         jmp     lessthanorequal_ret;
 lessthanorequal_lt:
-        ld.b    r0,#-1;
+        clr     r0;
+        addq    r0,#-1;
 lessthanorequal_ret:
         push    r0;
         jmp     _next;
@@ -407,7 +412,8 @@ greaterthanorequal_code:
         clr     r0;
         jmp     greaterthanorequal_ret;
 greaterthanorequal_gt:
-        ld.b    r0,#-1;
+        clr     r0;
+        addq    r0,#-1;
 greaterthanorequal_ret:
         push    r0;
         jmp     _next;
@@ -1463,7 +1469,7 @@ _c_9:
 _c_colon:
         dw      0b0000010000010000;
 _c_semicolon:
-        dw      0b1111111111111111;
+        dw      0b0001010000010000;
 _c_less_than:
         dw      0b1111111111111111;
 _c_equals:
