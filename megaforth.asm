@@ -1566,7 +1566,7 @@ input_buffer:
 
 //        dm      ": '\\n' 10 ;";
 //
-        dm      ": bl 32 ;";
+//        dm      ": bl 32 ;";
 //
 //        dm      ": space bl emit ;";
 //
@@ -1585,15 +1585,15 @@ input_buffer:
 //
 //        dm      ": ';' [ char ; ] literal ;";
 //
-        dm      ": '(' [ char ( ] literal ;";
+//        dm      ": '(' [ char ( ] literal ;";
 
-        dm      ": ')' [ char ) ] literal ;";
+//        dm      ": ')' [ char ) ] literal ;";
 //
 //        dm      ": '\"' [ char \" ] literal ;";
 //
-//        dm      ": 'A' [ char A ] literal ;";
+        dm      ": 'A' [ char A ] literal ;";
 //
-//        dm      ": '0' [ char 0 ] literal ;";
+        dm      ": '0' [ char 0 ] literal ;";
 //
 //        dm      ": '-' [ char - ] literal ;";
 //
@@ -1627,35 +1627,51 @@ input_buffer:
         dm      "   swap !";
         dm      ";";
 
-        dm      ": begin immediate";
-        dm      "   here @";
-        dm      ";";
+//        dm      ": begin immediate";
+//        dm      "   here @";
+//        dm      ";";
+//
+//        dm      ": until immediate";
+//        dm      "   ' 0branch ,";
+//        dm      "   here @ - ,";
+//        dm      ";";
+//
+//        dm      ": ( immediate";
+//        dm      "   1";
+//        dm      "   begin";
+//        dm      "   key";
+//        dm      "   dup '(' = if";
+//        dm      "       drop";
+//        dm      "       1+";
+//        dm      "   else";
+//        dm      "       ')' = if";
+//        dm      "           1-";
+//        dm      "       then";
+//        dm      "   then";
+//        dm      "   dup 0 = until";
+//        dm      "   drop";
+//        dm      ";";
 
-        dm      ": until immediate";
-        dm      "   ' 0branch ,";
-        dm      "   here @ - ,";
-        dm      ";";
-
-        dm      ": ( immediate";
-        dm      "   1";
-        dm      "   begin";
-        dm      "   key";
-        dm      "   dup '(' = if";
-        dm      "       drop";
-        dm      "       1+";
-        dm      "   else";
-        dm      "       ')' = if";
-        dm      "           1-";
-        dm      "       then";
+        dm      ": u.";  // ( u -- )
+        dm      "   base @ /mod";
+        dm      "   ?dup if";
+        dm      "       recurse";
         dm      "   then";
-        dm      "   dup 0 = until";
-        dm      "   drop";
+        dm      "   dup 10 < if";
+        dm      "       '0'";
+        dm      "   else";
+        dm      "       10 -";
+        dm      "       'A'";
+        dm      "   then";
+        dm      "   +";
+        dm      "   emit";
         dm      ";";
 // Test
 
-//        dm      ": test ( -- ) 5 begin dup 1- dup 0 = until ;";
-        dm      ": test 3 recurse ;";
+        dm      ": test 3 base ! 3 u. ;";
         dm      "test";
+//        dm      ": test ( -- ) 5 begin dup 1- dup 0 = until ;";
+//        dm      ": test 3 recurse ;";
 //        dm      "'\"'";
 //        dm      "0 not";
 //        dm      "space 65 emit";
