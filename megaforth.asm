@@ -51,7 +51,7 @@ illegal:
 _start:
 
         // set up data stack
-        ld.w    r0,#EXT_RAM_LEN;
+        ld.w    r0,#EXT_RAM_LEN-1;  // -1 to avoid signed maths confusion
         move    sp,r0;
         st.w    s0_var,r0;
 
@@ -1574,6 +1574,8 @@ input_buffer:
 
 // Scratch
 
+//        dm      "16 base ! 7FF4 8000 <";
+//        db      0;
 //        dm      "latest latest";
 //        dm      "latest @ hidden";
 //        dm      "9 10 16 base ! A 1A 3 base ! 2 10 3 2a";
@@ -1593,11 +1595,11 @@ input_buffer:
 //        dm      ": mod /mod drop ;";
 
 //        dm      ": '\\n' 10 ;";
-//
-//        dm      ": bl 32 ;";
-//
-//        dm      ": space bl emit ;";
-//
+
+        dm      ": bl 32 ;";
+
+        dm      ": space bl emit ;";
+
 //        dm      ": true -1 ;";              // 0xFFFF, or all 1s
 //
 //        dm      ": false 0 ;";
@@ -1659,10 +1661,10 @@ input_buffer:
         dm      "   here @";
         dm      ";";
 
-//        dm      ": until immediate";
-//        dm      "   ' 0branch ,";
-//        dm      "   here @ - ,";
-//        dm      ";";
+        dm      ": until immediate";
+        dm      "   ' 0branch ,";
+        dm      "   here @ - ,";
+        dm      ";";
 
         dm      ": while immediate";
         dm      "   ' 0branch ,";
@@ -1695,7 +1697,7 @@ input_buffer:
 //        dm      "   drop";
 //        dm      ";";
 
-        dm      ": u.";  // ( u -- )
+        dm      ": u."; // ( u -- )
         dm      "   base @ /mod";
         dm      "   ?dup if";
         dm      "       recurse";
@@ -1709,11 +1711,24 @@ input_buffer:
         dm      "   +";
         dm      "   emit";
         dm      ";";
+
+        dm      ": .s"; // ( -- )
+        dm      "   dsp@";
+        dm      "   begin";
+        dm      "       dup s0 @ <";
+        dm      "   while";
+        dm      "       dup @ u.";
+        dm      "       space";
+        dm      "       2+";
+        dm      "   repeat";
+        dm      "   drop";
+        dm      ";";
+
 // Test
 
-        dm      ": test 3 base ! 3 u. ;";
+        dm      ": test 5 begin dup 1- dup 0 = until .s ;"; // ( -- )
         dm      "test";
-//        dm      ": test ( -- ) 5 begin dup 1- dup 0 = until ;";
+//        dm      ": test 3 base ! 3 u. ;";
 //        dm      ": test 3 recurse ;";
 //        dm      "'\"'";
 //        dm      "0 not";
