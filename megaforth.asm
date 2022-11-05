@@ -53,6 +53,7 @@ _start:
         // set up data stack
         ld.w    r0,#EXT_RAM_LEN;
         move    sp,r0;
+        st.w    s0_var,r0;
 
         // set up return stack
         ld.w    r1,#RETURN_STACK;
@@ -872,6 +873,11 @@ here_code:
         push    r0;
         jmp     _next;
 
+s0_code:
+        ld.w    r0,#s0_var;
+        push    r0;
+        jmp     _next;
+
 latest_code:
         ld.w    r0,#latest_var;
         push    r0;
@@ -1384,8 +1390,15 @@ here_header:
 here:
         dw      here_code;
 
-latest_header:
+s0_header:
         dw      here_header;
+        db      2;
+        dm      "s0";
+s0:
+        dw      s0_code;
+
+latest_header:
+        dw      s0_header;
         db      6;
         dm      "latest";
 latest:
@@ -1410,6 +1423,9 @@ base_var:
 
 state_var:
         db      0;          // 0 = executing, non-zero = compiling
+
+s0_var:
+        dw;     // initiallised at start up
 
 latest_var:
         dw      latest_header;
