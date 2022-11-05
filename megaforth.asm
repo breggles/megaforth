@@ -1655,15 +1655,30 @@ input_buffer:
         dm      "   swap !";
         dm      ";";
 
-//        dm      ": begin immediate";
-//        dm      "   here @";
-//        dm      ";";
-//
+        dm      ": begin immediate";
+        dm      "   here @";
+        dm      ";";
+
 //        dm      ": until immediate";
 //        dm      "   ' 0branch ,";
 //        dm      "   here @ - ,";
 //        dm      ";";
-//
+
+        dm      ": while immediate";
+        dm      "   ' 0branch ,";
+        dm      "   here @";
+        dm      "   0 ,";
+        dm      ";";
+
+        dm      ": repeat immediate";
+        dm      "   ' branch ,";
+        dm      "   swap";
+        dm      "   here @ - ,";
+        dm      "   dup";
+        dm      "   here @ swap -";
+        dm      "   swap !";
+        dm      ";";
+
 //        dm      ": ( immediate";
 //        dm      "   1";
 //        dm      "   begin";
