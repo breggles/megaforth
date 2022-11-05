@@ -1591,14 +1591,14 @@ input_buffer:
 
 // Words
 
-//        dm      ": / /mod swap drop ;";
+       dm      ": / /mod swap drop ;";
 //        dm      ": mod /mod drop ;";
 
 //        dm      ": '\\n' 10 ;";
 
-        dm      ": bl 32 ;";
+//         dm      ": bl 32 ;";
 
-        dm      ": space bl emit ;";
+//         dm      ": space bl emit ;";
 
 //        dm      ": true -1 ;";              // 0xFFFF, or all 1s
 //
@@ -1606,10 +1606,10 @@ input_buffer:
 //
 //        dm      ": not invert ;";
 
-        dm      ": literal immediate";
-        dm      "   ' lit ,";
-        dm      "   ,";
-        dm      ";";
+//         dm      ": literal immediate";
+//         dm      "   ' lit ,";
+//         dm      "   ,";
+//         dm      ";";
 
 //        dm      ": ':' [ char : ] literal ;"; // do we need ] here? (testing says 'non')
 //
@@ -1620,11 +1620,11 @@ input_buffer:
 //        dm      ": ')' [ char ) ] literal ;";
 //
 //        dm      ": '\"' [ char \" ] literal ;";
-//
-        dm      ": 'A' [ char A ] literal ;";
-//
-        dm      ": '0' [ char 0 ] literal ;";
-//
+
+//         dm      ": 'A' [ char A ] literal ;";
+
+//         dm      ": '0' [ char 0 ] literal ;";
+
 //        dm      ": '-' [ char - ] literal ;";
 //
 //        dm      ": '.' [ char . ] literal ;";
@@ -1657,29 +1657,29 @@ input_buffer:
         dm      "   swap !";
         dm      ";";
 
-        dm      ": begin immediate";
-        dm      "   here @";
-        dm      ";";
+//         dm      ": begin immediate";
+//         dm      "   here @";
+//         dm      ";";
 
-        dm      ": until immediate";
-        dm      "   ' 0branch ,";
-        dm      "   here @ - ,";
-        dm      ";";
+//         dm      ": until immediate";
+//         dm      "   ' 0branch ,";
+//         dm      "   here @ - ,";
+//         dm      ";";
 
-        dm      ": while immediate";
-        dm      "   ' 0branch ,";
-        dm      "   here @";
-        dm      "   0 ,";
-        dm      ";";
+//         dm      ": while immediate";
+//         dm      "   ' 0branch ,";
+//         dm      "   here @";
+//         dm      "   0 ,";
+//         dm      ";";
 
-        dm      ": repeat immediate";
-        dm      "   ' branch ,";
-        dm      "   swap";
-        dm      "   here @ - ,";
-        dm      "   dup";
-        dm      "   here @ swap -";
-        dm      "   swap !";
-        dm      ";";
+//         dm      ": repeat immediate";
+//         dm      "   ' branch ,";
+//         dm      "   swap";
+//         dm      "   here @ - ,";
+//         dm      "   dup";
+//         dm      "   here @ swap -";
+//         dm      "   swap !";
+//         dm      ";";
 
 //        dm      ": ( immediate";
 //        dm      "   1";
@@ -1697,37 +1697,47 @@ input_buffer:
 //        dm      "   drop";
 //        dm      ";";
 
-        dm      ": u."; // ( u -- )
-        dm      "   base @ /mod";
-        dm      "   ?dup if";
-        dm      "       recurse";
-        dm      "   then";
-        dm      "   dup 10 < if";
-        dm      "       '0'";
-        dm      "   else";
-        dm      "       10 -";
-        dm      "       'A'";
-        dm      "   then";
-        dm      "   +";
-        dm      "   emit";
-        dm      ";";
+//         dm      ": u."; // ( u -- )
+//         dm      "   base @ /mod";
+//         dm      "   ?dup if";
+//         dm      "       recurse";
+//         dm      "   then";
+//         dm      "   dup 10 < if";
+//         dm      "       '0'";
+//         dm      "   else";
+//         dm      "       10 -";
+//         dm      "       'A'";
+//         dm      "   then";
+//         dm      "   +";
+//         dm      "   emit";
+//         dm      ";";
 
-        dm      ": .s"; // ( -- )
-        dm      "   dsp@";
-        dm      "   begin";
-        dm      "       dup s0 @ <";
-        dm      "   while";
-        dm      "       dup @ u.";
-        dm      "       space";
-        dm      "       2+";
-        dm      "   repeat";
-        dm      "   drop";
+//         dm      ": .s"; // ( -- )
+//         dm      "   dsp@";
+//         dm      "   begin";
+//         dm      "       dup s0 @ <";
+//         dm      "   while";
+//         dm      "       dup @ u.";
+//         dm      "       space";
+//         dm      "       2+";
+//         dm      "   repeat";
+//         dm      "   drop";
+//         dm      ";";
+
+        dm      ": uwidth"; // ( u -- width)
+        dm      "   base @ /";
+        dm      "   ?dup if";
+        dm      "       recurse 1+";
+        dm      "   else";
+        dm      "       1";
+        dm      "   then";
         dm      ";";
 
 // Test
 
-        dm      ": test 5 begin dup 1- dup 0 = until .s ;"; // ( -- )
-        dm      "test";
+        dm      "321 uwidth";
+        // dm      ": test 5 begin dup 1- dup 0 = until .s ;"; // ( -- )
+        // dm      "test";
 //        dm      ": test 3 base ! 3 u. ;";
 //        dm      ": test 3 recurse ;";
 //        dm      "'\"'";
