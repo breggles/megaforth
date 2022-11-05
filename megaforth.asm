@@ -1,5 +1,4 @@
 // TODO Error handling - try to figure out MP error system
-// TODO Implement "hidden"? Prevents recursive definitions
 // TODO investigate "absolute" branching
 // TODO replace rx_store with storing on stack, as faster
 // TODO put forth code/input_buffer at bottom of available space, once it's compiled it can be overriden
@@ -1654,7 +1653,8 @@ input_buffer:
         dm      ";";
 // Test
 
-        dm      ": test ( -- ) 5 begin dup 1- dup 0 = until ;";
+//        dm      ": test ( -- ) 5 begin dup 1- dup 0 = until ;";
+        dm      ": test 3 recurse ;";
         dm      "test";
 //        dm      "'\"'";
 //        dm      "0 not";
