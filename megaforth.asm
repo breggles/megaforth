@@ -497,6 +497,11 @@ rspstore_code:
         pop     r1;
         jmp     _next;
 
+dspfetch_code:
+        move    r0,sp;
+        push    r0;
+        jmp     _next;
+
 key_code:
         jsr     _key;
         push    r0;
@@ -1156,8 +1161,15 @@ rspstore_header:
 rspstore:
         dw      rspstore_code;
 
-key_header:
+dspfetch_header:
         dw      rspstore_header;
+        db      4;
+        dm      "dsp@";
+dspfetch:
+        dw      dspfetch_code;
+
+key_header:
+        dw      dspfetch_header;
         db      3;
         dm      "key";
 key:
