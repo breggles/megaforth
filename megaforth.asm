@@ -1745,7 +1745,7 @@ input_buffer:
 
 // Test
 
-            dm      "3 spaces"
+            dm      "3 spaces";
         // dm      "321 uwidth";
         // dm      ": test 5 begin dup 1- dup 0 = until .s ;"; // ( -- )
         // dm      "test";
