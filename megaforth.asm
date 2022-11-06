@@ -1770,9 +1770,11 @@ input_buffer:
         dm      "   then";
         dm      "   u.";
         dm      ";";
+
+        dm      ": . 0 .r space ;";
 // Test
 
-        dm      "-23 4 .r 23 4 .r";
+        dm      "-23 .";
         // dm      "321 uwidth";
         // dm      ": test 5 begin dup 1- dup 0 = until .s ;"; // ( -- )
         // dm      "test";
