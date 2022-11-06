@@ -1591,7 +1591,7 @@ input_buffer:
 
 // Words
 
-       // dm      ": / /mod swap drop ;";
+       dm      ": / /mod swap drop ;";
 //        dm      ": mod /mod drop ;";
 
 //        dm      ": '\\n' 10 ;";
@@ -1600,16 +1600,18 @@ input_buffer:
 
         dm      ": space bl emit ;";
 
+        dm      ": negate 0 swap - ;";
+
 //        dm      ": true -1 ;";              // 0xFFFF, or all 1s
 //
 //        dm      ": false 0 ;";
 //
 //        dm      ": not invert ;";
 
-//         dm      ": literal immediate";
-//         dm      "   ' lit ,";
-//         dm      "   ,";
-//         dm      ";";
+        dm      ": literal immediate";
+        dm      "   ' lit ,";
+        dm      "   ,";
+        dm      ";";
 
 //        dm      ": ':' [ char : ] literal ;"; // do we need ] here? (testing says 'non')
 //
@@ -1621,41 +1623,41 @@ input_buffer:
 //
 //        dm      ": '\"' [ char \" ] literal ;";
 
-//         dm      ": 'A' [ char A ] literal ;";
+        dm      ": 'A' [ char A ] literal ;";
 
-//         dm      ": '0' [ char 0 ] literal ;";
+        dm      ": '0' [ char 0 ] literal ;";
 
-//        dm      ": '-' [ char - ] literal ;";
+        dm      ": '-' [ char - ] literal ;";
 //
 //        dm      ": '.' [ char . ] literal ;";
 
-//         dm      ": recurse immediate";
-//         dm      "   latest @";
-//         dm      "   >cfa ,";
-//         dm      ";";
+        dm      ": recurse immediate";
+        dm      "   latest @";
+        dm      "   >cfa ,";
+        dm      ";";
 
         // NB: control structures only work in compile mode
 
-//         dm      ": if immediate";
-//         dm      "   ' 0branch ,";
-//         dm      "   here @";
-//         dm      "   0 ,";
-//         dm      ";";
+        dm      ": if immediate";
+        dm      "   ' 0branch ,";
+        dm      "   here @";
+        dm      "   0 ,";
+        dm      ";";
 
-//         dm      ": then immediate";
-//         dm      "   dup";
-//         dm      "   here @ swap -";
-//         dm      "   swap !";
-//         dm      ";";
+        dm      ": then immediate";
+        dm      "   dup";
+        dm      "   here @ swap -";
+        dm      "   swap !";
+        dm      ";";
 
-//         dm      ": else immediate";
-//         dm      "   ' branch ,";
-//         dm      "   here @";
-//         dm      "   0 ,";
-//         dm      "   swap dup";
-//         dm      "   here @ swap -";
-//         dm      "   swap !";
-//         dm      ";";
+        dm      ": else immediate";
+        dm      "   ' branch ,";
+        dm      "   here @";
+        dm      "   0 ,";
+        dm      "   swap dup";
+        dm      "   here @ swap -";
+        dm      "   swap !";
+        dm      ";";
 
         dm      ": begin immediate";
         dm      "   here @";
@@ -1697,20 +1699,20 @@ input_buffer:
 //        dm      "   drop";
 //        dm      ";";
 
-//         dm      ": u."; // ( u -- )
-//         dm      "   base @ /mod";
-//         dm      "   ?dup if";
-//         dm      "       recurse";
-//         dm      "   then";
-//         dm      "   dup 10 < if";
-//         dm      "       '0'";
-//         dm      "   else";
-//         dm      "       10 -";
-//         dm      "       'A'";
-//         dm      "   then";
-//         dm      "   +";
-//         dm      "   emit";
-//         dm      ";";
+        dm      ": u."; // ( u -- )
+        dm      "   base @ /mod";
+        dm      "   ?dup if";
+        dm      "       recurse";
+        dm      "   then";
+        dm      "   dup 10 < if";
+        dm      "       '0'";
+        dm      "   else";
+        dm      "       10 -";
+        dm      "       'A'";
+        dm      "   then";
+        dm      "   +";
+        dm      "   emit";
+        dm      ";";
 
 //         dm      ": .s"; // ( -- )
 //         dm      "   dsp@";
@@ -1724,28 +1726,53 @@ input_buffer:
 //         dm      "   drop";
 //         dm      ";";
 
-//         dm      ": uwidth"; // ( u -- width)
-//         dm      "   base @ /";
-//         dm      "   ?dup if";
-//         dm      "       recurse 1+";
-//         dm      "   else";
-//         dm      "       1";
-//         dm      "   then";
-//         dm      ";";
+        dm      ": uwidth"; // ( u -- width)
+        dm      "   base @ /";
+        dm      "   ?dup if";
+        dm      "       recurse 1+";
+        dm      "   else";
+        dm      "       1";
+        dm      "   then";
+        dm      ";";
 
-            dm      ": spaces"; // ( n -- )
-            dm      "   begin";
-            dm      "       dup 0 >";
-            dm      "   while";
-            dm      "       space";
-            dm      "       1-";
-            dm      "   repeat";
-            dm      "   drop";
-            dm      ";";
+        dm      ": spaces"; // ( n -- )
+        dm      "   begin";
+        dm      "       dup 0 >";
+        dm      "   while";
+        dm      "       space";
+        dm      "       1-";
+        dm      "   repeat";
+        dm      "   drop";
+        dm      ";";
 
+        dm      ": .r"; // ( n width -- )
+        dm      "   swap";      // ( width n )
+        dm      "   dup 0 < if";
+        dm      "       negate";    // ( width u )
+        dm      "       1";         // ( width u 1 )
+        dm      "       swap";      // ( width 1 u )
+        dm      "       rot";       // ( 1 u width )
+        dm      "       1-";        // ( 1 u width-1 )
+        dm      "   else";
+        dm      "       0";         // ( width u 0 )
+        dm      "       swap";      // ( width 0 u )
+        dm      "       rot";       // ( 0 u width )
+        dm      "   then";
+        dm      "   swap";          // ( flag width u )
+        dm      "   dup";           // ( flag width u u )
+        dm      "   uwidth";        // ( flag width u uwidth )
+        dm      "   rot";           // ( flag u uwidth width )
+        dm      "   swap -";        // ( flag u width-uwidth )
+        dm      "   spaces";        // ( flag u )
+        dm      "   swap";          // ( u flag )
+        dm      "   if";
+        dm      "       '-' emit";
+        dm      "   then";
+        dm      "   u.";
+        dm      ";";
 // Test
 
-            dm      "3 spaces";
+        dm      "-23 4 .r 23 4 .r";
         // dm      "321 uwidth";
         // dm      ": test 5 begin dup 1- dup 0 = until .s ;"; // ( -- )
         // dm      "test";
