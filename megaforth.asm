@@ -1475,17 +1475,17 @@ _c_open_parenthesis:
 _c_close_parenthesis:
         dw      0b0001010010010001;
 _c_asterisk:
-        dw      0b1111111111111111;
+        dw      0b0101010111010101;
 _c_plus:
-        dw      0b1111111111111111;
+        dw      0b0000010111010000;
 _c_comma:
-        dw      0b0001010000000000;
+        dw      0b0100010000000000;
 _c_hyphen:
         dw      0b0000000111000000;
 _c_period:
         dw      0b0010000000000000;
 _c_slash:
-        dw      0b1111111111111111;
+        dw      0b0001001010100100;
 _c_0:
         dw      0b0111101101101111;
 _c_1:
@@ -1511,13 +1511,13 @@ _c_colon:
 _c_semicolon:
         dw      0b0001010000010000;
 _c_less_than:
-        dw      0b1111111111111111;
+        dw      0b0100010001010100;
 _c_equals:
         dw      0b0000111000111000;
 _c_greater_than:
-        dw      0b1111111111111111;
+        dw      0b0001010100010001;
 _c_question_mark:
-        dw      0b1111111111111111;
+        dw      0b0010000010100011;
 _c_at:
         dw      0b1111111111111111;
 _c_A:
@@ -1609,9 +1609,9 @@ input_buffer:
 
 //        dm      ": '\\n' 10 ;";
 
-//         dm      ": bl 32 ;";
+        dm      ": bl 32 ;";
 
-//         dm      ": space bl emit ;";
+        dm      ": space bl emit ;";
 
 //         dm      ": negate 0 swap - ;";
 
@@ -1854,8 +1854,9 @@ input_buffer:
 
 // Test
 
+        dm      ".\" <>*+?\"";
         dm      ": test .\" hiya mega\" ;";
-        dm      ".\" hello forth\" test";
+        dm      ".\" hello forth\" space test";
         // dm      "s\" qwer\" tell";
         // dm      ": test s\" asdf\" ;";
         // dm      "test tell s\" qwer\" tell";
