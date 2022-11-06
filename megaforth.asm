@@ -1807,14 +1807,25 @@ input_buffer:
         dm      "       2-";            // we measured from length word
         dm      "       swap !";
         dm      "   else";
-        dm      "       '\"' emit";         // TODO
+        dm      "       here @";
+        dm      "       begin";
+        dm      "           key dup '\"' <>";
+        dm      "       while";
+        dm      "           over c!";
+        dm      "           1+";
+        dm      "       repeat";
+        dm      "       drop";
+        dm      "       here @ -";
+        dm      "       here @";
+        dm      "       swap";
         dm      "   then";
         dm      ";";
 
 // Test
 
-        dm      ": test s\" asdf\" ;";
-        dm      "test";
+        dm      "s\" qwer\" ";
+        // dm      ": test s\" asdf\" ;";
+        // dm      "test tell s\" qwer\" tell";
         // dm      "-23 .";
         // dm      "321 uwidth";
         // dm      ": test 5 begin dup 1- dup 0 = until .s ;"; // ( -- )
