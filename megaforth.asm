@@ -1621,6 +1621,13 @@ input_buffer:
 //
 //        dm      ": not invert ;";
 
+        dm      ": [compile] immediate";
+        dm      "   word";
+        dm      "   find";
+        dm      "   >cfa";
+        dm      "   ,";
+        dm      ";";
+
         dm      ": literal immediate";
         dm      "   ' lit ,";
         dm      "   ,";
@@ -1675,10 +1682,17 @@ input_buffer:
         dm      ": begin immediate";
         dm      "   here @";
         dm      ";";
+
 //         dm      ": until immediate";
 //         dm      "   ' 0branch ,";
 //         dm      "   here @ - ,";
 //         dm      ";";
+
+        dm      ": again immediate";
+        dm      "   ' branch ,";
+        dm      "   here @ -";
+        dm      "   ,";
+        dm      ";";
 
         dm      ": while immediate";
         dm      "   ' 0branch ,";
@@ -1822,11 +1836,29 @@ input_buffer:
         dm      "   then";
         dm      ";";
 
+        dm      ": .\" immediate"; // ( -- )
+        dm      "   state @ if";
+        dm      "       [compile] s\"";
+        dm      "       ' tell ,";
+        dm      "   else";
+        dm      "       begin";
+        dm      "           key";
+        dm      "           dup '\"' = if";
+        dm      "               drop";
+        dm      "               exit";
+        dm      "           then";
+        dm      "           emit";
+        dm      "       again";
+        dm      "   then";
+        dm      ";";
+
 // Test
 
+        dm      ": test .\" hiya mega\" ;";
+        dm      ".\" hello forth\" test";
         // dm      "s\" qwer\" tell";
-        dm      ": test s\" asdf\" ;";
-        dm      "test tell s\" qwer\" tell";
+        // dm      ": test s\" asdf\" ;";
+        // dm      "test tell s\" qwer\" tell";
         // dm      "-23 .";
         // dm      "321 uwidth";
         // dm      ": test 5 begin dup 1- dup 0 = until .s ;"; // ( -- )
