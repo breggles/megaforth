@@ -871,7 +871,7 @@ base_code:
         jmp     _next;
 
 state_code:
-        ld.b    r0,#state_var;
+        ld.w    r0,#state_var;
         push    r0;
         jmp     _next;
 
@@ -1433,10 +1433,10 @@ word_buffer:
         ds      32;
 
 base_var:
-        db      10;
+        dw      10;
 
 state_var:
-        db      0;          // 0 = executing, non-zero = compiling
+        dw      0;          // 0 = immediate, non-zero = compile
 
 s0_var:
         dw;     // initiallised at start up
@@ -1634,9 +1634,9 @@ input_buffer:
 
 //        dm      ": ')' [ char ) ] literal ;";
 
-       dm      ": '\"' [ char \" ] literal ;";
+        dm      ": '\"' [ char \" ] literal ;";
 
-//         dm      ": 'A' [ char A ] literal ;";
+        dm      ": 'A' [ char A ] literal ;";
 
 //         dm      ": '0' [ char 0 ] literal ;";
 
@@ -1809,7 +1809,8 @@ input_buffer:
         dm      "   else";
         dm      "       here @";
         dm      "       begin";
-        dm      "           key dup '\"' <>";
+        dm      "           key";
+        dm      "           dup '\"' <>";
         dm      "       while";
         dm      "           over c!";
         dm      "           1+";
@@ -1823,9 +1824,9 @@ input_buffer:
 
 // Test
 
-        dm      "s\" qwer\" ";
-        // dm      ": test s\" asdf\" ;";
-        // dm      "test tell s\" qwer\" tell";
+        // dm      "s\" qwer\" tell";
+        dm      ": test s\" asdf\" ;";
+        dm      "test tell s\" qwer\" tell";
         // dm      "-23 .";
         // dm      "321 uwidth";
         // dm      ": test 5 begin dup 1- dup 0 = until .s ;"; // ( -- )
