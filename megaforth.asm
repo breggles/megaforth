@@ -1854,7 +1854,7 @@ input_buffer:
 
 // Test
 
-        dm      ".\" <>*+?\"";
+        dm      ".\" <>*+?/\"";
         dm      ": test .\" hiya mega\" ;";
         dm      ".\" hello forth\" space test";
         // dm      "s\" qwer\" tell";
