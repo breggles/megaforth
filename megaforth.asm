@@ -1874,7 +1874,7 @@ input_buffer:
 //        dm      "space 65 emit";
 //        dm      "4 2 mod";
 
-        db      0;                              // halt
+        db      3;                              // halt
 
 here_var:
         dw      $+2;
