@@ -538,6 +538,9 @@ word_2:
         beq     word_2;
         ld.b    r1,#0;
         cmp     r0,r1;
+        beq     word_2;
+        ld.b    r1,#3;          // end of text
+        cmp     r0,r1;
         beq     word_halt;
         ld.w    r3,#word_buffer;
 word_1:
