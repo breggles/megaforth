@@ -600,7 +600,7 @@ number_loop:
         ld.b    r0,#'0';
         sub     r1,r0;           // < '0'?
         bcs     number_end;
-        ld.b    r0,#10;           // < '10'?
+        ld.b    r0,#10;          // < '10'?
         cmp     r1,r0;
         bcs     number_digit;
         ld.b    r0,#17;
