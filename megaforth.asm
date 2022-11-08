@@ -521,7 +521,7 @@ emit_code:
         jsr     _prn_str;
         jmp     _next;
 
-// NB: Leading null halts, trailing null is white space...
+// NB: EOT (ASCII 3) halts
 word_code:
         // TODO swap r0 & r2 around, r2 is index register, so should contain ptr...
         jsr     _word;
