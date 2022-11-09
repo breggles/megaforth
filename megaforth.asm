@@ -1581,7 +1581,7 @@ interpret_error:
 interpret_error_end:
         nop;
 eoi_msg:
-        dm      "EOI";
+        dm      "OK";
 eoi_msg_end:
         nop;
 test_str:
