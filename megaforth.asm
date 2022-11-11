@@ -564,6 +564,7 @@ word_halt:
         ld.w    r2,#eoi_msg;
         ld.b    r0,#(eoi_msg_end-eoi_msg-1); // -1 cuz MP strings are 0-terminated
         jsr     _prn_str;
+        pop     r0;             // tidy up stack
         jmp     _halt;
 
 _halt:
@@ -863,6 +864,11 @@ f_immed_code:
 
 f_lenmask_code:
         ld.w    r0,#_F_LENMASK;
+        push    r0;
+        jmp     _next;
+
+docol_code:
+        ld.w    r0,#_docol;
         push    r0;
         jmp     _next;
 
@@ -1384,10 +1390,17 @@ f_lenmask_header:
 f_lenmask:
         dw      f_lenmask_code;
 
+docol_header:
+        dw      f_lenmask_header;
+        db      5;
+        dm      "docol";
+docol:
+        dw      docol_code;
+
 // Variable Headers
 
 base_header:
-        dw      f_lenmask_header;
+        dw      docol_header;
         db      4;
         dm      "base";
 base:
@@ -1862,9 +1875,19 @@ input_buffer:
 
         dm      ": cells 2 * ;"; // ( n -- n )
 
+        dm      ": variable";
+        dm      "   1 cells allot";
+        dm      "   word create";
+        dm      "   docol ,";
+        dm      "   ' lit ,";
+        dm      "   ,";
+        dm      "   ' exit ,";
+        dm      ";";
+
 // Test
 
-        dm      "3 cells allot";
+        dm      "variable asdf 20 asdf ! asdf @";
+        // dm      "3 cells allot";
         // dm      ".\" <>*+?/\"";
         // dm      ": test .\" hiya mega\" ;";
         // dm      ".\" hello forth\" space test";
