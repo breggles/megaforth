@@ -1314,7 +1314,7 @@ double:
 tdfa_header:
         dw      double_header;
         db      4;
-        dm      "tdfa";
+        dm      ">dfa";
 tdfa:
         dw      _docol,tcfa,incr2,exit;
 
@@ -1674,26 +1674,26 @@ input_buffer:
 
         // NB: control structures only work in compile mode
 
-//         dm      ": if immediate";
-//         dm      "   ' 0branch ,";
-//         dm      "   here @";
-//         dm      "   0 ,";
-//         dm      ";";
+        dm      ": if immediate";
+        dm      "   ' 0branch ,";
+        dm      "   here @";
+        dm      "   0 ,";
+        dm      ";";
 
-//         dm      ": then immediate";
-//         dm      "   dup";
-//         dm      "   here @ swap -";
-//         dm      "   swap !";
-//         dm      ";";
+        dm      ": then immediate";
+        dm      "   dup";
+        dm      "   here @ swap -";
+        dm      "   swap !";
+        dm      ";";
 
-//         dm      ": else immediate";
-//         dm      "   ' branch ,";
-//         dm      "   here @";
-//         dm      "   0 ,";
-//         dm      "   swap dup";
-//         dm      "   here @ swap -";
-//         dm      "   swap !";
-//         dm      ";";
+        dm      ": else immediate";
+        dm      "   ' branch ,";
+        dm      "   here @";
+        dm      "   0 ,";
+        dm      "   swap dup";
+        dm      "   here @ swap -";
+        dm      "   swap !";
+        dm      ";";
 
 //         dm      ": begin immediate";
 //         dm      "   here @";
@@ -1884,9 +1884,29 @@ input_buffer:
         dm      "   ' exit ,";
         dm      ";";
 
+        dm      ": to immediate"; // ( n -- )
+        dm      "   word find >dfa 2+";
+        dm      "   state @ if";
+        dm      "       ' lit ,";
+        dm      "       ,";
+        dm      "       ' ! ,";
+        dm      "   else";
+        dm      "       !";
+        dm      "   then";
+        dm      ";";
+
+        // NB we don't provide implementations of `constant` and `value`,
+        // as their implmentation results in the same code as running
+        // ": <var_name> <var_value ;"
+
 // Test
 
-        dm      "variable asdf 20 asdf ! asdf @";
+        dm      ": ten 10 ;";
+        dm      "ten 20 to ten ten";
+        dm      ": twen 30 to ten ten ;";
+        dm      "twen ten";
+
+        // dm      "variable asdf 20 asdf ! asdf @";
         // dm      "3 cells allot";
         // dm      ".\" <>*+?/\"";
         // dm      ": test .\" hiya mega\" ;";
