@@ -1875,7 +1875,8 @@ input_buffer:
 
         dm      ": cells 2 * ;"; // ( n -- n )
 
-        dm      ": variable";
+        // TODO put cell at end so can add more for arrays?
+        dm      ": variable";   
         dm      "   1 cells allot";
         dm      "   word create";
         dm      "   docol ,";
@@ -1897,7 +1898,7 @@ input_buffer:
 
         // NB we don't provide implementations of `constant` and `value`,
         // as their implmentation results in the same code as running
-        // ": <var_name> <var_value ;"
+        // ": <name> <value> ;"
 
 // Test
 
