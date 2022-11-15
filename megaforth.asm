@@ -494,6 +494,15 @@ fetchbyte_code:
         push    r0;
         jmp     _next;
 
+ccopy_code:
+        ld.w    r2,(sp+2);         // source address
+        ld.b    r0,(r2++);
+        st.w    (sp+2),r2;
+        pop     r2;                // dest addr
+        st.b    (r2++),r0;
+        push    r2;
+        jmp     _next;
+
 rspstore_code:
         pop     r1;
         jmp     _next;
@@ -1176,8 +1185,15 @@ fetchbyte_header:
 fetchbyte:
         dw      fetchbyte_code;
 
-rspstore_header:
+ccopy_header:
         dw      fetchbyte_header;
+        db      4;
+        dm      "c@c!";
+ccopy:
+        dw      ccopy_code;
+
+rspstore_header:
+        dw      ccopy_header;
         db      4;
         dm      "rsp!";
 rspstore:
@@ -1674,26 +1690,26 @@ input_buffer:
 
         // NB: control structures only work in compile mode
 
-        dm      ": if immediate";
-        dm      "   ' 0branch ,";
-        dm      "   here @";
-        dm      "   0 ,";
-        dm      ";";
+//         dm      ": if immediate";
+//         dm      "   ' 0branch ,";
+//         dm      "   here @";
+//         dm      "   0 ,";
+//         dm      ";";
 
-        dm      ": then immediate";
-        dm      "   dup";
-        dm      "   here @ swap -";
-        dm      "   swap !";
-        dm      ";";
+//         dm      ": then immediate";
+//         dm      "   dup";
+//         dm      "   here @ swap -";
+//         dm      "   swap !";
+//         dm      ";";
 
-        dm      ": else immediate";
-        dm      "   ' branch ,";
-        dm      "   here @";
-        dm      "   0 ,";
-        dm      "   swap dup";
-        dm      "   here @ swap -";
-        dm      "   swap !";
-        dm      ";";
+//         dm      ": else immediate";
+//         dm      "   ' branch ,";
+//         dm      "   here @";
+//         dm      "   0 ,";
+//         dm      "   swap dup";
+//         dm      "   here @ swap -";
+//         dm      "   swap !";
+//         dm      ";";
 
 //         dm      ": begin immediate";
 //         dm      "   here @";
@@ -1868,33 +1884,6 @@ input_buffer:
 //         dm      "   then";
 //         dm      ";";
 
-        dm      ": allot"; // ( n -- addr )
-        dm      "   here @ swap";
-        dm      "   here +!";
-        dm      ";";
-
-        dm      ": cells 2 * ;"; // ( n -- n )
-
-        // TODO put cell at end so can add more for arrays?
-        dm      ": variable";   
-        dm      "   1 cells allot";
-        dm      "   word create";
-        dm      "   docol ,";
-        dm      "   ' lit ,";
-        dm      "   ,";
-        dm      "   ' exit ,";
-        dm      ";";
-
-        dm      ": to immediate"; // ( n -- )
-        dm      "   word find >dfa 2+";
-        dm      "   state @ if";
-        dm      "       ' lit ,";
-        dm      "       ,";
-        dm      "       ' ! ,";
-        dm      "   else";
-        dm      "       !";
-        dm      "   then";
-        dm      ";";
 
         // NB we don't provide implementations of `constant` and `value`,
         // as their implmentation results in the same code as running
@@ -1902,10 +1891,12 @@ input_buffer:
 
 // Test
 
-        dm      ": ten 10 ;";
-        dm      "ten 20 to ten ten";
-        dm      ": twen 30 to ten ten ;";
-        dm      "twen ten";
+        dm "0 here @ c! 1 here @ 1+ c! here @ here @ 2+ c@c! c@c!";
+
+//         dm      ": ten 10 ;";
+//         dm      "ten 20 to ten ten";
+//         dm      ": twen 30 to ten ten ;";
+//         dm      "twen ten";
 
         // dm      "variable asdf 20 asdf ! asdf @";
         // dm      "3 cells allot";
