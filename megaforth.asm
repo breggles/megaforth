@@ -1533,7 +1533,7 @@ _c_5:
 _c_6:
         dw      0b0010101011001110;
 _c_7:
-        dw      0b0010101010100111;
+        dw      0b0010010010100111;
 _c_8:
         dw      0b0010101010101010;
 _c_9:
@@ -1636,265 +1636,301 @@ input_buffer:
 
 // Words
 
-       // dm      ": / /mod swap drop ;";
-//        dm      ": mod /mod drop ;";
+        dm      ": / /mod swap drop ;";
+        dm      ": mod /mod drop ;";
 
-//        dm      ": '\\n' 10 ;";
+        dm      ": '\\n' 10 ;";
 
-//         dm      ": bl 32 ;";
+        dm      ": bl 32 ;";
 
-//         dm      ": space bl emit ;";
+        dm      ": space bl emit ;";
 
-//         dm      ": negate 0 swap - ;";
+        dm      ": negate 0 swap - ;";
 
-//        dm      ": true -1 ;";              // 0xFFFF, or all 1s
-//
-//        dm      ": false 0 ;";
-//
-//        dm      ": not invert ;";
+        dm      ": true -1 ;";              // 0xFFFF, or all 1s
 
-//         dm      ": [compile] immediate";
-//         dm      "   word";
-//         dm      "   find";
-//         dm      "   >cfa";
-//         dm      "   ,";
-//         dm      ";";
+        dm      ": false 0 ;";
 
-//         dm      ": literal immediate";
-//         dm      "   ' lit ,";
-//         dm      "   ,";
-//         dm      ";";
+        dm      ": not invert ;";
 
-//        dm      ": ':' [ char : ] literal ;"; // do we need ] here? (testing says 'non')
+        dm      ": [compile] immediate";
+        dm      "   word";
+        dm      "   find";
+        dm      "   >cfa";
+        dm      "   ,";
+        dm      ";";
 
-//        dm      ": ';' [ char ; ] literal ;";
+        dm      ": literal immediate";
+        dm      "   ' lit ,";
+        dm      "   ,";
+        dm      ";";
 
-//        dm      ": '(' [ char ( ] literal ;";
+        dm      ": ':' [ char : ] literal ;"; // do we need ] here? (testing says 'non')
 
-//        dm      ": ')' [ char ) ] literal ;";
+        dm      ": ';' [ char ; ] literal ;";
 
-//         dm      ": '\"' [ char \" ] literal ;";
+        dm      ": '(' [ char ( ] literal ;";
 
-//         dm      ": 'A' [ char A ] literal ;";
+        dm      ": ')' [ char ) ] literal ;";
 
-//         dm      ": '0' [ char 0 ] literal ;";
+        dm      ": '\"' [ char \" ] literal ;";
 
-//         dm      ": '-' [ char - ] literal ;";
+        dm      ": 'A' [ char A ] literal ;";
 
-//        dm      ": '.' [ char . ] literal ;";
+        dm      ": '0' [ char 0 ] literal ;";
 
-//         dm      ": recurse immediate";
-//         dm      "   latest @";
-//         dm      "   >cfa ,";
-//         dm      ";";
+        dm      ": '-' [ char - ] literal ;";
+
+        dm      ": '.' [ char . ] literal ;";
+
+        dm      ": recurse immediate";
+        dm      "   latest @";
+        dm      "   >cfa ,";
+        dm      ";";
 
         // NB: control structures only work in compile mode
 
-//         dm      ": if immediate";
-//         dm      "   ' 0branch ,";
-//         dm      "   here @";
-//         dm      "   0 ,";
-//         dm      ";";
+        dm      ": if immediate";
+        dm      "   ' 0branch ,";
+        dm      "   here @";
+        dm      "   0 ,";
+        dm      ";";
 
-//         dm      ": then immediate";
-//         dm      "   dup";
-//         dm      "   here @ swap -";
-//         dm      "   swap !";
-//         dm      ";";
+        dm      ": then immediate";
+        dm      "   dup";
+        dm      "   here @ swap -";
+        dm      "   swap !";
+        dm      ";";
 
-//         dm      ": else immediate";
-//         dm      "   ' branch ,";
-//         dm      "   here @";
-//         dm      "   0 ,";
-//         dm      "   swap dup";
-//         dm      "   here @ swap -";
-//         dm      "   swap !";
-//         dm      ";";
+        dm      ": else immediate";
+        dm      "   ' branch ,";
+        dm      "   here @";
+        dm      "   0 ,";
+        dm      "   swap dup";
+        dm      "   here @ swap -";
+        dm      "   swap !";
+        dm      ";";
 
-//         dm      ": begin immediate";
-//         dm      "   here @";
-//         dm      ";";
+        dm      ": begin immediate";
+        dm      "   here @";
+        dm      ";";
 
-//         dm      ": until immediate";
-//         dm      "   ' 0branch ,";
-//         dm      "   here @ - ,";
-//         dm      ";";
+        dm      ": until immediate";
+        dm      "   ' 0branch ,";
+        dm      "   here @ - ,";
+        dm      ";";
 
-//         dm      ": again immediate";
-//         dm      "   ' branch ,";
-//         dm      "   here @ -";
-//         dm      "   ,";
-//         dm      ";";
+        dm      ": again immediate";
+        dm      "   ' branch ,";
+        dm      "   here @ -";
+        dm      "   ,";
+        dm      ";";
 
-//         dm      ": while immediate";
-//         dm      "   ' 0branch ,";
-//         dm      "   here @";
-//         dm      "   0 ,";
-//         dm      ";";
+        dm      ": while immediate";
+        dm      "   ' 0branch ,";
+        dm      "   here @";
+        dm      "   0 ,";
+        dm      ";";
 
-//         dm      ": repeat immediate";
-//         dm      "   ' branch ,";
-//         dm      "   swap";
-//         dm      "   here @ - ,";
-//         dm      "   dup";
-//         dm      "   here @ swap -";
-//         dm      "   swap !";
-//         dm      ";";
+        dm      ": repeat immediate";
+        dm      "   ' branch ,";
+        dm      "   swap";
+        dm      "   here @ - ,";
+        dm      "   dup";
+        dm      "   here @ swap -";
+        dm      "   swap !";
+        dm      ";";
 
-//        dm      ": ( immediate";
-//        dm      "   1";
-//        dm      "   begin";
-//        dm      "   key";
-//        dm      "   dup '(' = if";
-//        dm      "       drop";
-//        dm      "       1+";
-//        dm      "   else";
-//        dm      "       ')' = if";
-//        dm      "           1-";
-//        dm      "       then";
-//        dm      "   then";
-//        dm      "   dup 0 = until";
-//        dm      "   drop";
-//        dm      ";";
+        dm      ": ( immediate";
+        dm      "   1";
+        dm      "   begin";
+        dm      "   key";
+        dm      "   dup '(' = if";
+        dm      "       drop";
+        dm      "       1+";
+        dm      "   else";
+        dm      "       ')' = if";
+        dm      "           1-";
+        dm      "       then";
+        dm      "   then";
+        dm      "   dup 0 = until";
+        dm      "   drop";
+        dm      ";";
 
-//         dm      ": u."; // ( u -- )
-//         dm      "   base @ /mod";
-//         dm      "   ?dup if";
-//         dm      "       recurse";
-//         dm      "   then";
-//         dm      "   dup 10 < if";
-//         dm      "       '0'";
-//         dm      "   else";
-//         dm      "       10 -";
-//         dm      "       'A'";
-//         dm      "   then";
-//         dm      "   +";
-//         dm      "   emit";
-//         dm      ";";
+        dm      ": u."; // ( u -- )
+        dm      "   base @ /mod";
+        dm      "   ?dup if";
+        dm      "       recurse";
+        dm      "   then";
+        dm      "   dup 10 < if";
+        dm      "       '0'";
+        dm      "   else";
+        dm      "       10 -";
+        dm      "       'A'";
+        dm      "   then";
+        dm      "   +";
+        dm      "   emit";
+        dm      ";";
 
-//         dm      ": .s"; // ( -- )
-//         dm      "   dsp@";
-//         dm      "   begin";
-//         dm      "       dup s0 @ <";
-//         dm      "   while";
-//         dm      "       dup @ u.";
-//         dm      "       space";
-//         dm      "       2+";
-//         dm      "   repeat";
-//         dm      "   drop";
-//         dm      ";";
+        dm      ": .s"; // ( -- )
+        dm      "   dsp@";
+        dm      "   begin";
+        dm      "       dup s0 @ <";
+        dm      "   while";
+        dm      "       dup @ u.";
+        dm      "       space";
+        dm      "       2+";
+        dm      "   repeat";
+        dm      "   drop";
+        dm      ";";
 
-//         dm      ": uwidth"; // ( u -- width)
-//         dm      "   base @ /";
-//         dm      "   ?dup if";
-//         dm      "       recurse 1+";
-//         dm      "   else";
-//         dm      "       1";
-//         dm      "   then";
-//         dm      ";";
+        dm      ": uwidth"; // ( u -- width)
+        dm      "   base @ /";
+        dm      "   ?dup if";
+        dm      "       recurse 1+";
+        dm      "   else";
+        dm      "       1";
+        dm      "   then";
+        dm      ";";
 
-//         dm      ": spaces"; // ( n -- )
-//         dm      "   begin";
-//         dm      "       dup 0 >";
-//         dm      "   while";
-//         dm      "       space";
-//         dm      "       1-";
-//         dm      "   repeat";
-//         dm      "   drop";
-//         dm      ";";
+        dm      ": spaces"; // ( n -- )
+        dm      "   begin";
+        dm      "       dup 0 >";
+        dm      "   while";
+        dm      "       space";
+        dm      "       1-";
+        dm      "   repeat";
+        dm      "   drop";
+        dm      ";";
 
-//         dm      ": .r"; // ( n width -- )
-//         dm      "   swap";      // ( width n )
-//         dm      "   dup 0 < if";
-//         dm      "       negate";    // ( width u )
-//         dm      "       1";         // ( width u 1 )
-//         dm      "       swap";      // ( width 1 u )
-//         dm      "       rot";       // ( 1 u width )
-//         dm      "       1-";        // ( 1 u width-1 )
-//         dm      "   else";
-//         dm      "       0";         // ( width u 0 )
-//         dm      "       swap";      // ( width 0 u )
-//         dm      "       rot";       // ( 0 u width )
-//         dm      "   then";
-//         dm      "   swap";          // ( flag width u )
-//         dm      "   dup";           // ( flag width u u )
-//         dm      "   uwidth";        // ( flag width u uwidth )
-//         dm      "   rot";           // ( flag u uwidth width )
-//         dm      "   swap -";        // ( flag u width-uwidth )
-//         dm      "   spaces";        // ( flag u )
-//         dm      "   swap";          // ( u flag )
-//         dm      "   if";
-//         dm      "       '-' emit";
-//         dm      "   then";
-//         dm      "   u.";
-//         dm      ";";
+        dm      ": .r"; // ( n width -- )
+        dm      "   swap";      // ( width n )
+        dm      "   dup 0 < if";
+        dm      "       negate";    // ( width u )
+        dm      "       1";         // ( width u 1 )
+        dm      "       swap";      // ( width 1 u )
+        dm      "       rot";       // ( 1 u width )
+        dm      "       1-";        // ( 1 u width-1 )
+        dm      "   else";
+        dm      "       0";         // ( width u 0 )
+        dm      "       swap";      // ( width 0 u )
+        dm      "       rot";       // ( 0 u width )
+        dm      "   then";
+        dm      "   swap";          // ( flag width u )
+        dm      "   dup";           // ( flag width u u )
+        dm      "   uwidth";        // ( flag width u uwidth )
+        dm      "   rot";           // ( flag u uwidth width )
+        dm      "   swap -";        // ( flag u width-uwidth )
+        dm      "   spaces";        // ( flag u )
+        dm      "   swap";          // ( u flag )
+        dm      "   if";
+        dm      "       '-' emit";
+        dm      "   then";
+        dm      "   u.";
+        dm      ";";
 
-//         dm      ": . 0 .r space ;";      // ( n -- )
+        dm      ": . 0 .r space ;";      // ( n -- )
 
-//         dm      ": c,"; // ( b -- ) ?
-//         dm      "   here @ c!";
-//         dm      "   1 here +!";
-//         dm      ";";
+        dm      ": c,"; // ( b -- ) ?
+        dm      "   here @ c!";
+        dm      "   1 here +!";
+        dm      ";";
 
-//         dm      ": s\" immediate"; // ( -- addr len )
+        dm      ": s\" immediate"; // ( -- addr len )
+        dm      "   state @ if";
+        dm      "       ' litstring ,";
+        dm      "       here @";
+        dm      "       0 ,";           // dummy length
+        dm      "       begin";
+        dm      "           key";
+        dm      "           dup '\"' <>";
+        dm      "       while";
+        dm      "           c,";
+        dm      "       repeat";
+        dm      "       drop";          // closing double quote
+        dm      "       dup";
+        dm      "       here @ swap -";
+        dm      "       2-";            // we measured from length word
+        dm      "       swap !";
+        dm      "   else";
+        dm      "       here @";
+        dm      "       begin";
+        dm      "           key";
+        dm      "           dup '\"' <>";
+        dm      "       while";
+        dm      "           over c!";
+        dm      "           1+";
+        dm      "       repeat";
+        dm      "       drop";
+        dm      "       here @ -";
+        dm      "       here @";
+        dm      "       swap";
+        dm      "   then";
+        dm      ";";
+
+        dm      ": .\" immediate"; // ( -- )
+        dm      "   state @ if";
+        dm      "       [compile] s\"";
+        dm      "       ' tell ,";
+        dm      "   else";
+        dm      "       begin";
+        dm      "           key";
+        dm      "           dup '\"' = if";
+        dm      "               drop";
+        dm      "               exit";
+        dm      "           then";
+        dm      "           emit";
+        dm      "       again";
+        dm      "   then";
+        dm      ";";
+
+        dm      ": allot"; // ( n -- addr )
+        dm      "   here @ swap";
+        dm      "   here +!";
+        dm      ";";
+
+        dm      ": cells 2 * ;"; // ( n -- n )
+
+        // TODO put cell at end so can add more for arrays?
+        dm      ": variable";
+        dm      "   1 cells allot";
+        dm      "   word create";
+        dm      "   docol ,";
+        dm      "   ' lit ,";
+        dm      "   ,";
+        dm      "   ' exit ,";
+        dm      ";";
+
+        dm      ": erase"; // ( addr n -- )
+        dm      ";";
+
+//         dm      ": to immediate"; // ( n -- )
+//         dm      "   word find >dfa 2+";
 //         dm      "   state @ if";
-//         dm      "       ' litstring ,";
-//         dm      "       here @";
-//         dm      "       0 ,";           // dummy length
-//         dm      "       begin";
-//         dm      "           key";
-//         dm      "           dup '\"' <>";
-//         dm      "       while";
-//         dm      "           c,";
-//         dm      "       repeat";
-//         dm      "       drop";          // closing double quote
-//         dm      "       dup";
-//         dm      "       here @ swap -";
-//         dm      "       2-";            // we measured from length word
-//         dm      "       swap !";
+//         dm      "       ' lit ,";
+//         dm      "       ,";
+//         dm      "       ' ! ,";
 //         dm      "   else";
-//         dm      "       here @";
-//         dm      "       begin";
-//         dm      "           key";
-//         dm      "           dup '\"' <>";
-//         dm      "       while";
-//         dm      "           over c!";
-//         dm      "           1+";
-//         dm      "       repeat";
-//         dm      "       drop";
-//         dm      "       here @ -";
-//         dm      "       here @";
-//         dm      "       swap";
+//         dm      "       !";
 //         dm      "   then";
 //         dm      ";";
-
-//         dm      ": .\" immediate"; // ( -- )
-//         dm      "   state @ if";
-//         dm      "       [compile] s\"";
-//         dm      "       ' tell ,";
-//         dm      "   else";
-//         dm      "       begin";
-//         dm      "           key";
-//         dm      "           dup '\"' = if";
-//         dm      "               drop";
-//         dm      "               exit";
-//         dm      "           then";
-//         dm      "           emit";
-//         dm      "       again";
-//         dm      "   then";
-//         dm      ";";
-
 
         // NB we don't provide implementations of `constant` and `value`,
         // as their implmentation results in the same code as running
         // ": <name> <value> ;"
 
+// Sudoku
+
+        dm "variable board 15 allot";
+
 // Test
 
-        dm "0 here @ c! 1 here @ 1+ c! here @ here @ 2+ c@c! c@c!";
+        // dm "0 here @ c! 1 here @ 1+ c! here @ here @ 2+ c@c! c@c!";
 
-//         dm      ": ten 10 ;";
-//         dm      "ten 20 to ten ten";
+        // dm      ": ten 10 ;";
+        // dm      "3 4 + .";
+
+        // dm      "ten 20 to ten ten";
 //         dm      ": twen 30 to ten ten ;";
 //         dm      "twen ten";
 
