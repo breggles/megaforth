@@ -1894,7 +1894,7 @@ input_buffer:
         dm      "   word create";
         dm      "   docol ,";
         dm      "   ' lit ,";
-        dm      "   here @ 2 cells + ,";
+        dm      "   here @ 2 cells + ,"; // store addr after `variable` definition
         dm      "   ' exit ,";
         dm      "   1 cells allot";
         dm      ";";
@@ -1904,8 +1904,8 @@ input_buffer:
 
         dm      ": erase"; // ( addr n -- )
         dm      "   begin";
-        dm      "       over 0 swap !";
-        dm      "       swap 1 cells + swap";
+        dm      "       over 3 swap !";
+        dm      "       swap 1+ swap";
         dm      "       1- dup 0 =";
         dm      "   until";
         dm      "   2drop";
@@ -1929,10 +1929,11 @@ input_buffer:
 // Sudoku
 
         // dm "1 2 + .";
-        dm "variable board";
-        dm "board @ . space 33 board ! board @ . ";
-        // dm "board 16 erase";
-        // dm "board @ .";
+        dm "variable board 14 allot";
+        // dm "board @ . space 33 board ! board @ . ";
+        dm "board @ .";
+        dm "board 16 erase";
+        dm "space board @ .";
 
 // Test
 
