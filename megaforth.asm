@@ -558,10 +558,9 @@ word_1:
         ld.b    r1,#' ';
         cmp     r0,r1;
         beq     word_3;
-        ld.b    r1,#0;
+        ld.b    r1,#0;          // MP strings are 0-terminated
         cmp     r0,r1;
-        beq     word_3;
-        jmp     word_1;
+        bne     word_1;
 word_3:
         ld.w    r0,#word_buffer;
         sub     r3,r0;
@@ -1741,21 +1740,21 @@ input_buffer:
         dm      "   swap !";
         dm      ";";
 
-        dm      ": ( immediate";
-        dm      "   1";
-        dm      "   begin";
-        dm      "   key";
-        dm      "   dup '(' = if";
-        dm      "       drop";
-        dm      "       1+";
-        dm      "   else";
-        dm      "       ')' = if";
-        dm      "           1-";
-        dm      "       then";
-        dm      "   then";
-        dm      "   dup 0 = until";
-        dm      "   drop";
-        dm      ";";
+//         dm      ": ( immediate";
+//         dm      "   1";
+//         dm      "   begin";
+//         dm      "   key";
+//         dm      "   dup '(' = if";
+//         dm      "       drop";
+//         dm      "       1+";
+//         dm      "   else";
+//         dm      "       ')' = if";
+//         dm      "           1-";
+//         dm      "       then";
+//         dm      "   then";
+//         dm      "   dup 0 = until";
+//         dm      "   drop";
+//         dm      ";";
 
         dm      ": u."; // ( u -- )
         dm      "   base @ /mod";
@@ -1885,23 +1884,31 @@ input_buffer:
         dm      ";";
 
         dm      ": allot"; // ( n -- addr )
-        dm      "   here @ swap";
-        dm      "   here +!";
+        dm      "   here +!"; // here
         dm      ";";
 
         dm      ": cells 2 * ;"; // ( n -- n )
 
         // TODO put cell at end so can add more for arrays?
         dm      ": variable";
-        dm      "   1 cells allot";
         dm      "   word create";
         dm      "   docol ,";
         dm      "   ' lit ,";
-        dm      "   ,";
+        dm      "   here @ 2 cells + ,";
         dm      "   ' exit ,";
+        dm      "   1 cells allot";
         dm      ";";
 
+//         dm      ": do"; // ( n -- )
+//         dm      ";";
+
         dm      ": erase"; // ( addr n -- )
+        dm      "   begin";
+        dm      "       over 0 swap !";
+        dm      "       swap 1 cells + swap";
+        dm      "       1- dup 0 =";
+        dm      "   until";
+        dm      "   2drop";
         dm      ";";
 
 //         dm      ": to immediate"; // ( n -- )
@@ -1921,7 +1928,11 @@ input_buffer:
 
 // Sudoku
 
-        dm "variable board 15 allot";
+        // dm "1 2 + .";
+        dm "variable board";
+        dm "board @ . space 33 board ! board @ . ";
+        // dm "board 16 erase";
+        // dm "board @ .";
 
 // Test
 
