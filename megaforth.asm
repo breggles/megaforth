@@ -1931,6 +1931,11 @@ input_buffer:
         dm "variable board 14 allot";
         dm "board 16 erase";
         dm "variable possible-set 2 allot  1 possible-set c!  2 possible-set 1+ c!  3 possible-set 2 + c!  4 possible-set 3 + c!";
+        dm "variable rnd  here rnd !";
+
+        dm ": random  rnd @ 31421 *  6927 +  dup rnd ! ;";
+
+        dm ": choose  random um*  nip ;"; // ( u1 -- u2 )
 
 // Test
 
