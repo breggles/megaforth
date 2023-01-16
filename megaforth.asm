@@ -1930,7 +1930,7 @@ input_buffer:
 
         dm "variable board 14 allot";
         dm "board 16 erase";
-        dm "variable possible-set  1 possible-set c!  2 possible-set 1+ c!  3 possible-set 2 + c!  4 possible-set 3 + c!";
+        dm "variable possible-set 2 allot  1 possible-set c!  2 possible-set 1+ c!  3 possible-set 2 + c!  4 possible-set 3 + c!";
 
 // Test
 
