@@ -1928,12 +1928,9 @@ input_buffer:
 
 // Sudoku
 
-        // dm "1 2 + .";
         dm "variable board 14 allot";
-        // dm "board @ . space 33 board ! board @ . ";
-        dm "board @ .";
         dm "board 16 erase";
-        dm "space board @ .";
+        dm "variable possible-set  1 possible-set c!  2 possible-set 1+ c!  3 possible-set 2 + c!  4 possible-set 3 + c!";
 
 // Test
 
