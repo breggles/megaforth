@@ -503,6 +503,18 @@ ccopy_code:
         push    r2;
         jmp     _next;
 
+tor_code:
+        pop     r0;
+        addq    r1,#-2;
+        move    r2,r1;
+        st.w    (r2),r0;
+        jmp     _next;
+
+fromr_code:
+        ld.w    r0,(r1++);
+        push    r0;
+        jmp     _next;
+
 rspstore_code:
         pop     r1;
         jmp     _next;
@@ -1191,8 +1203,22 @@ ccopy_header:
 ccopy:
         dw      ccopy_code;
 
-rspstore_header:
+tor_header:
         dw      ccopy_header;
+        db      2;
+        dm      ">r";
+tor:
+        dw      tor_code;
+
+fromr_header:
+        dw      tor_header;
+        db      2;
+        dm      "r>";
+fromr:
+        dw      fromr_code;
+
+rspstore_header:
+        dw      fromr_header;
         db      4;
         dm      "rsp!";
 rspstore:
@@ -1899,8 +1925,19 @@ input_buffer:
         dm      "   1 cells allot";
         dm      ";";
 
-//         dm      ": do"; // ( n -- )
-//         dm      ";";
+        dm      "variable i";
+
+        dm      ": do immediate"; // ( n1 n2 -- )
+        dm      "   here @";
+        dm      "   ' >r ,";
+        dm      "   ' i , ' ! ,";
+        dm      ";";
+
+        dm      ": loop immediate";
+        dm      "   ";
+        dm      "   ' 0branch ,"
+        dm      "   here @ -"
+        dm      ";";
 
         dm      ": erase"; // ( addr n -- )
         dm      "   begin";
@@ -1931,11 +1968,14 @@ input_buffer:
         dm "variable board 14 allot";
         dm "board 16 erase";
         dm "variable possible-set 2 allot  1 possible-set c!  2 possible-set 1+ c!  3 possible-set 2 + c!  4 possible-set 3 + c!";
-        dm "variable rnd  here rnd !";
 
-        dm ": random  rnd @ 31421 *  6927 +  dup rnd ! ;";
+        // dm "variable rnd  here rnd !";
 
-        dm ": choose  random um*  nip ;"; // ( u1 -- u2 )
+        // dm ": random  rnd @ 31421 *  6927 +  dup rnd ! ;";
+
+        // dm ": choose  random um*  nip ;"; // ( u1 -- u2 )
+
+
 
 // Test
 
