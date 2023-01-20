@@ -511,12 +511,22 @@ tor_code:
         jmp     _next;
 
 fromr_code:
-        ld.w    r0,(r1++);
+        move    r2,r1;
+        addq    r1,#2;
+        ld.w    r0,(r2);
         push    r0;
+        jmp     _next;
+
+rspfetch_code:
+        push    r1;
         jmp     _next;
 
 rspstore_code:
         pop     r1;
+        jmp     _next;
+
+rdrop_code:
+        addq    r1,#2;
         jmp     _next;
 
 dspfetch_code:
@@ -1217,15 +1227,29 @@ fromr_header:
 fromr:
         dw      fromr_code;
 
-rspstore_header:
+rspfetch_header:
         dw      fromr_header;
+        db      4;
+        dm      "rsp@";
+rspfetch:
+        dw      rspfetch_code;
+
+rspstore_header:
+        dw      rspfetch_header;
         db      4;
         dm      "rsp!";
 rspstore:
         dw      rspstore_code;
 
-dspfetch_header:
+rdrop_header:
         dw      rspstore_header;
+        db      5;
+        dm      "rdrop";
+rdrop:
+        dw      rdrop_code;
+
+dspfetch_header:
+        dw      rdrop_header;
         db      4;
         dm      "dsp@";
 dspfetch:
@@ -1925,18 +1949,31 @@ input_buffer:
         dm      "   1 cells allot";
         dm      ";";
 
-        dm      "variable i";
+        dm      "variable i variable loop-end";
 
-        dm      ": do immediate"; // ( n1 n2 -- )
+        dm      ": do immediate"; // ( end start -- )
+        dm      "   .\" do:start:comp\"";
         dm      "   here @";
-        dm      "   ' >r ,";
-        dm      "   ' i , ' ! ,";
+        dm      "   ]";
+        dm      "       .\" do:start\"";
+        dm      "       i !";
+        dm      "       loop-end !";
+        dm      "       .\" do:end\"";
+        dm      "   [";
+        dm      "   .\" do:end:comp\"";
         dm      ";";
 
         dm      ": loop immediate";
-        dm      "   ";
-        dm      "   ' 0branch ,"
-        dm      "   here @ -"
+        dm      "   .\" loop:start:comp\"";
+        dm      "   ]";
+        dm      "       .\" loop:start\"";
+        dm      "       loop-end @ dup";
+        dm      "       i @ 1+ dup";
+        dm      "       rot = 0branch";
+        dm      "       .\" loop:end\"";
+        dm      "   [";
+        dm      "   here @ - ,";
+        dm      "   .\" loop:end:comp\"";
         dm      ";";
 
         dm      ": erase"; // ( addr n -- )
@@ -1965,15 +2002,17 @@ input_buffer:
 
 // Sudoku
 
-        dm "variable board 14 allot";
-        dm "board 16 erase";
-        dm "variable possible-set 2 allot  1 possible-set c!  2 possible-set 1+ c!  3 possible-set 2 + c!  4 possible-set 3 + c!";
+//         dm      "variable board 14 allot";
+//         dm      "board 16 erase";
+//         dm      "variable possible-set 2 allot  1 possible-set c!  2 possible-set 1+ c!  3 possible-set 2 + c!  4 possible-set 3 + c!";
 
         // dm "variable rnd  here rnd !";
 
         // dm ": random  rnd @ 31421 *  6927 +  dup rnd ! ;";
 
         // dm ": choose  random um*  nip ;"; // ( u1 -- u2 )
+
+        dm      ": asdf 3 0 do i @ . loop ; asdf";
 
 
 
