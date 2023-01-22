@@ -2001,9 +2001,22 @@ input_buffer:
 
 // Sudoku
 
-//         dm      "variable board 14 allot";
-//         dm      "board 16 erase";
-//         dm      "variable possible-set 2 allot  1 possible-set c!  2 possible-set 1+ c!  3 possible-set 2 + c!  4 possible-set 3 + c!";
+        dm      "variable board 14 allot";
+
+        dm      "board 16 erase";
+
+        dm      "variable possible-set 2 allot"; //  1 possible-set c!  2 possible-set 1+ c!  3 possible-set 2 + c!  4 possible-set 3 + c!";
+
+        dm      ": .ps  4 0 do possible-set i @ + c@ . loop ; .ps";
+
+        dm      ": 4set-reset"; // ( addr -- )
+        dm      "   4 0 do";
+        dm      "       dup i @ 1+ swap i @ + c!";
+        dm      "   loop";
+        dm      "   drop";
+        dm      ";";
+
+        dm      "possible-set 4set-reset .ps";
 
         // dm "variable rnd  here rnd !";
 
@@ -2011,11 +2024,9 @@ input_buffer:
 
         // dm ": choose  random um*  nip ;"; // ( u1 -- u2 )
 
-        dm      ": asdf 15 2 do i @ . loop ; asdf";
-
-
-
 // Test
+
+        // dm      ": asdf 15 2 do i @ . loop ; asdf";
 
         // dm "0 here @ c! 1 here @ 1+ c! here @ here @ 2+ c@c! c@c!";
 
