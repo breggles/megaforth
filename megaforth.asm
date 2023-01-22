@@ -1917,6 +1917,7 @@ input_buffer:
         dm      "   then";
         dm      ";";
 
+        // TODO fix, if compiling immediate words, then `state` is "compile", but we wan't to run immediately...
         dm      ": .\" immediate"; // ( -- )
         dm      "   state @ if";
         dm      "       [compile] s\"";
@@ -1934,7 +1935,7 @@ input_buffer:
         dm      ";";
 
         dm      ": allot"; // ( n -- addr )
-        dm      "   here +!"; // here
+        dm      "    here +!"; // here
         dm      ";";
 
         dm      ": cells 2 * ;"; // ( n -- n )
@@ -1951,29 +1952,18 @@ input_buffer:
 
         dm      "variable i variable loop-end";
 
+        // TODO current implementation does not allow nested loops, even in sub-functions, due to use of global variables
         dm      ": do immediate"; // ( end start -- )
-        dm      "   .\" do:start:comp\"";
         dm      "   here @";
-        dm      "   ]";
-        dm      "       .\" do:start\"";
-        dm      "       i !";
-        dm      "       loop-end !";
-        dm      "       .\" do:end\"";
-        dm      "   [";
-        dm      "   .\" do:end:comp\"";
+        dm      "   ' i , ' ! ,";
+        dm      "   ' loop-end , ' ! ,";
         dm      ";";
 
         dm      ": loop immediate";
-        dm      "   .\" loop:start:comp\"";
-        dm      "   ]";
-        dm      "       .\" loop:start\"";
-        dm      "       loop-end @ dup";
-        dm      "       i @ 1+ dup";
-        dm      "       rot = 0branch";
-        dm      "       .\" loop:end\"";
-        dm      "   [";
+        dm      "   ' loop-end , ' @ , ' dup ,";
+        dm      "   ' i , ' @ , ' 1+ , ' dup ,";
+        dm      "   ' rot , ' = , ' 0branch ,";
         dm      "   here @ - ,";
-        dm      "   .\" loop:end:comp\"";
         dm      ";";
 
         dm      ": erase"; // ( addr n -- )
@@ -2012,7 +2002,7 @@ input_buffer:
 
         // dm ": choose  random um*  nip ;"; // ( u1 -- u2 )
 
-        dm      ": asdf 3 0 do i @ . loop ; asdf";
+        dm      ": asdf 15 2 do i @ . loop ; asdf";
 
 
 
