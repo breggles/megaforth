@@ -1885,6 +1885,7 @@ input_buffer:
         dm      "   1 here +!";
         dm      ";";
 
+        // TODO fix, if compiling immediate words, then `state` is "compile", but we wan't to run immediately...
         dm      ": s\" immediate"; // ( -- addr len )
         dm      "   state @ if";
         dm      "       ' litstring ,";
@@ -1950,9 +1951,17 @@ input_buffer:
         dm      "   1 cells allot";
         dm      ";";
 
+        // TODO vv
+        // dm      ": compile]";
+        // dm      ";";
+
+        // dm      ": [compile ;";
+
         dm      "variable i variable loop-end";
 
         // TODO current implementation does not allow nested loops, even in sub-functions, due to use of global variables
+        // TODO use `value` for `i` to avoid fetch/@ when using
+        // TODO could use built-in var for `i`/`loop-end`?
         dm      ": do immediate"; // ( end start -- )
         dm      "   here @";
         dm      "   ' i , ' ! ,";
