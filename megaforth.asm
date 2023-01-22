@@ -2005,7 +2005,7 @@ input_buffer:
 
         dm      "board 16 erase";
 
-        dm      "variable possible-set 2 allot"; //  1 possible-set c!  2 possible-set 1+ c!  3 possible-set 2 + c!  4 possible-set 3 + c!";
+        dm      "variable possible-set 2 allot";
 
         dm      ": .ps  4 0 do possible-set i @ + c@ . loop ; .ps";
 
@@ -2017,6 +2017,16 @@ input_buffer:
         dm      ";";
 
         dm      "possible-set 4set-reset .ps";
+
+        dm      ": 4set-remove"; // ( u addr -- )
+        dm      "   4 0 do";
+        dm      "       2dup i @ + c@ = if";
+        dm      "           0 over i @ + c!";
+        // dm      "           leave";
+        dm      "       then";
+        dm      "   loop";
+        dm      "   2drop";
+        dm      ";";
 
         // dm "variable rnd  here rnd !";
 
