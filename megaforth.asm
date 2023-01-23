@@ -2036,8 +2036,8 @@ input_buffer:
 
         dm      ": .board"; // ( addr -- addr )
         dm      "   16 0 do";
-        dm      "       i @ 4 mod 0 = if cr then";
-        dm      "       dup i @ + c@ .";
+        dm      "       dup i @ + c@ 0 .r";
+        dm      "       i @ 4 mod 3 = if cr then";
         dm      "   loop";
         dm      ";";
 
