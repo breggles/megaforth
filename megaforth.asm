@@ -2051,9 +2051,7 @@ input_buffer:
         dm      "4 4  rot   board!";
         dm      "3 15 rot   board!";
         dm      "2 9  rot   board!";
-        dm      "drop";
-
-        dm      "board .board";
+        dm      ".board";
 
         // dm "variable rnd  here rnd !";
 
