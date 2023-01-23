@@ -137,11 +137,14 @@ _prn_str:
         push    r2;          // str ptr
         push    r0;          // str len
         move    r3,r2;
-        ld.b    r1,cur_out_pos;
-        ld.b    r2,cur_out_pos+1;
+        ld.b    r1,cur_out_pos;     // x
+        ld.b    r2,cur_out_pos+1;   // y
 _prn_str_loop:
         ld.b    r0,(r3++);
         push    r3;
+        ld.b    r3,#0xA;        // line feed
+        cmp     r0,r3;
+        beq     _prn_str_new_row;
         jsr     _prn_chr;
         ld.b    r3,#7;
         cmp     r1,r3;          // 8 chars in a row
@@ -1686,11 +1689,14 @@ input_buffer:
 // Words
 
         dm      ": / /mod swap drop ;";
+
         dm      ": mod /mod drop ;";
 
         dm      ": '\\n' 10 ;";
 
         dm      ": bl 32 ;";
+
+        dm      ": cr '\\n' emit ;";
 
         dm      ": space bl emit ;";
 
@@ -1977,7 +1983,7 @@ input_buffer:
 
         dm      ": erase"; // ( addr n -- )
         dm      "   begin";
-        dm      "       over 3 swap !";
+        dm      "       over 0 swap !";
         dm      "       swap 1+ swap";
         dm      "       1- dup 0 =";
         dm      "   until";
@@ -2007,7 +2013,7 @@ input_buffer:
 
         dm      "variable possible-set 2 allot";
 
-        dm      ": .ps  4 0 do possible-set i @ + c@ . loop ; .ps";
+        // dm      ": .ps  4 0 do possible-set i @ + c@ . loop ; .ps";
 
         dm      ": 4set-reset"; // ( addr -- )
         dm      "   4 0 do";
@@ -2016,17 +2022,26 @@ input_buffer:
         dm      "   drop";
         dm      ";";
 
-        dm      "possible-set 4set-reset .ps";
+        // dm      "possible-set 4set-reset .ps";
 
-        dm      ": 4set-remove"; // ( u addr -- )
-        dm      "   4 0 do";
-        dm      "       2dup i @ + c@ = if";
-        dm      "           0 over i @ + c!";
-        // dm      "           leave";
-        dm      "       then";
+//         dm      ": 4set-remove"; // ( u addr -- )
+//         dm      "   4 0 do";
+//         dm      "       2dup i @ + c@ = if";
+//         dm      "           0 over i @ + c!";
+//         // dm      "           leave";
+//         dm      "       then";
+//         dm      "   loop";
+//         dm      "   2drop";
+//         dm      ";";
+
+        dm      ": .board"; // ( addr -- addr )
+        dm      "   16 0 do";
+        dm      "       i @ 4 mod 0 = if cr then";
+        dm      "       dup i @ + c@ .";
         dm      "   loop";
-        dm      "   2drop";
         dm      ";";
+
+        dm      "board .board";
 
         // dm "variable rnd  here rnd !";
 
