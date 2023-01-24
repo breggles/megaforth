@@ -1827,6 +1827,7 @@ input_buffer:
         dm      "   emit";
         dm      ";";
 
+        // TODO prints stack the wrong way round, from top to bottom?
         dm      ": .s"; // ( -- )
         dm      "   dsp@";
         dm      "   begin";
@@ -1942,7 +1943,7 @@ input_buffer:
         dm      ";";
 
         dm      ": allot"; // ( n -- addr )
-        dm      "    here +!"; // here
+        dm      "    here +!";
         dm      ";";
 
         dm      ": cells 2 * ;"; // ( n -- n )
@@ -2034,6 +2035,12 @@ input_buffer:
 //         dm      "   2drop";
 //         dm      ";";
 
+        dm      ": ndrop"; // ( x1..xn n -- )
+        dm      "   ?dup";
+        dm      "   0 = if exit then";
+        dm      "   0 do drop loop";
+        dm      ";";
+
         dm      ": .board"; // ( addr -- addr )
         dm      "   16 0 do";
         dm      "       dup i @ + c@ 0 .r";
@@ -2048,10 +2055,12 @@ input_buffer:
         dm      ";";
 
         dm      "1 2  board board!";
-        dm      "4 4  rot   board!";
-        dm      "3 15 rot   board!";
-        dm      "2 9  rot   board!";
-        dm      ".board";
+        // dm      "4 4  rot   board!";
+        // dm      "3 15 rot   board!";
+        // dm      "2 9  rot   board!";
+        dm      ".board drop";
+
+        dm      ".s";
 
         // dm "variable rnd  here rnd !";
 
