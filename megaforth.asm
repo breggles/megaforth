@@ -1829,13 +1829,13 @@ input_buffer:
 
         // TODO prints stack the wrong way round, from top to bottom?
         dm      ": .s"; // ( -- )
-        dm      "   dsp@";
+        dm      "   s0 @";
         dm      "   begin";
-        dm      "       dup s0 @ <";
+        dm      "       dup dsp@ >=";
         dm      "   while";
         dm      "       dup @ u.";
         dm      "       space";
-        dm      "       2+";
+        dm      "       2-";
         dm      "   repeat";
         dm      "   drop";
         dm      ";";
@@ -2060,7 +2060,7 @@ input_buffer:
         // dm      "2 9  rot   board!";
         dm      ".board drop";
 
-        dm      ".s";
+        dm      "1 2 3 .s";
 
         // dm "variable rnd  here rnd !";
 
