@@ -238,7 +238,7 @@ twodup_code:
         ld.w    r2,(sp+2);
         push    r2;
         push    r0;
-        ret;
+        jmp     _next;
 
 twoswap_code:
         st.w    r1_store,r1;
@@ -1832,7 +1832,7 @@ input_buffer:
         dm      "   dsp@";
         dm      "   s0 @";
         dm      "   begin";
-        dm      "       2- 2dup <";
+        dm      "       2- 2dup <=";
         dm      "   while";
         dm      "       dup @ u.";
         dm      "       space";
