@@ -1840,10 +1840,6 @@ input_buffer:
         dm      "   2drop";
         dm      ";";
 
-        dm      "1 2 3 .s";
-
-        db      3;
-
         dm      ": uwidth"; // ( u -- width)
         dm      "   base @ /";
         dm      "   ?dup if";
@@ -1980,10 +1976,11 @@ input_buffer:
         dm      ";";
 
         dm      ": loop immediate";
-        dm      "   ' loop-end , ' @ , ' dup ,";
-        dm      "   ' i , ' @ , ' 1+ , ' dup ,";
-        dm      "   ' rot , ' = , ' 0branch ,";
+        dm      "   ' loop-end , ' @ ,";
+        dm      "   ' i , ' @ , ' 1+ ,";
+        dm      "   ' 2dup , ' = , ' 0branch ,";
         dm      "   here @ - ,";
+        dm      "   ' 2drop ,";
         dm      ";";
 
         dm      ": erase"; // ( addr n -- )
@@ -2062,7 +2059,7 @@ input_buffer:
         // dm      "4 4  rot   board!";
         // dm      "3 15 rot   board!";
         // dm      "2 9  rot   board!";
-        dm      ".board drop";
+        dm      ".board .s";
 
         // dm "variable rnd  here rnd !";
 
