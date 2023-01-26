@@ -2042,6 +2042,109 @@ input_buffer:
         dm      "   0 do drop loop";
         dm      ";";
 
+        dm      ": col-end"; // ( addr1 -- addr2 )
+        dm      "   16 +";
+        dm      ";";
+
+        dm      ": col"; // ( addr u1 -- u2 u3 u4 u5 )
+        dm      "    + dup col-end swap do";
+        dm      "        i 4 * @ c@";
+        dm      "    loop";
+        dm      ";";
+
+        dm      ": row-start"; // ( addr1 u -- addr2 )
+        dm      "   4 * +";
+        dm      ";";
+
+        dm      ": row-end"; // ( addr1 -- addr2 )
+        dm      "   4 +";
+        dm      ";";
+
+        dm      ": row"; // ( addr u1 -- u2 u3 u4 u5 )
+        dm      "    row-start dup row-end swap do";
+        dm      "        i @ c@";
+        dm      "    loop";
+        dm      ";";
+
+        dm      ": quadr-field>start"; // ( u1 -- u2 )
+        dm      "    dup dup";
+        dm      "    4 / 2 mod 4 *";
+        dm      "    swap 2 mod +";
+        dm      "    -";
+        dm      ";";
+
+        dm      ": quadr-offset"; // ( u1 -- u2 )
+        dm      "   2 /mod 4 * +";
+        dm      ";";
+
+        dm      ": start>quadr"; // ( addr u1 -- u2 u3 u4 u5 )
+        dm      "    4 0 do";
+        dm      "        dup i @ quadr-offset + c@ swap";
+        dm      "    loop";
+        dm      "    drop";
+        dm      ";";
+
+        dm      ": coll-4set-remove"; // ( addr u1 u2 u3 u4 -- )
+        dm      "    4 0 do";
+        dm      "        4 i @ - pick 4set-remove";
+        dm      "    loop";
+        dm      "    drop";
+        dm      ";";
+
+        dm      ": possibles-remove"; // ( board$ u -- )
+        dm      "    possible-set 4set-reset";
+        dm      "    2dup possible-set -rot 4 / row coll-4set-remove";
+        dm      "    2dup possible-set -rot 4 mod col coll-4set-remove";
+        dm      "    possible-set -rot quadr-field>start + start>quadr coll-4set-remove";
+        dm      ";";
+
+        dm      ": possibilities"; // ( -- S:... count )
+        dm      "    0 4 0 do";
+        dm      "        possible-set i @ + c@ ?dup 0<> if";
+        dm      "            swap 1+";
+        dm      "        then";
+        dm      "    loop";
+        dm      ";";
+
+        dm      ": field-possibilities"; // ( u board$ -- S:... count )
+        dm      "    swap possibles-remove";
+        dm      "    possibilities";
+        dm      ";";
+
+        dm      ": field-solve"; // ( u board$ -- board$ flag )
+        dm      "    2dup field-possibilities";
+        dm      "    dup 1 = if";
+        dm      "        drop";
+        dm      "        -rot board!";
+        dm      "        true swap";
+        dm      "    else";
+        dm      "        ndrop";
+        dm      "        nip";
+        dm      "        false";
+        dm      "    then";
+        dm      ";";
+
+        dm      ": fields-solve"; // ( board$ -- board$ flag )
+        dm      "    false";
+        dm      "    16 0 do";
+        dm      "        swap dup i @ + c@ 0= if";
+        dm      "            i @ swap field-solve rot or";
+        dm      "        else";
+        dm      "            swap";
+        dm      "        then";
+        dm      "    loop";
+        dm      ";";
+
+        dm      ": board-solve"; // ( addr -- )
+        dm      "    .board cr";
+        dm      "    begin";
+        dm      "        fields-solve";
+        dm      "    while";
+        dm      "        .board cr";
+        dm      "    repeat";
+        dm      "    drop";
+        dm      ";";
+
         dm      ": .board"; // ( addr -- addr )
         dm      "   16 0 do";
         dm      "       dup i @ + c@ 0 .r";
@@ -2056,10 +2159,10 @@ input_buffer:
         dm      ";";
 
         dm      "1 2  board board!";
-        // dm      "4 4  rot   board!";
-        // dm      "3 15 rot   board!";
-        // dm      "2 9  rot   board!";
-        dm      ".board .s";
+        dm      "4 4  rot   board!";
+        dm      "3 15 rot   board!";
+        dm      "2 9  rot   board!";
+        dm      ".board drop .s";
 
         // dm "variable rnd  here rnd !";
 
