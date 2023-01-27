@@ -981,7 +981,7 @@ rot:
 nrot_header:
         dw      rot_header;
         db      4;
-        dm      "rot-";
+        dm      "-rot";
 nrot:
         dw      nrot_code;
 
@@ -2009,13 +2009,9 @@ input_buffer:
 
 // Sudoku
 
-        dm      "variable board 14 allot";
-
-        dm      "board 16 erase";
-
         dm      "variable possible-set 2 allot";
 
-        // dm      ": .ps  4 0 do possible-set i @ + c@ . loop ; .ps";
+        // dm      ": .ps  4 0 do possible-set i @ + c@ . loop ;";
 
         dm      ": 4set-reset"; // ( addr -- )
         dm      "   4 0 do";
@@ -2027,7 +2023,9 @@ input_buffer:
         // dm      "possible-set 4set-reset .ps";
 
         dm      ": 4set-remove"; // ( u addr -- )
-        dm      "   swap 1- + 0 swap c!";
+        dm      "   over 0 > if";
+        dm      "       swap 1- + 0 swap c!";
+        dm      "   then";
         dm      ";";
 
         // dm      "4 possible-set 4set-remove .ps";
@@ -2042,10 +2040,12 @@ input_buffer:
         dm      "   16 +";
         dm      ";";
 
+        // TODO implement +loop to do steps of 4
         dm      ": col"; // ( addr u1 -- u2 u3 u4 u5 )
-        dm      "    + dup col-end swap do";
-        dm      "        i 4 * @ c@";
+        dm      "    + 4 0 do";
+        dm      "        dup i @ 4 * + c@ swap";
         dm      "    loop";
+        dm      "    drop";
         dm      ";";
 
         dm      ": row-start"; // ( addr1 u -- addr2 )
@@ -2080,23 +2080,23 @@ input_buffer:
         dm      "    drop";
         dm      ";";
 
-        dm      ": coll-4set-remove"; // ( addr u1 u2 u3 u4 -- )
+        dm      ": coll-4set-remove"; // ( u1 u2 u3 u4 addr -- )
         dm      "    4 0 do";
-        dm      "        4 i @ - pick 4set-remove";
+        dm      "         dup -rot 4set-remove";
         dm      "    loop";
         dm      "    drop";
         dm      ";";
 
         dm      ": possibles-remove"; // ( board$ u -- )
         dm      "    possible-set 4set-reset";
-        dm      "    2dup possible-set -rot 4 / row coll-4set-remove";
-        dm      "    2dup possible-set -rot 4 mod col coll-4set-remove";
-        dm      "    possible-set -rot quadr-field>start + start>quadr coll-4set-remove";
+        dm      "    2dup 4 / row possible-set coll-4set-remove";                    // row
+        dm      "    2dup 4 mod col possible-set coll-4set-remove";                  // col
+        dm      "    quadr-field>start + start>quadr possible-set coll-4set-remove"; //quadr
         dm      ";";
 
         dm      ": possibilities"; // ( -- S:... count )
         dm      "    0 4 0 do";
-        dm      "        possible-set i @ + c@ ?dup 0<> if";
+        dm      "        possible-set i @ + c@ ?dup 0 <> if";
         dm      "            swap 1+";
         dm      "        then";
         dm      "    loop";
@@ -2107,6 +2107,12 @@ input_buffer:
         dm      "    possibilities";
         dm      ";";
 
+        dm      ": board!"; // ( u1 u2 board$ -- )
+        dm      "   dup >r";
+        dm      "   + c!";
+        dm      "   r>";
+        dm      ";";
+
         dm      ": field-solve"; // ( u board$ -- board$ flag )
         dm      "    2dup field-possibilities";
         dm      "    dup 1 = if";
@@ -2115,15 +2121,15 @@ input_buffer:
         dm      "        true swap";
         dm      "    else";
         dm      "        ndrop";
-        dm      "        nip";
+        dm      "        swap drop";
         dm      "        false";
         dm      "    then";
         dm      ";";
 
         dm      ": fields-solve"; // ( board$ -- board$ flag )
-        dm      "    false";
+        dm      "    false .s";
         dm      "    16 0 do";
-        dm      "        swap dup i @ + c@ 0= if";
+        dm      "        swap dup i @ .s + c@ 0 = if";
         dm      "            i @ swap field-solve rot or";
         dm      "        else";
         dm      "            swap";
@@ -2131,34 +2137,32 @@ input_buffer:
         dm      "    loop";
         dm      ";";
 
-        dm      ": board-solve"; // ( addr -- )
-        dm      "    .board cr";
-        dm      "    begin";
-        dm      "        fields-solve";
-        dm      "    while";
-        dm      "        .board cr";
-        dm      "    repeat";
-        dm      "    drop";
-        dm      ";";
-
-        dm      ": .board"; // ( addr -- addr )
+        dm      ": .board"; // ( board$ -- board$ )
         dm      "   16 0 do";
         dm      "       dup i @ + c@ 0 .r";
         dm      "       i @ 4 mod 3 = if cr then";
         dm      "   loop";
         dm      ";";
 
-        dm      ": board!"; // ( u1 u2 board$ -- )
-        dm      "   dup >r";
-        dm      "   + c!";
-        dm      "   r>";
+        dm      ": board-solve"; // ( board$ -- )
+        dm      "    .board cr";
+        dm      "    begin";
+        dm      "        not fields-solve";
+        dm      "    until";
+        dm      "    .board cr";
+        dm      "    drop";
         dm      ";";
+
+        dm      "variable board 14 allot";
+
+        dm      "board 16 erase";
 
         dm      "1 2  board board!";
         dm      "4 4  rot   board!";
         dm      "3 15 rot   board!";
         dm      "2 9  rot   board!";
-        dm      ".board drop .s";
+        // dm      ".board drop .s";
+        dm      "board-solve .s";
 
         // dm "variable rnd  here rnd !";
 
