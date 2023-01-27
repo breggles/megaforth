@@ -2026,15 +2026,11 @@ input_buffer:
 
         // dm      "possible-set 4set-reset .ps";
 
-//         dm      ": 4set-remove"; // ( u addr -- )
-//         dm      "   4 0 do";
-//         dm      "       2dup i @ + c@ = if";
-//         dm      "           0 over i @ + c!";
-//         // dm      "           leave";
-//         dm      "       then";
-//         dm      "   loop";
-//         dm      "   2drop";
-//         dm      ";";
+        dm      ": 4set-remove"; // ( u addr -- )
+        dm      "   swap 1- + 0 swap c!";
+        dm      ";";
+
+        // dm      "4 possible-set 4set-remove .ps";
 
         dm      ": ndrop"; // ( x1..xn n -- )
         dm      "   ?dup";
