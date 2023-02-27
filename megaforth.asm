@@ -28,7 +28,7 @@ CHAR_BYTE_WIDTH     equ 0x10;
 //     data just before code is code and then it gets everything wrong, after that,
 //     and it can only be fixed by adding random padding. Hence, I've split headers
 //     and code into two separate sections for Mega Forth.
-
+        
         jmp     _start;
 
         nop;
@@ -49,11 +49,14 @@ illegal:
         nop;
 
 _start:
-
         // set up data stack
         ld.w    r0,#EXT_RAM_LEN-1;  // -1 to avoid signed maths confusion
         move    sp,r0;
         st.w    s0_var,r0;
+
+//         ld.w    r0,#0xffff;
+//         ld.w    r1,#0xffff;
+//         jsr     _mulu;
 
         // set up return stack
         ld.w    r1,#RETURN_STACK;
@@ -76,6 +79,28 @@ _next:
         move    r2,r0;
         ld.w    r0,(r2);
         jmp     (r0);
+
+_mulu:
+        clr     r2;
+        clr     r3;
+        test    r1;
+        beq     _mulu_done;
+_mulu_loop:
+        add     r2,r0;
+        // could do bcc _mulu_nocarry; ?
+        push    r0;
+        push    r1;
+        clr     r0;
+        move    r1,r3;
+        addx    r0,r1;
+        move    r3,r0;
+        pop     r1;
+        pop     r0;
+        dec     r1;
+        beq     _mulu_done;
+        jmp     _mulu_loop;
+_mulu_done:
+        ret;
 
 _prn_chr:
         // TODO: what happens if print outside internal RAM?
@@ -652,7 +677,7 @@ number_digit:
         st.w    (sp+4),r1;
         beq     number_end;
         move    r1,r3;
-        mulu;
+        jsr     _mulu;
         move    r3,r2;
         ld.w    r2,(sp+6);     // string ptr
         jmp     number_loop;
