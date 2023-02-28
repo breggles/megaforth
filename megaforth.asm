@@ -54,9 +54,9 @@ _start:
         move    sp,r0;
         st.w    s0_var,r0;
 
-//         ld.w    r0,#0xffff;
-//         ld.w    r1,#0xffff;
-//         jsr     _mulu;
+        ld.w    r0,#0xf;
+        ld.w    r1,#0xf;
+        jsr     _mulu;
 
         // set up return stack
         ld.w    r1,#RETURN_STACK;
@@ -100,6 +100,10 @@ _mulu_loop:
         beq     _mulu_done;
         jmp     _mulu_loop;
 _mulu_done:
+        clr     r0;     // workaround for zeroing PS
+        push    r0;     // and  ps.#0; should work, but gives error...
+        pop     ps;
+        pop     ps;     // popping into PS only pops 1 byte, and `add    sp,#1` doesn't work, either
         ret;
 
 _prn_chr:
@@ -350,7 +354,7 @@ mul_code:
         pop     r0;
         pop     r1;
         muls;
-        push    r2;             // ignore overflow
+        push    r2;             // ignore overflow...
         ld.w    r3,r3_store;
         ld.w    r1,r1_store;
         jmp     _next;
